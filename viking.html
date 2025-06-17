@@ -1,0 +1,4225 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viking Pong Fotball – Eliteserien 2025</title>
+    <style>
+        
+        /* ======= GENERELL STYLING ======= */
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #0a1420, #1a2d42);
+    font-family: 'Arial', sans-serif;
+    color: white;
+    overflow: hidden;
+    touch-action: manipulation;
+}
+
+#gameContainer {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 60px;
+}
+
+/* ======= SPILLBRETT ======= */
+#gameField {
+    width: min(1100px, 95vw);
+    height: min(700px, 75vh);
+    background: linear-gradient(90deg, #2d5016, #387020, #4a8a2a, #387020, #2d5016);
+    border: 6px solid #ffffff;
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0,255,0,0.4);
+}
+
+.field-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: repeating-linear-gradient(
+        90deg,
+        transparent 0px,
+        transparent 29px,
+        rgba(255,255,255,0.1) 30px,
+        rgba(255,255,255,0.1) 31px
+    );
+}
+
+.center-line {
+    position: absolute;
+    left: 50%;
+    top: 5%;
+    width: 4px;
+    height: 90%;
+    background: white;
+    transform: translateX(-50%);
+}
+
+.center-circle {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 120px;
+    height: 120px;
+    border: 4px solid white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.center-spot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.penalty-area {
+    position: absolute;
+    width: 120px;
+    height: 240px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 4px solid white;
+    background: rgba(255,255,255,0.05);
+}
+
+.penalty-area.left {
+    left: 0;
+    border-left: none;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.penalty-area.right {
+    right: 0;
+    border-right: none;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.goal-area {
+    position: absolute;
+    width: 50px;
+    height: 120px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 4px solid white;
+    background: rgba(255,255,255,0.1);
+}
+
+.goal-area.left {
+    left: 0;
+    border-left: none;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.goal-area.right {
+    right: 0;
+    border-right: none;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.goal-post {
+    position: absolute;
+    width: 12px;
+    height: 140px;
+    background: white;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+.goal-post.left { left: -6px; }
+.goal-post.right { right: -6px; }
+
+.crowd-noise {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    height: 20px;
+    background: linear-gradient(90deg,
+        rgba(255,255,255,0.1) 0%,
+        rgba(255,255,255,0.2) 50%,
+        rgba(255,255,255,0.1) 100%);
+    border-radius: 10px;
+    animation: crowdPulse 3s ease-in-out infinite;
+}
+
+/* ======= SPILLERE OG BALL ======= */
+.player {
+    position: absolute;
+    width: 20px;
+    height: 100px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    transition: top 0.05s ease;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    border: 3px solid white;
+}
+
+.viking {
+    left: 40px;
+    box-shadow: 0 0 25px rgba(0, 33, 102, 0.8);
+    background: linear-gradient(180deg, #002166, #003399, #002166);
+}
+
+.opponent {
+    right: 40px;
+}
+
+.ball {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle at 35% 35%, #ffffff, #e8e8e8, #d0d0d0);
+    border: 2px solid #333;
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(255,255,255,0.9);
+    transition: none;
+}
+
+/* ======= UI OG SCOREBOARD ======= */
+#ui {
+    position: absolute;
+    top: 50px;          /* Økt fra 20px - mye lavere */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    pointer-events: none;
+}
+
+.scoreboard-container {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.field-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 8px;
+    border: none;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 5px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.scoreboard {
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a, #1a1a1a);
+    border: 4px solid #444444;  /* Redusert fra 6px */
+    border-radius: 6px;         /* Redusert fra 8px */
+    padding: 6px 20px;          /* Redusert fra 8px */
+    box-shadow: 
+        0 0 40px rgba(0,0,0,0.9),
+        inset 0 0 30px rgba(255,215,0,0.05),
+        0 8px 16px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;                   /* Redusert fra 4px */
+    backdrop-filter: blur(10px);
+    min-width: 480px;
+    position: relative;
+}
+
+.score-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: nowrap;  /* Tvinger elementene til å være på samme linje */
+}
+
+.team-name-led {
+    color: #FFD700;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 14px;
+    text-shadow: 
+        0 0 8px #FFD700,
+        0 0 16px #FFD700;
+    letter-spacing: 1px;
+    min-width: 120px;   /* Redusert litt for å spare plass */
+    max-width: 120px;   /* Legg til max-width */
+    text-align: left;
+    overflow: hidden;   /* Skjul overflødig tekst */
+    white-space: nowrap; /* Ingen linjeskift */
+}
+
+.score-led {
+    color: #FFD700;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 22px;
+    text-shadow: 
+        0 0 10px #FFD700,
+        0 0 20px #FFD700;
+    background: #000;
+    padding: 3px 10px;
+    border-radius: 4px;
+    border: 2px solid #333;
+    min-width: 50px;
+    text-align: center;
+    margin-right: 90px;  /* Økt litt for klokka */
+    flex-shrink: 0;     /* Forhindrer at score krymper */
+}
+
+.clock-led {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #FFD700;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 18px;    /* Redusert fra 20px */
+    text-shadow: 
+        0 0 10px #FFD700,
+        0 0 20px #FFD700;
+    background: #000;
+    padding: 8px 12px; /* Redusert fra 10px 15px */
+    border-radius: 6px;
+    border: 2px solid #333;
+}
+/* ======= INTROSCREEN ======= */
+#introScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #0a1420, #1a2d42);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+#introScreen img {
+    max-width: 400px;
+    max-height: 300px;
+    object-fit: contain;
+    margin-bottom: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 40px rgba(255,215,0,0.3);
+}
+
+.intro-title {
+    color: #FFD700;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 10px #FFD700;
+    text-align: center;
+}
+
+#loadingProgress {
+    width: 300px;
+    height: 20px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+#progressBar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #FFD700, #00FF00);
+    transition: width 0.3s ease;
+}
+
+.intro-text {
+    color: #00FF00;
+    font-size: 14px;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#startGameBtn {
+    background: linear-gradient(135deg, #00AA00, #00FF00);
+    color: #000;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0,170,0,0.3);
+    display: none;
+}
+
+/* ======= KNAPPER ======= */
+.button {
+    background: linear-gradient(135deg, #8B0000, #CD5C5C);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    margin: 10px 6px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(139,0,0,0.3);
+    pointer-events: auto;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.button:hover {
+    background: linear-gradient(135deg, #a00000, #dc6868);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(139,0,0,0.4);
+}
+
+#pauseBtn {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background: linear-gradient(135deg, #4A90E2, #357ABD);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 100;
+    pointer-events: auto;
+}
+
+@keyframes cupPulse {
+    0%, 100% { 
+        transform: translateY(-50%) scale(1); 
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    }
+    50% { 
+        transform: translateY(-50%) scale(1.05); 
+        box-shadow: 0 0 50px rgba(255, 215, 0, 1);
+    }
+}
+
+/* ======= MELDINGER OG POPUPS ======= */
+.goal-scorer-display {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #000000, #1a1a1a);
+    padding: 25px 35px;
+    border-radius: 20px;
+    text-align: center;
+    z-index: 500;
+    border: 3px solid #FFD700;
+    box-shadow: 0 0 40px rgba(255,215,0,0.5);
+    max-width: 350px;
+    backdrop-filter: blur(10px);
+    transition: none !important;
+    animation: none !important;
+}
+
+.goal-scorer-display * {
+    transition: none !important;
+    animation: none !important;
+}
+
+.goal-scorer-display img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #FFD700;
+    margin-bottom: 15px;
+    box-shadow: 0 0 20px rgba(255,215,0,0.3);
+    background: #FFD700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+}
+
+.goal-scorer-name {
+    color: #FFD700;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 10px #FFD700;
+}
+
+.goal-scorer-team {
+    color: #00FF00;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+}
+
+.halftime-screen {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.95);
+    padding: 40px 50px;
+    border-radius: 20px;
+    text-align: center;
+    z-index: 400;
+    border: 4px solid #FFD700;
+    max-width: 500px;
+    box-shadow: 0 0 50px rgba(255,215,0,0.5);
+    backdrop-filter: blur(15px);
+}
+
+#gameMessage {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.96);
+    padding: 30px 40px;
+    border-radius: 20px;
+    text-align: center;
+    font-size: 16px;
+    z-index: 200;
+    display: none;
+    border: 4px solid #FFD700;
+    max-width: 400px;
+    box-shadow: 0 0 40px rgba(255,215,0,0.5);
+    backdrop-filter: blur(10px);
+}
+
+/* ======= VAR SYSTEM ======= */
+.var-screen {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.95);
+    padding: 30px 40px;
+    border-radius: 20px;
+    text-align: center;
+    z-index: 600;
+    border: 4px solid #FF0000;
+    max-width: 500px;
+    box-shadow: 0 0 50px rgba(255,0,0,0.5);
+    backdrop-filter: blur(15px);
+}
+
+.var-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 550;
+}
+
+.offside-line {
+    position: absolute;
+    width: 4px;
+    height: 60%;
+    top: 20%;
+    opacity: 0;
+    box-shadow: 0 0 10px currentColor;
+    transition: all 0.5s ease-in-out;
+}
+
+.offside-line.red {
+    background: #FF0000;
+    color: #FF0000;
+}
+
+.offside-line.green {
+    background: #00FF00;
+    color: #00FF00;
+}
+
+.var-checking {
+    animation: varPulse 1s ease-in-out infinite;
+}
+
+/* ======= RUNDEOVERSIKT ======= */
+#roundSummary {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.96);
+    padding: 60px 40px 40px 40px;
+    border-radius: 0;
+    text-align: center;
+    font-size: 14px;
+    z-index: 200;
+    display: none;
+    border: none;
+    overflow-y: auto;
+    box-shadow: none;
+    backdrop-filter: blur(15px);
+    transform: none;
+}
+
+.other-results {
+    margin: 15px 0;
+    text-align: center;
+}
+
+.other-results h3 {
+    color: #FFD700;
+    text-align: center;
+    margin-bottom: 15px;
+    font-family: 'Courier New', monospace;
+}
+
+.result-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 15px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    align-items: center;
+    margin: 0 20px;
+}
+
+.result-team1 {
+    text-align: right;
+    color: white;
+}
+
+.result-score {
+    color: #00FF00;
+    font-weight: bold;
+    text-align: center;
+    min-width: 60px;
+    background: rgba(0,255,0,0.1);
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+.result-team2 {
+    text-align: left;
+    color: white;
+}
+
+/* ======= TABELL (SKJULT) ======= */
+#leagueTable {
+    display: none !important;
+}
+
+.table-header {
+    font-size: 14px;
+    font-weight: bold;
+    color: #00FF00;
+    margin-bottom: 10px;
+    text-align: center;
+    text-shadow: 0 0 10px #00FF00;
+    font-family: 'Courier New', monospace;
+}
+
+.table-row {
+    display: grid;
+    grid-template-columns: 25px 2fr 25px 25px 25px 50px 30px;
+    gap: 5px;
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(0,255,0,0.3);
+    font-size: 10px;
+    align-items: center;
+    font-family: 'Courier New', monospace;
+}
+
+.table-header-row {
+    font-weight: bold;
+    color: #00FF00;
+    font-size: 9px;
+    border-bottom: 2px solid #00FF00;
+}
+
+.table-pos {
+    text-align: center;
+    font-weight: bold;
+    color: #FFD700;
+}
+
+.table-team {
+    overflow: hidden;
+    white-space: nowrap;
+    font-weight: 500;
+    color: white;
+}
+
+.table-team.viking {
+    color: #FFD700;
+    font-weight: bold;
+    text-shadow: 0 0 5px #FFD700;
+}
+
+.table-stat {
+    text-align: center;
+    font-weight: 500;
+    color: #00FF00;
+}
+
+/* ======= MOBILE TOUCH KONTROLLER ======= */
+.mobile-controls {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    display: none;
+    z-index: 100;
+}
+
+.touch-area {
+    height: 200px;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid #FFD700;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFD700;
+    font-weight: bold;
+    backdrop-filter: blur(5px);
+}
+
+.mobile-instruction {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.8);
+    color: #FFD700;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 14px;
+    z-index: 1000;
+    display: none;
+}
+
+/* ======= ANIMASJONER ======= */
+@keyframes crowdPulse {
+    0%, 100% { opacity: 0.3; }
+    50%      { opacity: 0.7; }
+}
+
+@keyframes varLineAppear {
+    0% { 
+        opacity: 0; 
+        transform: scaleY(0) rotate(0deg); 
+    }
+    100% { 
+        opacity: 1; 
+        transform: scaleY(1) rotate(var(--rotation)); 
+    }
+}
+
+@keyframes varPulse {
+    0%, 100% { color: #FF0000; }
+    50% { color: #FFFF00; }
+}
+
+/* ======= RESPONSIVE DESIGN ======= */
+@media (max-width: 1200px) {
+    #roundSummary {
+        padding: 50px 20px 30px 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    #gameField {
+        width: 95vw;
+        height: 80vh;
+        transform: rotate(90deg);
+        transform-origin: center center;
+    }
+    
+    #gameContainer {
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .mobile-controls {
+        display: block;
+    }
+    
+    .scoreboard-container {
+        gap: 15px;
+    }
+    
+    .field-logo {
+        width: 60px;
+        height: 60px;
+        padding: 3px;
+    }
+    
+    .scoreboard {
+        padding: 10px 15px;
+        gap: 6px;
+        min-width: 280px;
+    }
+    
+    .team-name-led {
+        font-size: 12px;
+        min-width: 100px;
+    }
+    
+    .score-led {
+        font-size: 28px;
+        padding: 3px 10px;
+    }
+    
+    .clock-led {
+        font-size: 16px;
+        padding: 6px 12px;
+        right: 15px;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <!-- INTRO SKJERM -->
+    <div id="introScreen">
+        <img src="assets/images/stavangers-finaste.png" alt="Stavangers Finaste" onerror="this.style.display='none';">
+        
+        <div class="intro-title" id="loadingTitle">
+            🔊 LASTER SPILLDATA...
+        </div>
+        
+        <div id="loadingProgress">
+            <div id="progressBar"></div>
+        </div>
+        
+        <div class="intro-text">
+            Forbereder Viking FK Eliteserien 2025<br>
+            Laster supporter-lyd og kampdata...
+        </div>
+        
+        <button id="startGameBtn" onclick="startMainGame()">
+            🎮 START SPILLET!
+        </button>
+    </div>
+
+    <div class="mobile-instruction" style="display: none;">
+        📱 Drei skjermen til landskapsmodus for best opplevelse
+    </div>
+
+    <div id="gameContainer">
+        <div id="ui">
+    <div class="scoreboard-container">
+        <img id="leftLogo" src="assets/teams/viking-fk.png" class="field-logo left-logo">
+        
+        <div class="scoreboard">
+            <div class="score-line">
+                <div class="team-name-led" id="homeTeamName">VIKING FK</div>
+                <div class="score-led" id="homeScore">0</div>
+            </div>
+            <div class="score-line">
+                <div class="team-name-led" id="awayTeamName">MOTSTANDER</div>
+                <div class="score-led" id="awayScore">0</div>
+            </div>
+            
+            <div class="clock-led" id="matchClock">0'</div>
+        </div>
+        
+        <img id="rightLogo" src="assets/teams/unknown.png" class="field-logo right-logo">
+    </div>
+</div>
+
+        <button id="pauseBtn" onclick="togglePause()">PAUSE</button>
+
+        <div id="leagueTable">
+            <div class="table-header">⚡ ELITESERIEN ⚡</div>
+            <div id="tableContent"></div>
+        </div>
+
+        <div id="roundSummary">
+            <div id="roundSummaryContent"></div>
+        </div>
+
+        <div id="gameField">
+            <div class="crowd-noise"></div>
+            <div class="field-pattern"></div>
+            <div class="center-line"></div>
+            <div class="center-circle"></div>
+            <div class="center-spot"></div>
+            <div class="penalty-area left"></div>
+            <div class="penalty-area right"></div>
+            <div class="goal-area left"></div>
+            <div class="goal-area right"></div>
+            <div class="goal-post left"></div>
+            <div class="goal-post right"></div>
+
+            <div class="player viking" id="viking"></div>
+            <div class="player opponent" id="opponent"></div>
+            <div class="ball" id="ball"></div>
+        </div>
+
+        <div class="mobile-controls">
+            <div class="touch-area" id="touchArea">
+                Berør og dra for å kontrollere Viking-spilleren
+            </div>
+        </div>
+
+        <div id="gameMessage">
+            <div id="messageText"></div>
+            <button class="button" onclick="restartSeason()">Ny sesong</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== GLOBALE VARIABLER =====
+        let loadingProgress = 0;
+        let introStarted = false;
+        let cupTopScorers = [];
+
+        // Spilletilstand
+        let gameState = {
+            vikingScore: 0,
+            opponentScore: 0,
+            ballX: 550,
+            ballY: 350,
+            ballVelX: 5,
+            ballVelY: 4,
+            vikingY: 300,
+            opponentY: 300,
+            gameActive: true,
+            currentRound: 1,
+            mouseY: 350,
+            roundResults: [],
+            paused: false,
+            touchY: 350,
+            topScorers: [],
+            audioContext: null,
+            currentOpponentTeam: null,
+            currentHalf: 1,
+            matchTime: 0,
+            matchDuration: 60000,
+            matchStartTime: null,
+            halfTimeBreak: false,
+            sidesSwapped: false,
+            summaryPage: 1,
+            currentMatchIndex: 0,
+            cupEliminated: false,
+            lastKickoffTime: null
+        };
+
+        // ===== FORBEDRET LYDOPPSETT =====
+        const soundSystem = {
+            audioContext: null,
+            supporterAudio: null,
+            introAudio: null,
+            ballHitAudio: null,
+            whistleAudio: null,
+            goalCelebrationAudio: null,
+            
+            config: {
+                masterVolume: 0.7,
+                supporterVolume: 0.4,
+                introVolume: 0.6,
+                effectVolume: 0.6,
+                fileDuration: 53 * 60,
+                minStartTime: 120,
+                maxStartTime: 45 * 60,
+                retryAttempts: 3,
+                retryDelay: 2000
+            },
+            
+            init() {
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    console.log('Web Audio API ikke støttet');
+                }
+                this.loadSounds();
+                this.setupSupporterAudioEvents();
+                this.setupIntroAudio();
+            },
+            
+            loadSounds() {
+                // Intro-lyd
+                this.introAudio = new Audio('assets/sounds/viking_intro.mp3');
+                this.introAudio.volume = this.config.introVolume * this.config.masterVolume;
+                this.introAudio.preload = 'auto';
+                this.introAudio.loop = true;
+                this.introAudio.onerror = () => console.log('Intro-lyd ikke funnet, fortsetter uten');
+                
+                // Viking supporter-lyd
+                this.supporterAudio = new Audio('assets/sounds/viking_supporters.mp3');
+                this.supporterAudio.volume = this.config.supporterVolume * this.config.masterVolume;
+                this.supporterAudio.preload = 'auto';
+                this.supporterAudio.loop = false;
+                this.supporterAudio.onerror = () => console.log('Supporter-lyd ikke funnet, fortsetter uten');
+                
+                // Ball-hit lyd
+                this.ballHitAudio = new Audio('assets/sounds/ball_hit.mp3');
+                this.ballHitAudio.volume = this.config.effectVolume * this.config.masterVolume;
+                this.ballHitAudio.preload = 'auto';
+                this.ballHitAudio.onerror = () => console.log('Ball-hit lyd ikke funnet, fortsetter uten');
+                
+                // Dommerfløyte
+                this.whistleAudio = new Audio('assets/sounds/whistle.mp3');
+                this.whistleAudio.volume = this.config.effectVolume * this.config.masterVolume;
+                this.whistleAudio.preload = 'auto';
+                this.whistleAudio.onerror = () => console.log('Whistle-lyd ikke funnet, fortsetter uten');
+                
+                // Mål
+                this.scoringAudio = new Audio('assets/sounds/scoring.mp3');
+                this.scoringAudio.volume = this.config.effectVolume * this.config.masterVolume;
+                this.scoringAudio.preload = 'auto';
+                this.scoringAudio.onerror = () => console.log('Scoring-lyd ikke funnet');
+    
+                // VAR
+                this.varAudio = new Audio('assets/sounds/var.mp3');
+                this.varAudio.volume = this.config.effectVolume * this.config.masterVolume;
+                this.varAudio.preload = 'auto';
+                this.varAudio.onerror = () => console.log('VAR-lyd ikke funnet');
+
+                // Viking feiring
+                this.goalCelebrationAudio = new Audio('assets/sounds/viking_celebration.mp3');
+                this.goalCelebrationAudio.volume = this.config.effectVolume * this.config.masterVolume;
+                this.goalCelebrationAudio.preload = 'auto';
+                this.goalCelebrationAudio.onerror = () => console.log('Celebration-lyd ikke funnet, fortsetter uten');
+                
+                this.createSimpleWhistle();
+            },
+            // I soundSystem, legg til:
+stopAllGoalSounds() {
+    if (this.scoringAudio) {
+        this.scoringAudio.pause();
+        this.scoringAudio.currentTime = 0;
+    }
+    if (this.goalCelebrationAudio) {
+        this.goalCelebrationAudio.pause();
+        this.goalCelebrationAudio.currentTime = 0;
+    }
+},
+            
+            createSimpleWhistle() {
+                this.whistle = {
+                    play: () => {
+                        if (!this.audioContext) return;
+                        try {
+                            const oscillator = this.audioContext.createOscillator();
+                            const gainNode = this.audioContext.createGain();
+                            
+                            oscillator.connect(gainNode);
+                            gainNode.connect(this.audioContext.destination);
+                            
+                            oscillator.frequency.setValueAtTime(1000, this.audioContext.currentTime);
+                            oscillator.type = 'square';
+                            
+                            gainNode.gain.setValueAtTime(this.config.effectVolume, this.audioContext.currentTime);
+                            gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
+                            
+                            oscillator.start(this.audioContext.currentTime);
+                            oscillator.stop(this.audioContext.currentTime + 0.3);
+                        } catch (e) {
+                            console.log('Kunne ikke spille fløyte-lyd');
+                        }
+                    }
+                };
+            },
+            
+            setupIntroAudio() {
+                if (!this.introAudio) return;
+                
+                this.introAudio.addEventListener('canplaythrough', () => {
+                    console.log('🎵 Intro-lyd klar til avspilling');
+                });
+                
+                this.introAudio.addEventListener('error', (e) => {
+                    console.log('🎵 Intro-lyd feil:', e);
+                });
+            },
+
+            setupSupporterAudioEvents() {
+                if (!this.supporterAudio) return;
+                
+                this.supporterAudio.addEventListener('ended', () => {
+                    console.log('🎵 Supporter-lyd ferdig, restarter...');
+                    if (gameState.gameActive && !gameState.paused) {
+                        setTimeout(() => this.restartSupporters(), 1000);
+                    }
+                });
+                
+                this.supporterAudio.addEventListener('pause', () => {
+                    console.log('🎵 Supporter-lyd pauset');
+                });
+                
+                this.supporterAudio.addEventListener('error', (e) => {
+                    console.log('🎵 Supporter-lyd feil, prøver restart:', e);
+                    this.restartSupportersWithRetry();
+                });
+                
+                this.supporterAudio.addEventListener('canplaythrough', () => {
+                    console.log('🎵 Supporter-lyd klar til avspilling');
+                });
+            },
+            
+            startIntro() {
+                if (!this.introAudio) return;
+                
+                try {
+                    this.introAudio.currentTime = 0;
+                    const playPromise = this.introAudio.play();
+                    
+                    if (playPromise !== undefined) {
+                        playPromise
+                            .then(() => {
+                                console.log('🎵 Intro-lyd startet');
+                            })
+                            .catch(e => {
+                                console.log('Kunne ikke starte intro-lyd:', e);
+                            });
+                    }
+                } catch (e) {
+                    console.log('Feil ved start av intro-lyd:', e);
+                }
+            },
+            
+            stopIntro() {
+                if (this.introAudio) {
+                    this.introAudio.pause();
+                    this.introAudio.currentTime = 0;
+                }
+            },
+            
+            startSupporters() {
+                if (!this.supporterAudio) return;
+                
+                try {
+                    this.supporterAudio.pause();
+                    this.supporterAudio.currentTime = 0;
+                    
+                    const playPromise = this.supporterAudio.play();
+                    
+                    if (playPromise !== undefined) {
+                        playPromise
+                            .then(() => {
+                                console.log('🎵 Supporter-lyd startet umiddelbart');
+                                setTimeout(() => {
+                                    if (!this.supporterAudio.paused) {
+                                        const randomTime = this.config.minStartTime + 
+                                            Math.random() * (this.config.maxStartTime - this.config.minStartTime);
+                                        this.supporterAudio.currentTime = randomTime;
+                                        console.log(`🎵 Hoppet til ${Math.floor(randomTime/60)}:${Math.floor(randomTime%60).toString().padStart(2, '0')}`);
+                                    }
+                                }, 2000);
+                            })
+                            .catch(e => {
+                                console.log('Kunne ikke starte supporter-lyd umiddelbart, prøver senere');
+                                setTimeout(() => this.retryStartSupporters(), 1000);
+                            });
+                    }
+                    
+                } catch (e) {
+                    console.log('Feil ved start av supporter-lyd:', e);
+                    this.retryStartSupporters();
+                }
+            },
+
+            retryStartSupporters() {
+                if (!this.supporterAudio) return;
+                
+                try {
+                    const randomStart = this.config.minStartTime + 
+                        Math.random() * (this.config.maxStartTime - this.config.minStartTime);
+                    
+                    this.supporterAudio.currentTime = randomStart;
+                    this.supporterAudio.play().catch(e => {
+                        console.log('Retry feiler også, bruker backup-lyd');
+                    });
+                    
+                } catch (e) {
+                    console.log('Retry-forsøk feilet:', e);
+                }
+            },
+
+            restartSupportersWithRetry(attempt = 1) {
+                if (attempt > this.config.retryAttempts) {
+                    console.log('🎵 Gir opp restart av supporter-lyd etter', this.config.retryAttempts, 'forsøk');
+                    return;
+                }
+                
+                console.log(`🎵 Prøver restart av supporter-lyd (forsøk ${attempt})`);
+                
+                setTimeout(() => {
+                    if (gameState.gameActive && !gameState.paused) {
+                        this.startSupporters();
+                        
+                        setTimeout(() => {
+                            if (this.supporterAudio && this.supporterAudio.paused) {
+                                this.restartSupportersWithRetry(attempt + 1);
+                            }
+                        }, 2000);
+                    }
+                }, this.config.retryDelay);
+            },
+
+            restartSupporters() {
+                if (gameState.gameActive && !gameState.paused) {
+                    this.startSupporters();
+                }
+            },
+            
+            stopSupporters() {
+                if (this.supporterAudio) {
+                    this.supporterAudio.pause();
+                }
+            },
+
+            playWhistle() {
+                if (this.whistleAudio) {
+                    this.whistleAudio.currentTime = 0;
+                    this.whistleAudio.play().catch(e => {
+                        console.log('Whistle-fil ikke tilgjengelig, bruker backup');
+                        if (this.whistle) this.whistle.play();
+                    });
+                } else if (this.whistle) {
+                    this.whistle.play();
+                }
+            },
+
+            playBallHit() {
+                if (this.ballHitAudio) {
+                    this.ballHitAudio.currentTime = 0;
+                    this.ballHitAudio.play().catch(e => console.log('Ball-hit lyd ikke tilgjengelig'));
+                }
+            },
+
+            playScoring() {
+    if (this.scoringAudio) {
+        this.scoringAudio.currentTime = 0;
+        this.scoringAudio.play().catch(e => console.log('Scoring-lyd feilet'));
+    }
+},
+
+playVAR() {
+    if (this.varAudio) {
+        this.varAudio.currentTime = 0;
+        this.varAudio.play().catch(e => console.log('VAR-lyd feilet'));
+    }
+},
+
+            playViking5Goals() {
+                if (this.goalCelebrationAudio) {
+                    this.goalCelebrationAudio.currentTime = 0;
+                    this.goalCelebrationAudio.play().catch(e => console.log('Viking celebration lyd ikke tilgjengelig'));
+                }
+            },
+
+            setVolume(volume) {
+                [this.supporterAudio, this.ballHitAudio, this.whistleAudio, this.goalCelebrationAudio].forEach(audio => {
+                    if (audio) {
+                        audio.volume = volume * this.config.masterVolume;
+                    }
+                });
+            },
+
+            fadeOut(duration = 1000) {
+                if (!this.supporterAudio) return;
+                
+                const startVolume = this.supporterAudio.volume;
+                const fadeStep = startVolume / (duration / 50);
+                
+                const fadeInterval = setInterval(() => {
+                    if (this.supporterAudio.volume > fadeStep) {
+                        this.supporterAudio.volume -= fadeStep;
+                    } else {
+                        this.supporterAudio.volume = 0;
+                        this.stopSupporters();
+                        clearInterval(fadeInterval);
+                        this.supporterAudio.volume = startVolume;
+                    }
+                }, 50);
+            }
+        };
+
+        // ===== INTRO-SEKVENS =====
+        function startIntroSequence() {
+    if (introStarted) return;
+    introStarted = true;
+    
+    console.log('🎬 Starter intro-sekvens');
+    
+    // Ikke start lyd automatisk - vente på brukerinteraksjon
+    simulateLoading();
+    preloadMainAudio();
+}
+
+        function simulateLoading() {
+            const progressBar = document.getElementById('progressBar');
+            const loadingTitle = document.getElementById('loadingTitle');
+            
+            const interval = setInterval(() => {
+                loadingProgress += Math.random() * 3 + 1;
+                
+                if (loadingProgress >= 100) {
+                    loadingProgress = 100;
+                    clearInterval(interval);
+                    showStartButton();
+                }
+                
+                if (progressBar) {
+                    progressBar.style.width = loadingProgress + '%';
+                }
+                
+                if (loadingTitle) {
+                    if (loadingProgress < 30) {
+                        loadingTitle.textContent = '🔊 LASTER SPILLDATA...';
+                    } else if (loadingProgress < 70) {
+                        loadingTitle.textContent = '🎵 LASTER SUPPORTER-LYD...';
+                    } else if (loadingProgress < 90) {
+                        loadingTitle.textContent = '⚽ FORBEREDER KAMPOPPSETT...';
+                    } else {
+                        loadingTitle.textContent = '✅ KLAR TIL SPILL!';
+                    }
+                }
+            }, 200);
+        }
+
+        function preloadMainAudio() {
+            if (!soundSystem.supporterAudio) return;
+            
+            soundSystem.supporterAudio.addEventListener('canplaythrough', () => {
+                console.log('🎵 Hovedlyd ferdig lastet');
+                loadingProgress = Math.max(loadingProgress, 80);
+            });
+            
+            soundSystem.supporterAudio.addEventListener('progress', () => {
+                if (soundSystem.supporterAudio.buffered.length > 0) {
+                    const buffered = soundSystem.supporterAudio.buffered.end(0);
+                    const duration = soundSystem.supporterAudio.duration;
+                    if (duration > 0) {
+                        const bufferProgress = (buffered / duration) * 100;
+                        console.log(`🎵 Buffer progress: ${bufferProgress.toFixed(1)}%`);
+                    }
+                }
+            });
+            
+            soundSystem.supporterAudio.currentTime = 0;
+            soundSystem.supporterAudio.play().then(() => {
+                soundSystem.supporterAudio.pause();
+                soundSystem.supporterAudio.currentTime = 0;
+            }).catch(e => {
+                console.log('Preload av hovedlyd feilet, men det er ok');
+            });
+        }
+
+        function showStartButton() {
+            const startBtn = document.getElementById('startGameBtn');
+            if (startBtn) {
+                startBtn.style.display = 'block';
+            }
+        }
+
+        function startMainGame() {
+            const introScreen = document.getElementById('introScreen');
+            
+            soundSystem.stopIntro();
+            
+            if (introScreen) {
+                introScreen.style.display = 'none';
+            }
+            
+            console.log('🎮 Starter hovedspill');
+            initializeGame();
+        }
+
+        // ===== KAMPDATA =====
+        const cupData = {
+            vikingMatches: [
+                { round: 1, opponent: "Hana", home: false },
+                { round: 2, opponent: "Fløy-Flekkerøy", home: false },
+                { round: 3, opponent: "Moss", home: false },
+                { round: 4, opponent: "Åsane", home: false },
+                { round: 5, opponent: "Aalesund", home: false },
+                { round: 6, opponent: "TBD", home: false },
+                { round: 7, opponent: "TBD", home: false }
+            ],
+
+            roundNames: {
+                1: "RUNDE 1", 2: "RUNDE 2", 3: "RUNDE 3", 4: "RUNDE 4",
+                5: "KVARTFINALE", 6: "SEMIFINALE", 7: "FINALE"
+            },
+
+            fixedMatches: {
+                5: [
+                    { team1: 'Aalesund', team2: 'Viking' },
+                    { team1: 'Rosenborg', team2: 'Sarpsborg 08' }, 
+                    { team1: 'Stabæk', team2: 'Kristiansund' },
+                    { team1: 'Lillestrøm', team2: 'KFUM' }
+                ],
+                6: [
+                    { team1: 'Viking', team2: 'TBD' },
+                    { team1: 'TBD', team2: 'TBD' }
+                ],
+                7: [
+                    { team1: 'TBD', team2: 'TBD' }
+                ]
+            },
+
+            cupResults: {
+                5: [],
+                6: [],
+                7: []
+            },
+
+            otherResults: {
+                1: [
+                   { home: 'Innstranda', away: 'Bodø/Glimt', result: [0, 8] },
+      { home: 'Os', away: 'Fana', result: [4, 2] },
+      { home: 'Nordstrand', away: 'Ullensaker/Kisa', result: [5, 7] },
+      { home: 'Våg', away: 'Start', result: [2, 4] },
+      { home: 'Bærum', away: 'Grorud', result: [6, 8] },
+      { home: 'Bjørnevatn', away: 'Alta', result: [0, 11] },
+      { home: 'Askøy', away: 'Åsane', result: [1, 5] },
+      { home: 'Djerv 1919', away: 'Sotra', result: [2, 3] },
+      { home: 'Oppsal', away: 'Kjelsås', result: [0, 1] },
+      { home: 'Gneist', away: 'Lysekloster', result: [0, 2] },
+      { home: 'Ørn Horten', away: 'Arendal', result: [5, 4] },
+      { home: 'Torvastad', away: 'Vard Haugesund', result: [2, 0] },
+      { home: 'Åssiden', away: 'Mjøndalen', result: [1, 4] },
+      { home: 'Lillehammer', away: 'HamKam', result: [0, 2] },
+      { home: 'Brumunddal', away: 'Raufoss', result: [1, 4] },
+      { home: 'Elverum', away: 'Gjøvik-Lyn', result: [2, 0] },
+      { home: 'Vindbjart', away: 'Jerv', result: [0, 3] },
+      { home: 'Volda', away: 'Sogndal', result: [1, 2] },
+      { home: 'Rollon', away: 'Aalesund', result: [0, 3] },
+      { home: 'Sarpsborg FK', away: 'Fredrikstad', result: [0, 4] },
+      { home: 'Junkeren', away: 'Harstad', result: [2, 1] },
+      { home: 'Spjelkavik', away: 'Træff', result: [0, 2] },
+      { home: 'NHHI', away: 'Sandviken', result: [1, 3] },
+      { home: 'Frigg', away: 'Lørenskog', result: [1, 3] },
+      { home: 'Union Carl Berner', away: 'Skeid', result: [0, 3] },
+      { home: 'Brattvåg', away: 'Hødd', result: [4, 6] },
+      { home: 'Flint', away: 'Odd', result: [3, 2] },
+      { home: 'Ulfstind', away: 'Tromsdalen', result: [0, 3] },
+      { home: 'Bjørkelangen', away: 'Strømmen', result: [1, 6] },
+      { home: 'Rindal', away: 'Rosenborg', result: [1, 11] },
+      { home: 'Kvik', away: 'Stjørdals-Blink', result: [0, 1] },
+      { home: 'Verdal', away: 'Levanger', result: [0, 8] },
+      { home: 'Trygg/Lade', away: 'Strindheim TF', result: [0, 1] },
+      { home: 'Byåsen TF', away: 'Nardo', result: [3, 5] },
+      { home: 'Melhus', away: 'Kristiansund', result: [1, 5] },
+      { home: 'Elnesvågen', away: 'Molde', result: [0, 7] },
+      { home: 'Fjøra', away: 'Bjarg', result: [1, 3] },
+      { home: 'Nord', away: 'Haugesund', result: [0, 11] },
+      { home: 'Notodden', away: 'Stabæk', result: [0, 3] },
+      { home: 'Konnerud', away: 'Strømsgodset', result: [0, 5] },
+      { home: 'Ullern', away: 'Follo', result: [2, 5] },
+      { home: 'Ready', away: 'Asker', result: [7, 6] },
+      { home: 'Råde', away: 'Lyn', result: [1, 2] },
+      { home: 'Skjervøy', away: 'Fløya', result: [2, 1] },
+      { home: 'Melbo', away: 'Sortland', result: [0, 1] },
+      { home: 'Sprint-Jeløy ', away: 'Sarpsborg 08', result: [0, 4] },
+      { home: 'Hamna', away: 'Tromsø', result: [0, 10] },
+      { home: 'Mosjøen IL', away: 'Rana FK', result: [0, 4] },
+      { home: 'Varegg', away: 'Brann', result: [0, 6] },
+      { home: 'Hønefoss BK', away: 'Pors', result: [0, 1] },
+      { home: 'Grei', away: 'KFUM', result: [1, 5] },
+      { home: 'Gamle Oslo', away: 'Vålerenga', result: [4, 2] },
+      { home: 'Vidar', away: 'Sandnes Ulf', result: [2, 0] },
+      { home: 'Varhaug', away: 'Bryne', result: [0, 4] },
+      { home: 'Fram Larvik', away: 'FK Eik Tønsberg 871', result: [4, 1] },
+      { home: 'Ridabu', away: 'Kongsvinger', result: [0, 12] },
+      { home: 'Sverresborg', away: 'Ranheim TF', result: [2, 4] },
+      { home: 'Eiger', away: 'Egersund', result: [1, 7] },
+      { home: 'Skjetten', away: 'Lillestrøm', result: [0, 5] },
+      { home: 'Brodd', away: 'Fløy-Flekkerøy', result: [1, 3] },
+      { home: 'Teie', away: 'Sandefjord Fotball', result: [0, 5] },
+      { home: 'Kvik Halden', away: 'Moss', result: [1, 3] },
+      { home: 'Skedsmo', away: 'Eidsvold TF', result: [0, 5] }
+    ],
+    2: [
+      { home: 'Skjervøy', away: 'Tromsø', result: [0, 1] },
+      { home: 'Levanger', away: 'Rana FK', result: [1, 2] },
+      { home: 'Grorud', away: 'Hødd', result: [3, 1] },
+      { home: 'Flint', away: 'Fredrikstad', result: [0, 5] },
+      { home: 'Junkeren', away: 'Bodø/Glimt', result: [1, 5] },
+      { home: 'Nardo', away: 'Kristiansund', result: [1, 4] },
+      { home: 'Strindheim TF', away: 'Rosenborg', result: [0, 3] },
+      { home: 'Stjørdals-Blink', away: 'Ranheim TF', result: [1, 2] },
+      { home: 'Torvastad', away: 'Bryne', result: [1, 2] },
+      { home: 'Ørn Horten', away: 'Sandefjord Fotball', result: [0, 2] },
+      { home: 'Strømmen', away: 'Raufoss', result: [2, 1] },
+      { home: 'Os', away: 'Lysekloster', result: [5, 4] },
+      { home: 'Sandviken', away: 'Sogndal', result: [0, 4] },
+      { home: 'Vidar', away: 'Haugesund', result: [1, 2] },
+      { home: 'Jerv', away: 'Egersund', result: [0, 1] },
+      { home: 'Fram Larvik', away: 'Stabæk', result: [0, 4] },
+      { home: 'Elverum', away: 'Kongsvinger', result: [2, 7] },
+      { home: 'Ready', away: 'KFUM', result: [0, 3] },
+      { home: 'Kjelsås', away: 'Lyn', result: [0, 3] },
+      { home: 'Alta', away: 'Skeid', result: [3, 0] },
+      { home: 'Sortland', away: 'Tromsdalen', result: [0, 5] },
+      { home: 'Træff', away: 'Molde', result: [12, 13] },
+      { home: 'Bjarg', away: 'Brann', result: [0, 2] },
+      { home: 'Sotra', away: 'Åsane', result: [0, 2] },
+      { home: 'Pors', away: 'Start', result: [3, 2] },
+      { home: 'Ullensaker/Kisa', away: 'Aalesund', result: [2, 3] },
+      { home: 'Lørenskog', away: 'HamKam', result: [0, 1] },
+      { home: 'Follo', away: 'Moss', result: [2, 3] },
+      { home: 'Gamle Oslo', away: 'Sarpsborg 08', result: [1, 6] },
+      { home: 'Eidsvold TF', away: 'Lillestrøm', result: [0, 2] },
+      { home: 'Mjøndalen', away: 'Strømsgodset', result: [5, 4] }
+    ],
+    3: [
+      { home: 'Alta', away: 'Kristiansund', result: [0, 4] },
+      { home: 'Os', away: 'Åsane', result: [1, 4] },
+      { home: 'Bryne', away: 'Brann', result: [2, 1] },
+      { home: 'Stabæk', away: 'Haugesund', result: [2, 1] },
+      { home: 'Sarpsborg 08', away: 'Sandefjord Fotball', result: [3, 1] },
+      { home: 'Grorud', away: 'Lillestrøm', result: [2, 3] },
+      { home: 'Lyn', away: 'HamKam', result: [0, 2] },
+      { home: 'Tromsdalen', away: 'Rosenborg', result: [0, 5] },
+      { home: 'Rana FK', away: 'Molde', result: [0, 4] },
+      { home: 'Pors', away: 'Fredrikstad', result: [1, 3] },
+      { home: 'Strømmen', away: 'Mjøndalen', result: [1, 3] },
+      { home: 'Sogndal', away: 'Kongsvinger', result: [6, 7] },
+      { home: 'Ranheim TF', away: 'Egersund', result: [2, 5] },
+      { home: 'Tromsø', away: 'KFUM', result: [0, 1] },
+      { home: 'Aalesund', away: 'Bodø/Glimt', result: [1, 0] }
+    ],
+    4: [
+      { home: 'Egersund', away: 'Sarpsborg 08', result: [1, 3] },
+      { home: 'Stabæk', away: 'Mjøndalen', result: [4, 3] },
+      { home: 'Aalesund', away: 'HamKam', result: [8, 7] },
+      { home: 'Bryne', away: 'KFUM', result: [0, 2] },
+      { home: 'Kongsvinger', away: 'Rosenborg', result: [2, 3] },
+      { home: 'Lillestrøm', away: 'Fredrikstad', result: [4, 2] },
+      { home: 'Molde', away: 'Kristiansund', result: [3, 4] }
+    ]
+            }
+        };
+
+        const teams = [
+            { name: 'Bodø/Glimt', excelName: 'Bodø/Glimt', logo: 'bodo-glimt.png', difficulty: 5, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#FFD700', secondaryColor: '#FFD700', pattern: 'solid', players: [
+        {name: 'Kasper Høgh', image: 'kasper-hogh', emoji: '⚽', goals2025: 7},
+        {name: 'Ulrik Saltnes', image: 'ulrik-saltnes', emoji: '💪', goals2025: 5},
+        {name: 'Ole Blomberg', image: 'ole-blomberg', emoji: '🎯', goals2025: 3},
+        {name: 'Jens Petter Hauge', image: 'jens-petter-hauge', emoji: '🚀', goals2025: 1},
+        {name: 'Patrick Berg', image: 'patrick-berg', emoji: '🛡️', goals2025: 1}
+    ]},
+    { name: 'Rosenborg BK', excelName: 'Rosenborg', logo: 'rosenborg.png', difficulty: 4, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#FFFFFF', secondaryColor: '#000000', pattern: 'solid', players: [
+        {name: 'Marius Broholm', image: 'marius-broholm', emoji: '👑', goals2025: 5},
+        {name: 'Sverre Nypan', image: 'sverre-nypan', emoji: '⚡', goals2025: 2},
+        {name: 'Ole Sæter', image: 'ole-seter', emoji: '🎯', goals2025: 1},
+        {name: 'Adrian Pereira', image: 'adrian-pereira', emoji: '🛡️', goals2025: 1},
+        {name: 'Noah Holm', image: 'noah-holm', emoji: '💨', goals2025: 1}
+    ]},
+    { name: 'Molde FK', excelName: 'Molde', logo: 'molde-fk.jpg', difficulty: 4, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#4A90E2', secondaryColor: '#FFFFFF', pattern: 'solid', players: [
+        {name: 'Kristian Eriksen', image: 'kristian-eriksen', emoji: '⚽', goals2025: 3},
+        {name: 'Veton Berisha', image: 'veton-berisha', emoji: '🎯', goals2025: 3},
+        {name: 'Martin Linnes', image: 'martin-linnes', emoji: '💎', goals2025: 2},
+        {name: 'Fredrik Gulbrandsen', image: 'fredrik-gulbrandsen', emoji: '💪', goals2025: 1},
+        {name: 'Magnus Wolff Eikrem', image: 'magnus-wolff-eikrem', emoji: '🚀', goals2025: 1}
+    ]},
+    { name: 'Brann', excelName: 'Brann', logo: 'brann.png', difficulty: 3, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#DC143C', secondaryColor: '#DC143C', pattern: 'solid', players: [
+        {name: 'Aune Heggebø', image: 'aune-heggebo', emoji: '👑', goals2025: 7},
+        {name: 'Mads Sande', image: 'mads-sande', emoji: '💎', goals2025: 3},
+        {name: 'Bård Finne', image: 'bard-finne', emoji: '💥', goals2025: 3},
+        {name: 'Niklas Castro', image: 'niklas-castro', emoji: '🎯', goals2025: 3},
+        {name: 'Emil Kornvig', image: 'emil-kornvig', emoji: '⚡', goals2025: 2}
+    ]},
+    { name: 'Fredrikstad', excelName: 'Fredrikstad', logo: 'fredrikstad.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#DC143C', secondaryColor: '#FFFFFF', pattern: 'solid', players: [
+        {name: 'Sondre Sørløkk', image: 'sondre-sorlokk', emoji: '⚽', goals2025: 3},
+        {name: 'Emil Holten', image: 'emil-holten', emoji: '🎯', goals2025: 3},
+        {name: 'Oskar Øhlenschlæger', image: 'oskar-ohlenschlaeger', emoji: '✨', goals2025: 2},
+        {name: 'Fallou Fall', image: 'fallou-fall', emoji: '💪', goals2025: 1},
+        {name: 'Stian Molde', image: 'stian-molde', emoji: '🛡️', goals2025: 1}
+    ]},
+    { name: 'Vålerenga', excelName: 'Vålerenga', logo: 'valerenga.png', difficulty: 3, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#4A90E2', secondaryColor: '#DC143C', pattern: 'stripe_thin', players: [
+        {name: 'Elias Sørensen', image: 'elias-sorensen', emoji: '⚽', goals2025: 3},
+        {name: 'Magnus Riisnæs', image: 'magnus-riisnes', emoji: '💎', goals2025: 2},
+        {name: 'Henrik Bjørdal', image: 'henrik-bjordal', emoji: '⚡', goals2025: 2},
+        {name: 'Fidel Ambina', image: 'fidel-ambina', emoji: '🚀', goals2025: 1},
+        {name: 'Muamer Brajanac', image: 'muamer-brajanac', emoji: '🎯', goals2025: 1}
+    ]},
+    { name: 'KFUM Oslo', excelName: 'KFUM', logo: 'kfum-oslo.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#FF6B6B', secondaryColor: '#4A90E2', pattern: 'tricolor', players: [
+        {name: 'Moussa Njie', image: 'moussa-njie', emoji: '⚽', goals2025: 2},
+        {name: 'Johannes Nunez', image: 'johannes-nunez', emoji: '🎯', goals2025: 2},
+        {name: 'Simen Hestnes', image: 'simen-hestnes', emoji: '💎', goals2025: 1},
+        {name: 'Mame Ndiaye', image: 'mame-ndiaye', emoji: '💪', goals2025: 1},
+        {name: 'Teodor Haltvik', image: 'teodor-haltvik', emoji: '🛡️', goals2025: 0}
+    ]},
+    { name: 'Haugesund', excelName: 'Haugesund', logo: 'haugesund.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#FFFFFF', secondaryColor: '#4A90E2', pattern: 'solid', players: [
+        {name: 'Madiodio Dia', image: 'madiodio-dia', emoji: '⚽', goals2025: 1},
+        {name: 'Julius Eskesen', image: 'julius-eskesen', emoji: '🎯', goals2025: 1},
+        {name: 'Sory Ibrahim Diarra', image: 'sory-ibrahim-diarra', emoji: '💪', goals2025: 1},
+        {name: 'Troy Nyhammer', image: 'troy-nyhammer', emoji: '🚀', goals2025: 0},
+        {name: 'Bruno Leite', image: 'bruno-leite', emoji: '⚡', goals2025: 0}
+    ]},
+    { name: 'Kristiansund BK', excelName: 'Kristiansund', logo: 'kristiansund.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#708090', secondaryColor: '#708090', pattern: 'solid', players: [
+        {name: 'David Tufekcic', image: 'david-tufekcic', emoji: '⚽', goals2025: 3},
+        {name: 'Sander Kilen', image: 'sander-kilen', emoji: '🎯', goals2025: 3},
+        {name: 'Ruben Alte', image: 'ruben-alte', emoji: '💎', goals2025: 2},
+        {name: 'Alioune Ndour', image: 'alioune-ndour', emoji: '💪', goals2025: 2},
+        {name: 'Rezan Corlu', image: 'rezan-corlu', emoji: '🚀', goals2025: 1}
+    ]},
+    { name: 'Sarpsborg 08', excelName: 'Sarpsborg 08', logo: 'sarpsborg.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#87CEEB', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
+        {name: 'Daniel Karlsbakk', image: 'daniel-karlsbakk', emoji: '⚽', goals2025: 6},
+        {name: 'Harald Nilsen Tangen', image: 'harald-nilsen-tangen', emoji: '💎', goals2025: 2},
+        {name: 'Frederik Carstensen', image: 'frederik-carstensen', emoji: '🎯', goals2025: 2},
+        {name: 'Sveinn Gudjohnsen', image: 'sveinn-gudjohnsen', emoji: '💪', goals2025: 2},
+        {name: 'Sondre Ørjasæter', image: 'sondre-orjaseter', emoji: '⚡', goals2025: 1}
+    ]},
+    { name: 'Sandefjord', excelName: 'Sandefjord Fotball', logo: 'sandefjord.png', difficulty: 1, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#4169E1', secondaryColor: '#4169E1', pattern: 'solid', players: [
+        {name: 'Stefan Sigurdarson', image: 'stefan-sigurdarson', emoji: '⚽', goals2025: 5},
+        {name: 'Jakob Dunsby', image: 'jakob-dunsby', emoji: '🎯', goals2025: 2},
+        {name: 'Christopher Cheng', image: 'christopher-cheng', emoji: '💪', goals2025: 2},
+        {name: 'Zinedin Smajlovic', image: 'zinedin-smajlovic', emoji: '⚡', goals2025: 1},
+        {name: 'Sander Mørk', image: 'sander-mork', emoji: '💎', goals2025: 1}
+    ]},
+    { name: 'Strømsgodset', excelName: 'Strømsgodset', logo: 'stromsgodset.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#1E3A8A', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
+        {name: 'Marko Farji', image: 'marko-farji', emoji: '⚽', goals2025: 5},
+        {name: 'Jonas Therkelsen', image: 'jonas-therkelsen', emoji: '🎯', goals2025: 2},
+        {name: 'Logi Tómasson', image: 'logi-tomasson', emoji: '💪', goals2025: 1},
+        {name: 'Fredrik Dahl', image: 'fredrik-dahl', emoji: '💎', goals2025: 1},
+        {name: 'Herman Stengel', image: 'herman-stengel', emoji: '🚀', goals2025: 1}
+    ]},
+    { name: 'Tromsø IL', excelName: 'Tromsø', logo: 'tromso.png', difficulty: 1, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#DC143C', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
+        {name: 'Daniel Braut', image: 'daniel-braut', emoji: '⚽', goals2025: 5},
+        {name: 'Ieltsin Camões', image: 'ieltsin-camoes', emoji: '🎯', goals2025: 3},
+        {name: 'Vetle Skjærvik', image: 'vetle-skjaervik', emoji: '💎', goals2025: 2},
+        {name: 'August Mikkelsen', image: 'august-mikkelsen', emoji: '💪', goals2025: 1},
+        {name: 'Jakob Napoleon Romsaas', image: 'jakob-napoleon-romsaas', emoji: '⚡', goals2025: 1}
+    ]},
+    { name: 'HamKam', excelName: 'HamKam', logo: 'hamkam.png', difficulty: 1, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#228B22', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
+        {name: 'Moses Mawa', image: 'moses-mawa', emoji: '⚽', goals2025: 2},
+        {name: 'Kristian Lien', image: 'kristian-lien', emoji: '🎯', goals2025: 2},
+        {name: 'Snorre Nilsen', image: 'snorre-nilsen', emoji: '💎', goals2025: 1},
+        {name: 'Alwande Roaldsøy', image: 'alwande-roaldsoy', emoji: '💪', goals2025: 1},
+        {name: 'Tore Sørås', image: 'tore-soras', emoji: '⚡', goals2025: 1}
+    ]},
+    { name: 'Bryne FK', excelName: 'Bryne', logo: 'bryne.png', difficulty: 1, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#DC143C', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
+        {name: 'Duarte Moreira', image: 'duarte-moreira', emoji: '⚽', goals2025: 4},
+        {name: 'Sanel Bojadzic', image: 'sanel-bojadzic', emoji: '🎯', goals2025: 3},
+        {name: 'Nicklas Jakobsen', image: 'nicklas-jakobsen', emoji: '💎', goals2025: 2},
+        {name: 'Alfred Scriven', image: 'alfred-scriven', emoji: '💪', goals2025: 2},
+        {name: 'Axel Kryger', image: 'axel-kryger', emoji: '⚡', goals2025: 1}
+    ]}
+        ];
+
+    
+
+        const vikingSchedule = [
+    { index: 0, date: '2025-03-29', type: 'serie', round: 1, opponent: 'Vålerenga', home: false },
+    { index: 1, date: '2025-04-05', type: 'serie', round: 2, opponent: 'KFUM Oslo', home: true },
+    { index: 2, date: '2025-04-13', type: 'cup', round: 1, opponent: 'Hana', home: false },
+    { index: 3, date: '2025-04-20', type: 'serie', round: 3, opponent: 'HamKam', home: false },
+    { index: 4, date: '2025-04-24', type: 'cup', round: 2, opponent: 'Fløy-Flekkerøy', home: false },
+    { index: 5, date: '2025-04-27', type: 'serie', round: 4, opponent: 'Tromsø', home: true },
+    { index: 6, date: '2025-05-02', type: 'serie', round: 5, opponent: 'Sarpsborg 08', home: true },
+    { index: 7, date: '2025-05-07', type: 'cup', round: 3, opponent: 'Moss', home: false },
+    { index: 8, date: '2025-05-11', type: 'serie', round: 6, opponent: 'Haugesund', home: false },
+    { index: 9, date: '2025-05-16', type: 'serie', round: 7, opponent: 'Sandefjord', home: true },
+    { index: 10, date: '2025-05-20', type: 'cup', round: 4, opponent: 'Åsane', home: false },
+    { index: 11, date: '2025-05-24', type: 'serie', round: 8, opponent: 'Kristiansund', home: false },
+    { index: 12, date: '2025-05-31', type: 'serie', round: 9, opponent: 'Molde', home: false },
+    { index: 13, date: '2025-06-21', type: 'serie', round: 10, opponent: 'Fredrikstad', home: true },
+    { index: 14, date: '2025-06-25', type: 'cup', round: 5, opponent: 'Aalesund', home: false },
+    { index: 15, date: '2025-06-28', type: 'serie', round: 11, opponent: 'Rosenborg', home: false },
+    { index: 16, date: '2025-07-05', type: 'cup', round: 6, opponent: 'TBD', home: false },
+    { index: 17, date: '2025-07-12', type: 'serie', round: 12, opponent: 'Strømsgodset', home: true },
+    { index: 18, date: '2025-07-15', type: 'cup', round: 7, opponent: 'TBD', home: false },
+    { index: 19, date: '2025-07-19', type: 'serie', round: 13, opponent: 'Brann', home: false },
+    { index: 20, date: '2025-07-26', type: 'serie', round: 14, opponent: 'Bodø/Glimt', home: true },
+    { index: 21, date: '2025-08-09', type: 'serie', round: 15, opponent: 'Bryne', home: false },
+    { index: 22, date: '2025-08-16', type: 'serie', round: 16, opponent: 'Kristiansund', home: true },
+    { index: 23, date: '2025-08-23', type: 'serie', round: 17, opponent: 'Sandefjord', home: false },
+    { index: 24, date: '2025-08-30', type: 'serie', round: 18, opponent: 'Haugesund', home: true },
+    { index: 25, date: '2025-09-13', type: 'serie', round: 19, opponent: 'Bodø/Glimt', home: false },
+    { index: 26, date: '2025-09-20', type: 'serie', round: 20, opponent: 'Rosenborg', home: true },
+    { index: 27, date: '2025-09-27', type: 'serie', round: 21, opponent: 'KFUM Oslo', home: false },
+    { index: 28, date: '2025-10-04', type: 'serie', round: 22, opponent: 'Molde', home: true },
+    { index: 29, date: '2025-10-18', type: 'serie', round: 23, opponent: 'Sarpsborg 08', home: false },
+    { index: 30, date: '2025-10-25', type: 'serie', round: 24, opponent: 'Brann', home: true },
+    { index: 31, date: '2025-11-01', type: 'serie', round: 25, opponent: 'Tromsø', home: false },
+    { index: 32, date: '2025-11-08', type: 'serie', round: 26, opponent: 'Bryne', home: true },
+    { index: 33, date: '2025-11-22', type: 'serie', round: 27, opponent: 'Strømsgodset', home: false },
+    { index: 34, date: '2025-11-29', type: 'serie', round: 28, opponent: 'HamKam', home: true },
+    { index: 35, date: '2025-12-06', type: 'serie', round: 29, opponent: 'Fredrikstad', home: false },
+    { index: 36, date: '2025-12-13', type: 'serie', round: 30, opponent: 'Vålerenga', home: true }
+];
+
+
+        window.vikingTeam = {
+            name: 'Viking FK',
+            logo: 'viking-fk.png',
+            color: '#002166',
+            secondaryColor: '#FFFFFF',
+            played: 0,
+            won: 0,
+            lost: 0,
+            draws: 0,
+            points: 0,
+            goalsFor: 0,
+            goalsAgainst: 0,
+            players: [
+                {name: 'Zlatko Tripic', image: 'zlatko-tripic', emoji: '👑', goals2025: 8},
+                {name: 'Peter Christiansen', image: 'peter-christiansen', emoji: '⚽', goals2025: 4},
+                {name: 'Henrik Falchener', image: 'henrik-falchener', emoji: '🎯', goals2025: 3},
+                {name: 'Edvin Austbø', image: 'edvin-austbo', emoji: '💎', goals2025: 3},
+                {name: 'Simen Kvia-Egeskog', image: 'simen-kvia-egeskog', emoji: '💪', goals2025: 3},
+                {name: 'Henrik Heggheim', image: 'henrik-heggheim', emoji: '🛡️', goals2025: 2},
+                {name: 'Herman Haugen', image: 'herman-haugen', emoji: '⚡', goals2025: 1},
+                {name: 'Joe Bell', image: 'joe-bell', emoji: '🚀', goals2025: 1}
+            ]
+        };
+
+        const vikingTeam = window.vikingTeam;
+
+        function getCurrentOpponent() {
+                if (gameState.currentMatchIndex >= vikingSchedule.length) {
+                    return null;
+                }
+                
+                const currentMatch = vikingSchedule[gameState.currentMatchIndex];
+                
+                if (currentMatch.type === 'cup' && gameState.cupEliminated) {
+                    gameState.currentMatchIndex++;
+                    return getCurrentOpponent();
+                }
+                
+                if (currentMatch.type === 'cup') {
+                    return {
+                        name: currentMatch.opponent,
+                        excelName: currentMatch.opponent,
+                        difficulty: 2,
+                        color: '#666666',
+                        secondaryColor: '#FFFFFF',
+                        pattern: 'solid',
+                        logo: 'unknown.png',
+                        players: [
+                            {name: 'Lokalhelt', emoji: '⚽', image: 'unknown', goals2025: 0}
+                        ]
+                    };
+                }
+                
+                let team = findTeamByName(currentMatch.opponent);
+                if (team) {
+                    return team;
+                }
+                
+                return {
+                    name: currentMatch.opponent,
+                    excelName: currentMatch.opponent,
+                    difficulty: 3,
+                    color: '#888888',
+                    secondaryColor: '#FFFFFF',
+                    pattern: 'solid',
+                    logo: 'unknown.png',
+                    players: [
+                        {name: 'Ukjent Spiller', emoji: '⚽', image: 'unknown', goals2025: 0}
+                    ]
+                };
+            }
+
+        function findTeamByName(name) {
+
+                if (!name) return null; // LEGG TIL DENNE LINJEN
+
+                let team = teams.find(team => team.name === name);
+                if (team) return team;
+                
+                team = teams.find(team => team.name.includes(name) || name.includes(team.name.split(' ')[0]));
+                if (team) return team;
+                
+                return teams.find(team => team.excelName === name);
+            }
+
+
+        function getRandomPlayer(team) {
+                if (!team || !team.players || !Array.isArray(team.players) || team.players.length === 0) {
+                    return null;
+                }
+                
+                const randomIndex = Math.floor(Math.random() * team.players.length);
+                return team.players[randomIndex];
+            }
+
+            function addToTopScorers(player, team) {
+                if (!player || !team || !player.name || !team.name) {
+                    return;
+                }
+                
+                const existingScorer = gameState.topScorers.find(s => s.name === player.name && s.team === team.name);
+                if (existingScorer) {
+                    existingScorer.goals++;
+                } else {
+                    gameState.topScorers.push({
+                        name: player.name,
+                        team: team.name,
+                        goals: 1,
+                        emoji: player.emoji || '⚽'
+                    });
+                }
+                gameState.topScorers.sort((a, b) => b.goals - a.goals);
+            }
+
+        function addToCupTopScorers(player, team) {
+            if (!player || !team || !player.name || !team.name) return;
+            
+            const existingScorer = cupTopScorers.find(s => s.name === player.name && s.team === team.name);
+            if (existingScorer) {
+                existingScorer.goals++;
+            } else {
+                cupTopScorers.push({
+                    name: player.name,
+                    team: team.name,
+                    goals: 1,
+                    emoji: player.emoji || '⚽'
+                });
+            }
+        }
+
+        function generateOtherResults() {
+    const currentOpponent = getCurrentOpponent();
+    const otherTeams = teams.filter(team => team.name !== currentOpponent?.name);
+    const results = [];
+
+    for (let i = 0; i < otherTeams.length - 1; i += 2) {
+        if (otherTeams[i + 1]) {
+            const team1 = otherTeams[i];
+            const team2 = otherTeams[i + 1];
+            const team1Strength = 6 - team1.difficulty;
+            const team2Strength = 6 - team2.difficulty;
+
+            let team1Goals = Math.floor(Math.random() * 4);
+            let team2Goals = Math.floor(Math.random() * 4);
+
+            if (team1Strength > team2Strength) {
+                team1Goals += Math.floor(Math.random() * 2);
+            } else if (team2Strength > team1Strength) {
+                team2Goals += Math.floor(Math.random() * 2);
+            }
+
+            // Oppdater mål for/imot
+            team1.goalsFor += team1Goals;
+            team1.goalsAgainst += team2Goals;
+            team2.goalsFor += team2Goals;
+            team2.goalsAgainst += team1Goals;
+
+            // Oppdater poeng og statistikk (inkludert uavgjort)
+            if (team1Goals > team2Goals) {
+                team1.won++;
+                team1.points += 3;
+                team2.lost++;
+            } else if (team2Goals > team1Goals) {
+                team2.won++;
+                team2.points += 3;
+                team1.lost++;
+            } else {
+                // UAVGJORT
+                team1.draws++;
+                team1.points += 1;
+                team2.draws++;
+                team2.points += 1;
+            }
+
+            team1.played++;
+            team2.played++;
+
+            // Legg til målscorere for andre lag
+            for (let j = 0; j < team1Goals; j++) {
+                const scorer = getRandomPlayer(team1);
+                if (scorer) addToTopScorers(scorer, team1);
+            }
+            for (let j = 0; j < team2Goals; j++) {
+                const scorer = getRandomPlayer(team2);
+                if (scorer) addToTopScorers(scorer, team2);
+            }
+
+            results.push({
+                team1: team1.name,
+                team1Goals: team1Goals,
+                team2Goals: team2Goals,
+                team2: team2.name
+            });
+        }
+    }
+
+    return results;
+}
+
+        function updateOpponentJersey() {
+                const opponent = document.getElementById('opponent'); // <- LEGG TIL DENNE LINJEN
+    const currentTeam = getCurrentOpponent();
+    if (!currentTeam || !opponent) return;
+                
+                const primaryColor = currentTeam.color;
+                const secondaryColor = currentTeam.secondaryColor;
+
+                switch(currentTeam.pattern) {
+                    case 'stripes':
+                        opponent.style.background = `repeating-linear-gradient(90deg, ${primaryColor} 0px, ${primaryColor} 6px, ${secondaryColor} 6px, ${secondaryColor} 12px)`;
+                        break;
+                    case 'stripe_thin':
+                        opponent.style.background = `linear-gradient(90deg, ${primaryColor} 0%, ${primaryColor} 45%, ${secondaryColor} 47%, ${secondaryColor} 53%, ${primaryColor} 55%, ${primaryColor} 100%)`;
+                        break;
+                    case 'tricolor':
+                        opponent.style.background = `linear-gradient(0deg, ${secondaryColor} 0%, ${secondaryColor} 33%, #FFFFFF 33%, #FFFFFF 66%, ${primaryColor} 66%, ${primaryColor} 100%)`;
+                        break;
+                    case 'solid':
+                    default:
+                        opponent.style.background = `linear-gradient(180deg, ${primaryColor}, ${primaryColor}dd, ${primaryColor})`;
+                        break;
+                }
+            }
+            function updateNextCupOpponent(completedRound) {
+    if (completedRound === 5) { // Etter kvartfinale
+        // Generer semifinale-motstandere
+        const semiResults = [
+            { team1: 'Rosenborg', team2: 'Sarpsborg 08', winner: Math.random() > 0.5 ? 'Rosenborg' : 'Sarpsborg 08' },
+            { team1: 'Stabæk', team2: 'Kristiansund', winner: Math.random() > 0.5 ? 'Stabæk' : 'Kristiansund' },
+            { team1: 'Lillestrøm', team2: 'KFUM', winner: Math.random() > 0.5 ? 'Lillestrøm' : 'KFUM' }
+        ];
+        
+        // Oppdater Viking sin semifinale-motstander
+        const vikingSemiOpponent = semiResults[0].winner;
+        const otherSemiMatch = [semiResults[1].winner, semiResults[2].winner];
+        
+        // Oppdater vikingSchedule
+        const semiMatch = vikingSchedule.find(m => m.type === 'cup' && m.round === 6);
+        if (semiMatch) {
+            semiMatch.opponent = vikingSemiOpponent;
+        }
+        
+        // Oppdater fixedMatches for semifinale
+        cupData.fixedMatches[6] = [
+            { team1: 'Viking', team2: vikingSemiOpponent },
+            { team1: otherSemiMatch[0], team2: otherSemiMatch[1] }
+        ];
+        
+        // Generer kvartfinale-resultater for andre kamper
+        cupData.cupResults[5] = semiResults.map(result => ({
+            team1: result.team1,
+            team1Goals: result.winner === result.team1 ? 2 : 1,
+            team2Goals: result.winner === result.team2 ? 2 : 1,
+            team2: result.team2
+        }));
+        
+    } else if (completedRound === 6) { // Etter semifinale
+        // Bestem finale-motstander
+        const otherSemiWinner = Math.random() > 0.5 ? 
+            cupData.fixedMatches[6][1].team1 : cupData.fixedMatches[6][1].team2;
+        
+        // Oppdater Viking sin finale-motstander
+        const finaleMatch = vikingSchedule.find(m => m.type === 'cup' && m.round === 7);
+        if (finaleMatch) {
+            finaleMatch.opponent = otherSemiWinner;
+        }
+        
+        // Oppdater fixedMatches for finale
+        cupData.fixedMatches[7] = [
+            { team1: 'Viking', team2: otherSemiWinner }
+        ];
+        
+        // Generer semifinale-resultater
+        cupData.cupResults[6] = [
+            {
+                team1: cupData.fixedMatches[6][1].team1,
+                team1Goals: otherSemiWinner === cupData.fixedMatches[6][1].team1 ? 2 : 1,
+                team2Goals: otherSemiWinner === cupData.fixedMatches[6][1].team2 ? 2 : 1,
+                team2: cupData.fixedMatches[6][1].team2
+            }
+        ];
+    }
+}
+
+function initializeCupTopScorers() {
+    console.log('🎯 Initializing cup top scorers...');
+    cupTopScorers = [];
+    
+    // Generer mål fra alle hardkodede cup-resultater
+    Object.values(cupData.otherResults).flat().forEach(match => {
+        const [homeGoals, awayGoals] = match.result;
+        
+        // Hjemmelag mål
+        if (homeGoals > 0) {
+            const homeTeam = findTeamByName(match.home);
+            if (homeTeam) {
+                // Bruk ekte spillere fra Eliteserien-lag
+                for (let i = 0; i < homeGoals; i++) {
+                    const scorer = getRandomPlayer(homeTeam);
+                    if (scorer) addToCupTopScorers(scorer, homeTeam);
+                }
+            } else {
+                // Lag enkle cuphelt-spillere for lavere divisjoner
+                const dummyTeam = { 
+                    name: match.home, 
+                    players: [
+                        {name: 'Lokal helt', emoji: '⚽'},
+                        {name: 'Va goe ein gang', emoji: '🏆'},
+                        {name: 'Sykt talent', emoji: '🎯'}
+                    ]
+                };
+                for (let i = 0; i < homeGoals; i++) {
+                    const scorer = getRandomPlayer(dummyTeam);
+                    addToCupTopScorers(scorer, dummyTeam);
+                }
+            }
+        }
+        
+        // Samme for bortelag...
+        if (awayGoals > 0) {
+            const awayTeam = findTeamByName(match.away);
+            if (awayTeam) {
+                for (let i = 0; i < awayGoals; i++) {
+                    const scorer = getRandomPlayer(awayTeam);
+                    if (scorer) addToCupTopScorers(scorer, awayTeam);
+                }
+            } else {
+                const dummyTeam = { 
+                    name: match.away, 
+                    players: [
+                        {name: 'Lokalhelt', emoji: '⚽'},
+                        {name: 'Cuphelt', emoji: '🏆'},
+                        {name: 'Matchvinner', emoji: '🎯'}
+                    ]
+                };
+                for (let i = 0; i < awayGoals; i++) {
+                    const scorer = getRandomPlayer(dummyTeam);
+                    addToCupTopScorers(scorer, dummyTeam);
+                }
+            }
+        }
+    });
+    
+    cupTopScorers.sort((a, b) => b.goals - a.goals);
+    console.log('✅ Cup top scorers initialized:', cupTopScorers.length, 'scorers');
+}
+
+        // ===== SPILL-FUNKSJONER =====
+        function initializeGame() {
+            console.log('🎮 Initializing main game...');
+            
+            initializeCupTopScorers();
+            
+            // DOM-elementer
+            const gameField = document.getElementById('gameField');
+            const viking = document.getElementById('viking');
+            const opponent = document.getElementById('opponent');
+            const ball = document.getElementById('ball');
+            const touchArea = document.getElementById('touchArea');
+
+
+            
+
+            // ===== FUNKSJONER =====
+            function kickOff(team) {
+    console.log('🏈 kickOff called for:', team, 'halfTimeBreak:', gameState.halfTimeBreak, 'matchTime:', gameState.matchTime);
+    gameState.lastKickoffTime = Date.now();
+
+    // KOMPLETT NULLSTILLING FØRST
+    gameState.ballVelX = 0;
+    gameState.ballVelY = 0;
+    
+    // Start ballen nærmere den som tar avspark
+    const fieldRect = gameField.getBoundingClientRect();
+    const fieldWidth = fieldRect.width - 40;
+    
+    if (team === 'viking') {
+        // Viking tar avspark - start ballen litt til venstre for midten
+        gameState.ballX = gameState.sidesSwapped ? fieldWidth * 0.6 : fieldWidth * 0.4;
+    } else {
+        // Motstander tar avspark - start ballen litt til høyre for midten
+        gameState.ballX = gameState.sidesSwapped ? fieldWidth * 0.4 : fieldWidth * 0.6;
+    }
+    
+    gameState.ballY = 350;
+    
+    const ball = document.getElementById('ball');
+    if (ball) {
+        ball.style.left = gameState.ballX + 'px';
+        ball.style.top = gameState.ballY + 'px';
+    }
+    
+    console.log('⚽ Ball positioned for kickoff at:', gameState.ballX);
+    
+    soundSystem.playWhistle();
+    soundSystem.startSupporters();
+    
+    // VENT LITT, SÅ SETT HELT NY HASTIGHET
+    setTimeout(() => {
+        // Redusert starthastighet og mer vinkel
+        if (team === 'viking') {
+            gameState.ballVelX = gameState.sidesSwapped ? -6 : 6; // Redusert fra 5
+        } else {
+            gameState.ballVelX = gameState.sidesSwapped ? 6 : -6; // Redusert fra -5
+        }
+        
+        // Større Y-hastighet for å unngå rette linjer
+        gameState.ballVelY = (Math.random() - 0.5) * 4; // Økt fra * 2
+        
+        // Sørg for at ballen ikke går helt rett
+        if (Math.abs(gameState.ballVelY) < 1) {
+            gameState.ballVelY = Math.random() > 0.5 ? 1.5 : -1.5;
+        }
+        
+        console.log('🚀 Ball hastighet satt til FRESH values:', gameState.ballVelX, gameState.ballVelY);
+    }, 100);
+}
+            
+            function updateBall() {
+    if (gameState.paused) return;
+    
+    gameState.ballX += gameState.ballVelX;
+    gameState.ballY += gameState.ballVelY;
+
+    const fieldRect = gameField.getBoundingClientRect();
+    const fieldWidth = fieldRect.width - 40;
+    const fieldHeight = fieldRect.height - 40;
+
+    // KONTROLLERT akselerasjon med hard maks-grense
+    const maxSpeed = 10; // Lavere maks-hastighet
+    const acceleration = 1.0001; // Minimal akselerasjon
+    
+    if (Math.abs(gameState.ballVelX) < maxSpeed) {
+        gameState.ballVelX *= acceleration;
+    }
+    
+    // HARD STOPP hvis hastigheten blir for høy
+    if (Math.abs(gameState.ballVelX) > maxSpeed) {
+        console.warn('⚠️ Ball hastighet for høy:', gameState.ballVelX, '- reduserer til', maxSpeed);
+        gameState.ballVelX = gameState.ballVelX > 0 ? maxSpeed : -maxSpeed;
+    }
+
+    if (gameState.ballY <= 10 || gameState.ballY >= fieldHeight - 10) {
+        gameState.ballVelY = -gameState.ballVelY;
+        gameState.ballY = Math.max(10, Math.min(fieldHeight - 10, gameState.ballY));
+        gameState.ballVelY += (Math.random() - 0.5) * 1.5;
+    }
+
+    checkPlayerCollisions();
+
+    // MÅLLOGIKK
+    if (!gameState.sidesSwapped) {
+        if (gameState.ballX <= 0) {
+            goalScored('opponent');
+        } else if (gameState.ballX >= fieldWidth) {
+            goalScored('viking');
+        }
+    } else {
+        if (gameState.ballX <= 0) {
+            goalScored('viking');
+        } else if (gameState.ballX >= fieldWidth) {
+            goalScored('opponent');
+        }
+    }
+
+    ball.style.left = gameState.ballX + 'px';
+    ball.style.top = gameState.ballY + 'px';
+}       
+function checkPlayerCollisions() {
+    const viking = document.getElementById('viking');
+    const opponent = document.getElementById('opponent');
+    const ball = document.getElementById('ball');
+    
+    if (!viking || !opponent || !ball) return;
+    
+    const vikingRect = viking.getBoundingClientRect();
+    const opponentRect = opponent.getBoundingClientRect();
+    const ballRect = ball.getBoundingClientRect();
+    const fieldRect = gameField.getBoundingClientRect();
+    
+    // Konverter til relative posisjoner
+    const ballCenterX = gameState.ballX + 10;
+    const ballCenterY = gameState.ballY + 10;
+    
+    // Sjekk kollisjon med Viking-spiller (venstre side i 1. omgang)
+    if (!gameState.sidesSwapped) {
+        // Viking er på venstre side
+        if (gameState.ballX <= 60 && gameState.ballX >= 40 &&
+            ballCenterY >= gameState.vikingY && ballCenterY <= gameState.vikingY + 100) {
+            gameState.ballVelX = Math.abs(gameState.ballVelX);
+            
+            // Juster Y-hastighet basert på hvor ballen treffer
+            const hitPos = (ballCenterY - gameState.vikingY) / 100;
+            gameState.ballVelY = (hitPos - 0.5) * 8;
+            
+            soundSystem.playBallHit();
+        }
+        
+        // Sjekk kollisjon med motstander (høyre side)
+        const fieldWidth = fieldRect.width - 40;
+        if (gameState.ballX >= fieldWidth - 60 && gameState.ballX <= fieldWidth - 40 &&
+            ballCenterY >= gameState.opponentY && ballCenterY <= gameState.opponentY + 100) {
+            gameState.ballVelX = -Math.abs(gameState.ballVelX);
+            
+            const hitPos = (ballCenterY - gameState.opponentY) / 100;
+            gameState.ballVelY = (hitPos - 0.5) * 8;
+            
+            soundSystem.playBallHit();
+        }
+    } else {
+        // Byttet side i 2. omgang
+        const fieldWidth = fieldRect.width - 40;
+        
+        // Viking er på høyre side
+        if (gameState.ballX >= fieldWidth - 60 && gameState.ballX <= fieldWidth - 40 &&
+            ballCenterY >= gameState.vikingY && ballCenterY <= gameState.vikingY + 100) {
+            gameState.ballVelX = -Math.abs(gameState.ballVelX);
+            
+            const hitPos = (ballCenterY - gameState.vikingY) / 100;
+            gameState.ballVelY = (hitPos - 0.5) * 8;
+            
+            soundSystem.playBallHit();
+        }
+        
+        // Motstander er på venstre side
+        if (gameState.ballX <= 60 && gameState.ballX >= 40 &&
+            ballCenterY >= gameState.opponentY && ballCenterY <= gameState.opponentY + 100) {
+            gameState.ballVelX = Math.abs(gameState.ballVelX);
+            
+            const hitPos = (ballCenterY - gameState.opponentY) / 100;
+            gameState.ballVelY = (hitPos - 0.5) * 8;
+            
+            soundSystem.playBallHit();
+        }
+    }
+}     
+
+            function updateOpponent() {
+    if (gameState.paused) return;
+    
+    const currentTeam = getCurrentOpponent();
+    if (!currentTeam) return;
+    
+    const difficulty = currentTeam.difficulty;
+    const speed = 1.4 + difficulty * 0.4;
+    const accuracy = 0.6 + difficulty * 0.1;
+    
+    // Spesiell oppførsel de første sekundene etter avspark
+    const timeSinceKickoff = Date.now() - (gameState.lastKickoffTime || 0);
+    const isKickoffSituation = timeSinceKickoff < 2000; // 2 sekunder
+    
+    let targetY;
+    
+    if (isKickoffSituation) {
+        // Ved avspark, følg ballen tettere
+        targetY = gameState.ballY - 50;
+    } else {
+        // Normal prediksjon
+        const predictedBallY = gameState.ballY + (gameState.ballVelY * 7);
+        targetY = predictedBallY - 50;
+    }
+    
+    const error = (Math.random() - 0.5) * (80 / accuracy);
+    const adjustedTarget = targetY + error;
+
+    if (gameState.opponentY < adjustedTarget - speed) {
+        gameState.opponentY += speed * (isKickoffSituation ? 1.5 : 1); // Raskere ved avspark
+    } else if (gameState.opponentY > adjustedTarget + speed) {
+        gameState.opponentY -= speed * (isKickoffSituation ? 1.5 : 1);
+    }
+
+    const fieldRect = gameField.getBoundingClientRect();
+    const maxY = fieldRect.height - 140;
+    gameState.opponentY = Math.max(0, Math.min(maxY, gameState.opponentY));
+    opponent.style.top = gameState.opponentY + 'px';
+}            
+
+            function updateViking() {
+                if (gameState.paused) return;
+                
+                const targetY = (window.innerWidth <= 768 ? gameState.touchY : gameState.mouseY) - 50;
+                const smoothing = 0.8;
+                const newY = gameState.vikingY + (targetY - gameState.vikingY) * smoothing;
+                
+                const fieldRect = gameField.getBoundingClientRect();
+                const maxY = fieldRect.height - 140;
+                gameState.vikingY = Math.max(0, Math.min(maxY, newY));
+                viking.style.top = gameState.vikingY + 'px';
+            }
+
+            function goalScored(scorer) {
+                if (gameState.halfTimeBreak || gameState.matchTime >= 90) {
+        console.log('🚫 Mål ignorert - kampause eller kampen er ferdig');
+        return;
+    }
+    gameState.gameActive = false;
+
+    let goalScorer;
+    let isVikingFifthGoal = false;
+    
+    if (scorer === 'viking') {
+        gameState.vikingScore++;
+        goalScorer = getRandomPlayer(vikingTeam);
+        
+        // SPILL SCORING-LYD UMIDDELBART (før VAR)
+        soundSystem.playScoring();
+        
+        if (gameState.vikingScore === 5) {
+            isVikingFifthGoal = true;
+        }
+        
+        const currentMatch = vikingSchedule[gameState.currentMatchIndex];
+         if (currentMatch && currentMatch.type === 'cup') {
+        addToCupTopScorers(goalScorer, vikingTeam);
+    } else {
+        addToTopScorers(goalScorer, vikingTeam);  // FLYTTET HIT
+    }
+        
+        if (checkForVAR(scorer, goalScorer, vikingTeam, isVikingFifthGoal)) {
+            return; // VAR håndterer bare celebration-lyd
+        } else {
+            // INGEN VAR - spill celebration hvis 5. mål
+            if (isVikingFifthGoal) {
+                setTimeout(() => soundSystem.playViking5Goals(), 2000);
+            }
+            showGoalScorerDisplay(goalScorer, vikingTeam);
+            
+            // LEGG TIL DENNE setTimeout FOR VIKING OGSÅ:
+            setTimeout(() => {
+                kickOff(scorer === 'viking' ? 'opponent' : 'viking');
+                if (!gameState.halfTimeBreak) {
+                    gameState.gameActive = true;
+                }
+            }, 4000);
+        }
+    
+    } else {
+        gameState.opponentScore++;
+        const currentOpponentTeam = getCurrentOpponent();
+        goalScorer = getRandomPlayer(currentOpponentTeam);
+        
+        const currentMatch = vikingSchedule[gameState.currentMatchIndex];
+        if (currentMatch && currentMatch.type === 'cup') {
+        addToCupTopScorers(goalScorer, currentOpponentTeam);
+    } else {
+        addToTopScorers(goalScorer, currentOpponentTeam);  // FLYTTET HIT
+    }
+        
+        if (checkForVAR(scorer, goalScorer, currentOpponentTeam, false)) {
+            return; // VAR håndterer lydene
+        } else {
+            // INGEN VAR - ikke spill scoring-lyd for motstander
+            showGoalScorerDisplay(goalScorer, currentOpponentTeam);
+            
+            setTimeout(() => {
+                kickOff(scorer === 'viking' ? 'opponent' : 'viking');
+                if (!gameState.halfTimeBreak) {
+                    gameState.gameActive = true;
+                }
+            }, 4000);
+        }
+    }
+
+    updateUI(); // Ikke glem denne!
+}
+   
+            function checkForVAR(scorer, goalScorer, team, isVikingFifthGoal = false) {
+    if (Math.random() < 0.1) {
+        console.log('🎥 VAR-situasjon!');
+        showVARCheck(scorer, goalScorer, team, isVikingFifthGoal);
+        return true;
+    }
+    return false;
+}
+
+            function showVARCheck(scorer, goalScorer, team, isVikingFifthGoal = false) {
+    // SPILL VAR-LYD UMIDDELBART
+    soundSystem.playVAR();
+    
+    showOffsideLines(scorer);
+    
+    setTimeout(() => {
+        const varScreen = document.createElement('div');
+        varScreen.className = 'var-screen';
+        varScreen.id = 'varScreen';
+        
+        varScreen.innerHTML = `
+        <img src="assets/images/var-plakat.png" style="width: 250px; height: 180px; margin-bottom: 15px;" onerror="this.style.display='none';">
+        <div style="color: #FF0000; font-size: 24px; font-weight: bold; margin-bottom: 15px; font-family: 'Courier New', monospace;">
+                📹 VAR SJEKK
+            </div>
+            <div class="var-checking" style="font-size: 18px; font-weight: bold; margin-bottom: 20px; font-family: 'Courier New', monospace;">
+                SJEKKER MULIG OFFSIDE
+            </div>
+            <div style="color: #FFFF00; font-size: 18px; margin-bottom: 20px;">
+                VAR
+            </div>
+            <div style="color: #FFD700; font-size: 16px; font-family: 'Courier New', monospace;">
+                ${goalScorer.name} - ${team.name.toUpperCase()}
+            </div>
+        `;
+        
+        document.body.appendChild(varScreen);
+        
+        // Start linje-animasjoner etter 1 sekund
+        setTimeout(() => {
+            animateVARLines(scorer);
+        }, 1000);
+        
+        // Simuler VAR-sjekk i 4 sekunder (lenger for animasjoner)
+        setTimeout(() => {
+            makeVARDecision(scorer, goalScorer, team, varScreen, isVikingFifthGoal);
+        }, 4000);
+    }, 500);
+}
+
+function showOffsideLines(scorer) {
+    const gameField = document.getElementById('gameField');
+    const fieldRect = gameField.getBoundingClientRect();
+    
+    const varLines = document.createElement('div');
+    varLines.className = 'var-lines';
+    varLines.id = 'varLines';
+    varLines.style.width = fieldRect.width + 'px';
+    varLines.style.height = fieldRect.height + 'px';
+    varLines.style.left = fieldRect.left + 'px';
+    varLines.style.top = fieldRect.top + 'px';
+    
+    // Bestem hvilken side målet ble scoret på (der scorer skutt MOT)
+    let isRightGoal; // Høyre mål
+    
+    if (!gameState.sidesSwapped) {
+        // Første omgang: Viking venstre, Opponent høyre
+        isRightGoal = (scorer === 'viking'); // Viking skyter mot høyre mål
+    } else {
+        // Andre omgang: Viking høyre, Opponent venstre  
+        isRightGoal = (scorer === 'opponent'); // Opponent skyter mot høyre mål
+    }
+    
+    // Plasser linjer nær målet som ble scoret på
+    const baseX = isRightGoal ? 75 : 25; // 75% (høyre) eller 25% (venstre) fra venstre
+    
+    console.log(`🎯 Mål scoret på ${isRightGoal ? 'høyre' : 'venstre'} side av ${scorer}, sidesSwapped: ${gameState.sidesSwapped}`);
+    
+    // Rød linje (litt uskakk)
+    const redLine = document.createElement('div');
+    redLine.className = 'offside-line red';
+    redLine.id = 'redLine';
+    const redRotation = Math.random() * 6 - 3; // -3 til +3 grader
+    const redX = baseX + (Math.random() * 6 - 3); // Litt variasjon i posisjon
+    redLine.style.left = redX + '%';
+    redLine.style.setProperty('--rotation', redRotation + 'deg');
+    redLine.style.animation = 'varLineAppear 0.7s ease-in-out forwards';
+    
+    // Grønn linje (litt uskakk og litt forskjøvet)
+    const greenLine = document.createElement('div');
+    greenLine.className = 'offside-line green';
+    greenLine.id = 'greenLine';
+    const greenRotation = Math.random() * 6 - 3; // -3 til +3 grader
+    const greenX = baseX + (Math.random() * 6 - 3) + 2; // Litt forskjøvet fra rød
+    greenLine.style.left = greenX + '%';
+    greenLine.style.setProperty('--rotation', greenRotation + 'deg');
+    greenLine.style.animation = 'varLineAppear 0.7s ease-in-out 0.3s forwards';
+    
+    varLines.appendChild(redLine);
+    varLines.appendChild(greenLine);
+    document.body.appendChild(varLines);
+}
+function animateVARLines(scorer) {
+    const redLine = document.getElementById('redLine');
+    const greenLine = document.getElementById('greenLine');
+    
+    if (!redLine || !greenLine) return;
+    
+    // Flytt linjene 2-3 ganger for å simulere "justering"
+    let moveCount = 0;
+    const maxMoves = 2 + Math.floor(Math.random() * 2); // 2-3 bevegelser
+    
+    const moveInterval = setInterval(() => {
+        if (moveCount >= maxMoves) {
+            clearInterval(moveInterval);
+            return;
+        }
+        
+        // Flytt begge linjer litt
+        const redCurrentX = parseFloat(redLine.style.left);
+        const greenCurrentX = parseFloat(greenLine.style.left);
+        
+        const redNewX = redCurrentX + (Math.random() * 4 - 2); // ±2%
+        const greenNewX = greenCurrentX + (Math.random() * 4 - 2); // ±2%
+        
+        redLine.style.left = Math.max(10, Math.min(90, redNewX)) + '%';
+        greenLine.style.left = Math.max(10, Math.min(90, greenNewX)) + '%';
+        
+        // Litt ny rotasjon også
+        const newRedRotation = Math.random() * 6 - 3;
+        const newGreenRotation = Math.random() * 6 - 3;
+        
+        redLine.style.setProperty('--rotation', newRedRotation + 'deg');
+        greenLine.style.setProperty('--rotation', newGreenRotation + 'deg');
+        
+        moveCount++;
+    }, 800);
+}
+
+function animateFinalLines(goalStands) {
+    const redLine = document.getElementById('redLine');
+    const greenLine = document.getElementById('greenLine');
+    
+    if (!redLine || !greenLine) return;
+    
+    if (goalStands) {
+        // Målscorer er ONSIDE - grønn linje foran rød
+        setTimeout(() => {
+        updateUI(); // <- LEGG TIL DENNE LINJEN
+
+            redLine.style.backgroundColor = '#00FF00';
+            redLine.style.color = '#00FF00';
+            redLine.style.boxShadow = '0 0 15px #00FF00';
+        }, 200);
+    } else {
+        // Målscorer er OFFSIDE - rød linje foran grønn  
+        setTimeout(() => {
+            greenLine.style.backgroundColor = '#FF0000';
+            greenLine.style.color = '#FF0000';
+            greenLine.style.boxShadow = '0 0 15px #FF0000';
+        }, 200);
+    }
+}
+
+function makeVARDecision(scorer, goalScorer, team, varScreen, isVikingFifthGoal = false) {
+    const goalStands = Math.random() < 0.5;
+    const currentMatch = vikingSchedule[gameState.currentMatchIndex];
+    
+    animateFinalLines(goalStands);
+    
+    if (goalStands) {
+        // MÅL GODKJENT - SPILL SCORING-LYD PÅ NYTT!
+        if (scorer === 'viking') {
+            soundSystem.playScoring(); // SPILL SCORING IGJEN ETTER VAR
+            if (isVikingFifthGoal) {
+                setTimeout(() => soundSystem.playViking5Goals(), 2000); // Celebration etter scoring
+            }
+        }
+        
+        // OPPDATER UI UMIDDELBART
+        updateUI();
+        
+        // Generer score-display
+        let scoreDisplay;
+        if (currentMatch && currentMatch.home) {
+            scoreDisplay = `VIKING FK ${gameState.vikingScore} – ${gameState.opponentScore} ${getCurrentOpponent()?.name?.toUpperCase() || 'MOTSTANDER'}`;
+        } else {
+            scoreDisplay = `${getCurrentOpponent()?.name?.toUpperCase() || 'MOTSTANDER'} ${gameState.opponentScore} – ${gameState.vikingScore} VIKING FK`;
+        }
+        
+        varScreen.innerHTML = `
+        <img src="assets/images/var-plakat.png" style="width: 250px; height: 180px; margin-bottom: 10px;" onerror="this.style.display='none';">
+        <div style="color: #00FF00; font-size: 28px; font-weight: bold; margin-bottom: 15px; font-family: 'Courier New', monospace;">
+                MÅL GODKJENT
+            </div>
+            <div style="color: #00FF00; font-size: 16px; margin-bottom: 15px;">
+                Ingen overtredelse funnet
+            </div>
+            <div style="color: #FFD700; font-size: 16px; font-family: 'Courier New', monospace;">
+                ${goalScorer.name} - ${team.name.toUpperCase()}
+            </div>
+            <div style="color: #00FF00; font-size: 18px; font-weight: bold; margin-top: 15px; font-family: 'Courier New', monospace;">
+                ${scoreDisplay}
+            </div>
+        `;
+        varScreen.style.borderColor = '#00FF00';
+        varScreen.style.boxShadow = '0 0 50px rgba(0,255,0,0.5)';
+        
+        setTimeout(() => {
+            cleanupVAR();
+            setTimeout(() => {
+                showGoalScorerDisplay(goalScorer, team);
+                setTimeout(() => {
+                    if (!gameState.halfTimeBreak && gameState.matchTime < 90) {
+                        kickOff(scorer === 'viking' ? 'opponent' : 'viking');
+                        gameState.gameActive = true;
+                    } else {
+                        console.log('🚫 Ikke restart spill - kamp i pause eller ferdig');
+                    }
+                }, 4000);
+            }, 500);
+        }, 3000);
+        
+    } else {
+        // MÅL ANNULLERT - ingen ekstra lyder
+        if (scorer === 'viking') {
+            gameState.vikingScore--;
+            updateUI();
+        } else {
+            gameState.opponentScore--;
+            updateUI();
+        }        
+        // Generer score-display etter score-endring
+        let scoreDisplay;
+        if (currentMatch && currentMatch.home) {
+            scoreDisplay = `VIKING FK ${gameState.vikingScore} – ${gameState.opponentScore} ${getCurrentOpponent()?.name?.toUpperCase() || 'MOTSTANDER'}`;
+        } else {
+            scoreDisplay = `${getCurrentOpponent()?.name?.toUpperCase() || 'MOTSTANDER'} ${gameState.opponentScore} – ${gameState.vikingScore} VIKING FK`;
+        }
+        
+        varScreen.innerHTML = `
+            <img src="assets/images/var-plakat.png" style="width: 250px; height: 180px; margin-bottom: 10px;" onerror="this.style.display='none';">
+            <div style="color: #FF0000; font-size: 28px; font-weight: bold; margin-bottom: 15px; font-family: 'Courier New', monospace;">
+                 MÅL ANNULLERT
+            </div>
+            <div style="color: #FF0000; font-size: 16px; margin-bottom: 15px;">
+                Offside på angrepsspiller
+            </div>
+            <div style="color: #FFD700; font-size: 16px; font-family: 'Courier New', monospace;">
+                ${goalScorer.name} - ${team.name.toUpperCase()}
+            </div>
+            <div style="color: #FF6B6B; font-size: 18px; font-weight: bold; margin-top: 15px; font-family: 'Courier New', monospace;">
+                ${scoreDisplay}
+            </div>
+        `;
+        
+        updateUI();
+        
+            setTimeout(() => {
+            cleanupVAR();
+            setTimeout(() => {
+                // NYTT: Samme sjekk her
+                if (!gameState.halfTimeBreak && gameState.matchTime < 90) {
+                    kickOff(scorer === 'viking' ? 'opponent' : 'viking');
+                    gameState.gameActive = true;
+                } else {
+                    console.log('🚫 Ikke restart spill - kamp i pause eller ferdig');
+                }
+            }, 500);
+        }, 3000);
+    }
+}
+
+function cleanupVAR() {
+    console.log('🧹 Cleaning up VAR');
+    const varScreen = document.getElementById('varScreen');
+    const varLines = document.getElementById('varLines');
+    
+    if (varScreen) {
+        try {
+            document.body.removeChild(varScreen);
+            console.log('🧹 VAR screen removed');
+        } catch (e) {
+            console.log('VAR-skjerm allerede fjernet');
+        }
+    }
+    
+    if (varLines) {
+        try {
+            document.body.removeChild(varLines);
+            console.log('🧹 VAR lines removed');
+        } catch (e) {
+            console.log('VAR-linjer allerede fjernet');
+        }
+    }
+    soundSystem.stopAllGoalSounds();
+}
+            
+
+            function showGoalScorerDisplay(player, team) {
+                const scorerDisplay = document.createElement('div');
+                scorerDisplay.className = 'goal-scorer-display';
+                
+                const displayId = 'goalScorer_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                scorerDisplay.id = displayId;
+
+                const playerImage = `assets/players/${team.name.toLowerCase().replace(/\s+/g, '-').replace('ø','o').replace('å','a')}/${player.image}.png`;
+
+                scorerDisplay.innerHTML = `
+                    <div style="width: 200px; height: 200px; border-radius: 50%; border: 4px solid #FFD700; margin: 0 auto 20px auto; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #FFD700, #FFA500); position: relative; overflow: hidden; box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);">
+                        <img src="${playerImage}" alt="${player.name}" style="width: 190px; height: 190px; object-fit: contain; border-radius: 50%;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div style="display: none; font-size: 65px; color: #000;">${player.emoji}</div>
+                    </div>
+                    <div class="goal-scorer-name">⚽ MÅL!</div>
+                    <div class="goal-scorer-team">${player.name}</div>
+                    <div style="color: #FFFFFF; font-size: 14px; margin-top: 8px;">${team.name.toUpperCase()}</div>
+                    <div style="color: #00FF00; font-size: 18px; font-weight: bold; margin-top: 10px; font-family: 'Courier New', monospace;">
+                        VIKING FK ${gameState.vikingScore} – ${gameState.opponentScore} ${getCurrentOpponent().name.toUpperCase()}
+                    </div>
+                `;
+                
+                document.body.appendChild(scorerDisplay);
+
+                setTimeout(() => {
+                    const elementToRemove = document.getElementById(displayId);
+                    if (elementToRemove) {
+                        try {
+                            document.body.removeChild(elementToRemove);
+                        } catch (e) {
+                            console.log('Målscorer-display allerede fjernet');
+                        }
+                    }
+                }, 4000);
+            }
+
+            function updateUI() {
+    const homeTeamName = document.getElementById('homeTeamName');
+    const awayTeamName = document.getElementById('awayTeamName');
+    const homeScore = document.getElementById('homeScore');
+    const awayScore = document.getElementById('awayScore');
+    const leftLogo = document.getElementById('leftLogo');
+    const rightLogo = document.getElementById('rightLogo');
+    
+    if (gameState.currentMatchIndex >= vikingSchedule.length) {
+        if (homeTeamName) homeTeamName.textContent = 'SESONGEN';
+        if (awayTeamName) awayTeamName.textContent = 'FERDIG';
+        if (homeScore) homeScore.textContent = '';
+        if (awayScore) awayScore.textContent = '';
+        return;
+    }
+    
+    const currentMatch = vikingSchedule[gameState.currentMatchIndex];
+    const opponentTeam = getCurrentOpponent();
+    
+    if (currentMatch.type === 'cup' && gameState.cupEliminated) {
+        gameState.currentMatchIndex++;
+        updateUI();
+        return;
+    }
+    
+    if (opponentTeam && currentMatch && homeTeamName && awayTeamName) {
+        gameState.currentOpponentTeam = opponentTeam;
+        
+        // LOGOER BASERT PÅ SPILLERETNING (ikke hjemme/borte)
+        if (!gameState.sidesSwapped) {
+            // 1. OMGANG: Viking til venstre, motstander til høyre
+            if (leftLogo) {
+                leftLogo.src = 'assets/teams/viking-fk.png';
+                leftLogo.style.display = 'block';
+            }
+            if (rightLogo) {
+                rightLogo.src = getTeamLogoPath(opponentTeam.name);
+                rightLogo.style.display = 'block';
+            }
+        } else {
+            // 2. OMGANG: Viking til høyre, motstander til venstre  
+            if (leftLogo) {
+                leftLogo.src = getTeamLogoPath(opponentTeam.name);
+                leftLogo.style.display = 'block';
+            }
+            if (rightLogo) {
+                rightLogo.src = 'assets/teams/viking-fk.png';
+                rightLogo.style.display = 'block';
+            }
+        }
+        
+        // SCOREBOARD basert på hjemme/borte (første linje = hjemme, andre linje = borte)
+        if (currentMatch.home) {
+            // Viking spiller hjemme
+            homeTeamName.textContent = 'VIKING FK';
+            awayTeamName.textContent = opponentTeam.name.toUpperCase();
+            if (homeScore) homeScore.textContent = gameState.vikingScore;
+            if (awayScore) awayScore.textContent = gameState.opponentScore;
+        } else {
+            // Viking spiller borte
+            homeTeamName.textContent = opponentTeam.name.toUpperCase();
+            awayTeamName.textContent = 'VIKING FK';
+            if (homeScore) homeScore.textContent = gameState.opponentScore;
+            if (awayScore) awayScore.textContent = gameState.vikingScore;
+        }
+    }
+    
+    updateTable();
+}
+
+            function forceUpdateLogos() {
+    console.log('🔄 Force updating logos'); // DEBUG
+    const leftLogo = document.getElementById('leftLogo');
+    const rightLogo = document.getElementById('rightLogo');
+    const opponentTeam = getCurrentOpponent();
+    
+    if (!opponentTeam || !leftLogo || !rightLogo) return;
+    
+    // FORCE CLEAR FØRST
+    leftLogo.src = '';
+    rightLogo.src = '';
+    
+    // VENT LITT, SÅ SETT NYE LOGOER
+    setTimeout(() => {
+        if (!gameState.sidesSwapped) {
+            // 1. OMGANG: Viking venstre, motstander høyre
+            leftLogo.src = 'assets/teams/viking-fk.png?' + Date.now(); // Cache-bust
+            rightLogo.src = getTeamLogoPath(opponentTeam.name) + '?' + Date.now();
+            console.log('🔄 1. omgang - Viking venstre, motstander høyre');
+        } else {
+            // 2. OMGANG: Viking høyre, motstander venstre
+            leftLogo.src = getTeamLogoPath(opponentTeam.name) + '?' + Date.now();
+            rightLogo.src = 'assets/teams/viking-fk.png?' + Date.now();
+            console.log('🔄 2. omgang - Viking høyre, motstander venstre');
+        }
+    }, 50);
+}
+
+            function updateTable() {
+                const allTeams = [vikingTeam, ...teams];
+                allTeams.sort((a, b) => {
+                    if (b.points !== a.points) return b.points - a.points;
+                    const aGoalDiff = a.goalsFor - a.goalsAgainst;
+                    const bGoalDiff = b.goalsFor - b.goalsAgainst;
+                    if (bGoalDiff !== aGoalDiff) return bGoalDiff - aGoalDiff;
+                    return b.goalsFor - a.goalsFor;
+                });
+
+                const tableContent = document.getElementById('tableContent');
+                if (!tableContent) return;
+
+                let tableHTML = `<div class="table-row table-header-row">
+                    <div class="table-pos">#</div>
+                    <div class="table-team">LAG</div>
+                    <div class="table-stat">K</div>
+                    <div class="table-stat">S</div>
+                    <div class="table-stat">T</div>
+                    <div class="table-stat">MÅL</div>
+                    <div class="table-stat">P</div>
+                </div>`;
+
+                allTeams.slice(0, 8).forEach((team, index) => {
+                    const isViking = team.name === 'Viking FK';
+                    const teamName = isViking ? 'VIKING' : team.name.split(' ')[0].toUpperCase();
+                    
+                    tableHTML += `<div class="table-row">
+                        <div class="table-pos">${index + 1}</div>
+                        <div class="table-team ${isViking ? 'viking' : ''}">${teamName}</div>
+                        <div class="table-stat">${team.played}</div>
+                        <div class="table-stat">${team.won}</div>
+                        <div class="table-stat">${team.lost}</div>
+                        <div class="table-stat">${team.goalsFor}-${team.goalsAgainst}</div>
+                        <div class="table-stat">${team.points}</div>
+                    </div>`;
+                });
+
+                tableContent.innerHTML = tableHTML;
+            }
+
+            
+            function updateMatchClock() {
+    if (!gameState.gameActive || gameState.paused || gameState.halfTimeBreak) return;
+    
+    if (!gameState.matchStartTime) {
+        gameState.matchStartTime = Date.now();
+        gameState.matchTime = 0;
+    }
+    
+    const elapsed = Date.now() - gameState.matchStartTime;
+    const halfDuration = gameState.matchDuration; // 60 seconds per half
+    
+    if (gameState.currentHalf === 1) {
+        gameState.matchTime = Math.floor((elapsed / halfDuration) * 45);
+        if (gameState.matchTime >= 45) {
+            gameState.matchTime = 45;
+            console.log('⏱️ MATCH TIME 45 - calling showHalfTimeBreak');
+            showHalfTimeBreak();
+        }
+    } else {
+        gameState.matchTime = 45 + Math.floor((elapsed / halfDuration) * 45);
+        if (gameState.matchTime >= 90) {
+            gameState.matchTime = 90;
+            console.log('⏱️ MATCH TIME 90 - calling endMatch');
+            endMatch();
+        }
+    }
+    
+    updateClockDisplay();
+}
+
+            function updateClockDisplay() {
+                const clockElement = document.getElementById('matchClock');
+                if (clockElement) {
+                    clockElement.textContent = `${gameState.matchTime}'`;
+                }
+            }
+
+            function showHalfTimeBreak() {
+    console.log('⏱️ showHalfTimeBreak called');
+    
+    // NYTT: Clean opp eventuelle pågående VAR-er først
+    cleanupVAR();
+    gameState.gameActive = false;
+    gameState.halfTimeBreak = true;
+    
+    // Legg til en flagg for å forhindre dobbelt start
+    let secondHalfStarted = false;
+    
+    const halfTimeScreen = document.createElement('div');
+    halfTimeScreen.className = 'halftime-screen';
+    halfTimeScreen.id = 'halfTimeScreen';
+    halfTimeScreen.innerHTML = `
+        <h2 style="color: #FFD700; margin-bottom: 20px; font-family: 'Courier New', monospace;">⏱️ PAUSE ⏱️</h2>
+        <div style="color: #00FF00; font-size: 24px; font-weight: bold; margin-bottom: 15px; font-family: 'Courier New', monospace;">
+            1. OMGANG FERDIG
+        </div>
+        <div style="color: #FFFFFF; font-size: 20px; margin-bottom: 20px; font-family: 'Courier New', monospace;">
+            VIKING FK ${gameState.vikingScore} – ${gameState.opponentScore} ${getCurrentOpponent().name.toUpperCase()}
+        </div>
+        <div style="color: #FFD700; font-size: 14px; margin-bottom: 25px;">
+            Spillerne bytter side og forbereder seg til 2. omgang
+        </div>
+        <button class="button" onclick="startSecondHalfOnce()" style="background: linear-gradient(135deg, #00AA00, #00FF00); color: #000;">
+            Start 2. omgang
+        </button>
+    `;
+    
+    document.body.appendChild(halfTimeScreen);
+    
+    // Lag en wrapper-funksjon som sjekker flagget
+    window.startSecondHalfOnce = function() {
+        if (!secondHalfStarted) {
+            secondHalfStarted = true;
+            startSecondHalf();
+        }
+    };
+    
+    setTimeout(() => {
+        if (!secondHalfStarted) {
+            console.log('⏱️ Auto-starting second half');
+            secondHalfStarted = true;
+            startSecondHalf();
+        }
+    }, 3000);
+}
+
+            function endMatch() {
+                if (gameState.currentHalf < 2 || gameState.matchTime < 45) {
+                    return;
+                }
+                
+                gameState.gameActive = false;
+                const currentTeam = getCurrentOpponent();
+                const currentMatch = vikingSchedule[gameState.currentMatchIndex];
+
+                 gameState.lastMatchOpponent = currentTeam;
+                
+                if (currentMatch.type === 'serie') {
+                    vikingTeam.goalsFor += gameState.vikingScore;
+                    vikingTeam.goalsAgainst += gameState.opponentScore;
+                    currentTeam.goalsFor += gameState.opponentScore;
+                    currentTeam.goalsAgainst += gameState.vikingScore;
+                    
+                    if (gameState.vikingScore > gameState.opponentScore) {
+                        vikingTeam.won++;
+                        vikingTeam.points += 3;
+                        currentTeam.lost++;
+                    } else if (gameState.opponentScore > gameState.vikingScore) {
+                        vikingTeam.lost++;
+                        currentTeam.won++;
+                        currentTeam.points += 3;
+                    } else {
+                        vikingTeam.draws++;
+                        vikingTeam.points += 1;
+                        currentTeam.draws++;
+                        currentTeam.points += 1;
+                    }
+                    
+                    vikingTeam.played++;
+                    currentTeam.played++;
+                }
+
+                if (currentMatch && currentMatch.type === 'cup') {
+                    if (gameState.vikingScore < gameState.opponentScore) {
+    gameState.cupEliminated = true;
+} else if (gameState.vikingScore === gameState.opponentScore) {
+    // Straffesparkkonkurranse - 50/50 sjanse
+    if (Math.random() < 0.5) {
+        gameState.cupEliminated = true;
+        displayMessage('TYPISK! TAPTE PÅ STRAFFEKONK!', 3000);
+    } else {
+        displayMessage('JADDA! VANT STRAFFEKONK!', 3000);
+    }
+}
+if (!gameState.cupEliminated) {
+        updateNextCupOpponent(currentMatch.round);
+    }
+
+                }
+
+                setTimeout(() => {
+                    showRoundSummary();
+                }, 1500);
+            }
+
+            function gameLoop() {
+                if (gameState.gameActive && !gameState.paused) {
+                    updateBall();
+                    updateOpponent();
+                    updateViking();
+                    updateMatchClock();
+                }
+                requestAnimationFrame(gameLoop);
+            }
+
+            // Mobile touch kontroller
+            if (touchArea) {
+                touchArea.addEventListener('touchstart', handleTouch, {passive: false});
+                touchArea.addEventListener('touchmove', handleTouch, {passive: false});
+                touchArea.addEventListener('touchend', handleTouch, {passive: false});
+            }
+
+            function handleTouch(e) {
+                e.preventDefault();
+                if (e.touches.length > 0) {
+                    const touch = e.touches[0];
+                    const rect = touchArea.getBoundingClientRect();
+                    const touchRelativeY = touch.clientY - rect.top;
+                    const fieldHeight = gameField.offsetHeight;
+                    gameState.touchY = (touchRelativeY / touchArea.offsetHeight) * fieldHeight;
+                }
+            }
+
+            // Musestyring på desktop
+            if (window.innerWidth > 768) {
+                gameField.addEventListener('mousemove', (e) => {
+                    const rect = gameField.getBoundingClientRect();
+                    gameState.mouseY = e.clientY - rect.top;
+                });
+            }
+
+            // Start spillet
+            updateUI();
+            updateOpponentJersey();
+            kickOff('viking');
+            gameLoop();
+        
+        window.resetBallCompletely = resetBallCompletely;
+            window.kickOff = kickOff;
+            window.updateUI = updateUI;
+            window.updateOpponentJersey = updateOpponentJersey;
+            window.getTeamLogoPath = getTeamLogoPath;
+            window.getCurrentOpponent = getCurrentOpponent;
+            window.checkPlayerCollisions = checkPlayerCollisions;
+        
+        }
+
+        // ===== HJELPEFUNKSJONER =====
+        function initializeCupTopScorers() {
+            cupTopScorers = [];
+        }
+
+        
+        // ===== ERSTATT showRoundSummary() funksjonen med denne =====
+function showRoundSummary() {
+    const currentMatch = vikingSchedule[gameState.currentMatchIndex];
+    
+    if (currentMatch && currentMatch.type === 'cup') {
+        // CUP - legg til mål fra andre lag for denne runden
+        addCupGoalsForCompletedRound(currentMatch.round);
+        
+        // Generer cup-resultater og vis trekning
+        const cupResults = generateCupResults(currentMatch.round);
+        gameState.roundResults = cupResults;
+    } else {
+        // SERIE - generer normale resultater
+        const otherResults = generateOtherResults();
+        gameState.roundResults = otherResults;
+    }
+
+    // Start på side 1
+    gameState.summaryPage = 1;
+    showSummaryPage(1);
+}
+
+// ===== LEGG TIL DISSE FUNKSJONENE ETTER showRoundSummary =====
+
+function showSummaryPage(pageNumber) {
+    const roundSummary = document.getElementById('roundSummary');
+    const roundSummaryContent = document.getElementById('roundSummaryContent');
+    
+    let content = '';
+    const currentMatch = vikingSchedule[gameState.currentMatchIndex];
+    const isCup = currentMatch && currentMatch.type === 'cup';
+
+    if (pageNumber === 1) {
+        // ===== SIDE 1: KAMPRESULTATER =====
+        content = `
+            <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); max-width: 900px; margin: 0 auto;">
+                <div style="flex: 1; background: linear-gradient(135deg, #1a1a1a, #2a2a2a); padding: 20px; border-radius: 15px; border: 2px solid ${isCup ? '#FF6B6B' : '#FFD700'}; overflow: hidden;">
+                    ${generateAllMatchesHTML()}
+                </div>
+            </div>
+        `;
+    } else if (pageNumber === 2) {
+        // ===== SIDE 2: TOPPSCORERE (SERIE ELLER CUP) =====
+        content = `
+            <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); max-width: 900px; margin: 0 auto;">
+                <div style="flex: 1; background: linear-gradient(135deg, #1a1a1a, #2a2a2a); padding: 20px; border-radius: 15px; border: 2px solid ${isCup ? '#FF6B6B' : '#FFD700'}; overflow: hidden;">
+                    ${isCup ? generateCupTopScorersHTML() : generateTopScorersWithImagesHTML()}
+                </div>
+            </div>
+        `;
+    } else if (pageNumber === 3) {
+        // ===== SIDE 3: TABELL ELLER CUP-TREKNING =====
+        content = `
+            <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); max-width: 900px; margin: 0 auto;">
+                <div style="flex: 1; background: linear-gradient(135deg, #1a1a1a, #2a2a2a); padding: 20px; border-radius: 15px; border: 2px solid ${isCup ? '#FF6B6B' : '#FFD700'}; overflow: hidden;">
+                    ${isCup ? generateCupDrawHTML(currentMatch.round) : generateCompactLeagueTableHTML()}
+                </div>
+            </div>
+        `;
+    }
+
+    roundSummaryContent.innerHTML = content;
+    roundSummary.style.display = 'block';
+    
+    // FJERN ALLE EKSISTERENDE KNAPPER
+    const existingButtons = roundSummary.querySelectorAll('.floating-nav-btn');
+    existingButtons.forEach(btn => btn.remove());
+    
+    // LEGG TIL FULLSKJERM ELEMENTER
+    addFullscreenElements(pageNumber, isCup);
+
+    
+}
+
+function addFullscreenElements(pageNumber, isCup = false) {
+    const roundSummary = document.getElementById('roundSummary');
+    
+    // FULLSKJERM OVERSKRIFT ØVERST
+    const title = document.createElement('div');
+    title.className = 'floating-nav-btn';
+    title.style.cssText = `
+        position: fixed;
+        top: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #000000, #1a1a1a);
+        color: ${isCup ? '#FF6B6B' : '#FFD700'};
+        padding: 8px 25px;
+        border-radius: 15px;
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        font-size: 16px;
+        border: 2px solid ${isCup ? '#FF6B6B' : '#FFD700'};
+        z-index: 250;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 0 20px rgba(${isCup ? '255,107,107' : '255,215,0'},0.3);
+    `;
+    
+    if (pageNumber === 1) {
+        const currentMatch = vikingSchedule[gameState.currentMatchIndex];
+        if (isCup) {
+            title.textContent = `🏆 CUP ${cupData.roundNames[currentMatch.round]} - RESULTATER`;
+        } else {
+            title.textContent = `⚽ RUNDE ${gameState.currentRound} - RESULTATER`;
+        }
+    } else if (pageNumber === 2) {
+        title.textContent = isCup ? '🏆 CUP-TOPPSCORERE' : '⚽ TOPPSCORERE';
+    } else if (pageNumber === 3) {
+        title.textContent = isCup ? '🏆 NESTE CUP-RUNDE' : '⚽ ELITESERIEN';
+    }
+   
+    roundSummary.appendChild(title);
+    
+    // NAVIGASJONSKNAPPER
+    if (pageNumber === 1) {
+        const nextBtn = createFullscreenButton('Neste →', 'showSummaryPage(2)', 'right', '#4A90E2', '#357ABD');
+        roundSummary.appendChild(nextBtn);
+    } else if (pageNumber === 2) {
+        const prevBtn = createFullscreenButton('← Forrige', 'showSummaryPage(1)', 'left', '#666', '#888');
+        const nextBtn = createFullscreenButton('Neste →', 'showSummaryPage(3)', 'right', '#4A90E2', '#357ABD');
+        roundSummary.appendChild(prevBtn);
+        roundSummary.appendChild(nextBtn);
+    } else if (pageNumber === 3) {
+        const prevBtn = createFullscreenButton('← Forrige', 'showSummaryPage(2)', 'left', '#666', '#888');
+        roundSummary.appendChild(prevBtn);
+        
+        const mainBtn = createFullscreenMainButton();
+        roundSummary.appendChild(mainBtn);
+    }
+}
+
+function createFullscreenButton(text, onclick, side, color1, color2) {
+    const btn = document.createElement('button');
+    btn.className = 'floating-nav-btn button';
+    btn.onclick = new Function(onclick);
+    btn.textContent = text;
+    btn.style.cssText = `
+        position: fixed;
+        ${side}: 150px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: linear-gradient(135deg, ${color1}, ${color2});
+        font-size: 16px;
+        padding: 15px 25px;
+        border-radius: 30px;
+        box-shadow: 0 0 25px rgba(${side === 'right' ? '74, 144, 226' : '102, 102, 102'}, 0.6);
+        border: 3px solid #FFD700;
+        z-index: 250;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+    `;
+    return btn;
+}
+
+function createFullscreenMainButton() {
+    const btn = document.createElement('button');
+    btn.className = 'floating-nav-btn button';
+    
+    const isSeasonEnd = gameState.currentMatchIndex >= vikingSchedule.length;
+    
+    btn.onclick = isSeasonEnd ? window.restartSeason : continueToNextRound;
+    
+    // Sjekk om neste kamp er cup
+    const nextMatch = vikingSchedule[gameState.currentMatchIndex + 1];
+    const isCupMatch = nextMatch && nextMatch.type === 'cup';
+    
+    btn.style.cssText = `
+        position: fixed;
+        right: 120px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: ${isCupMatch ? 
+            'linear-gradient(135deg, #FFD700, #FFA500)' : // Gull for cup
+            isSeasonEnd ? 'linear-gradient(135deg, #FF6B6B, #FF4444)' : 
+            'linear-gradient(135deg, #00AA00, #00FF00)'};
+        color: ${isCupMatch || isSeasonEnd ? '#000' : '#000'};
+        font-size: 16px;
+        padding: 15px 25px;
+        border-radius: 30px;
+        box-shadow: 0 0 30px rgba(${isCupMatch ? '255, 215, 0' : 
+            isSeasonEnd ? '255, 107, 107' : '0, 255, 0'}, 0.8);
+        border: 3px solid ${isCupMatch ? '#FFA500' : '#FFD700'};
+        z-index: 250;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        backdrop-filter: blur(10px);
+        animation: ${isCupMatch ? 'cupPulse 2s infinite' : 'none'};
+    `;
+    
+    if (isSeasonEnd) {
+        btn.innerHTML = 'Start ny sesong';
+    } else if (nextMatch) {
+        const nextOpponent = findTeamByName(nextMatch.opponent) || { name: nextMatch.opponent };
+        const opponentLogo = getTeamLogoPath(nextOpponent.name);
+        
+        if (isCupMatch) {
+            const roundName = cupData.roundNames[nextMatch.round] || 'CUP';
+            btn.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 20px; margin-bottom: 5px;">🏆 NM-CUP 🏆</div>
+                    <div style="font-size: 14px; font-weight: normal;">${roundName}</div>
+                    <div style="font-size: 12px; margin-top: 3px;">vs ${nextOpponent.name}</div>
+                </div>
+                ${opponentLogo ? `<img src="${opponentLogo}" style="width: 30px; height: 30px; object-fit: contain; border-radius: 4px;" onerror="this.style.display='none';">` : ''}
+            `;
+        } else {
+            const matchType = '⚽';
+            btn.innerHTML = `
+                ${matchType} Spill neste kamp!
+                ${opponentLogo ? `<img src="${opponentLogo}" style="width: 24px; height: 24px; object-fit: contain; border-radius: 4px;" onerror="this.style.display='none';">` : ''}
+            `;
+        }
+    }
+    
+    return btn;
+}
+
+function generateAllMatchesHTML() {
+    const currentTeam = gameState.lastMatchOpponent || getCurrentOpponent();
+    const vikingWon = gameState.vikingScore > gameState.opponentScore;
+    const isDraw = gameState.vikingScore === gameState.opponentScore;
+    
+    let html = '';
+    
+    // VIKING-KAMP FØRST (KOMPAKT)
+    const vikingLogo = getTeamLogoPath('Viking FK');
+    const opponentLogo = currentTeam ? getTeamLogoPath(currentTeam.name) : '';
+    
+    html += `
+        <div style="display: flex; align-items: center; gap: 15px; padding: 10px 0; border-bottom: 2px solid ${isDraw ? '#FFD700' : (vikingWon ? '#00FF00' : '#FF6B6B')}; margin-bottom: 15px;">
+            
+            <!-- VIKING SIDE -->
+            <div style="display: flex; align-items: center; gap: 8px; flex: 1; justify-content: flex-end;">
+                <div style="color: #FFD700; font-family: 'Courier New', monospace; font-size: 13px; text-align: right; font-weight: bold;">VIKING FK</div>
+                <img src="${vikingLogo}" style="width: 28px; height: 28px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none';">
+            </div>
+            
+            <!-- RESULTAT -->
+            <div style="color: ${isDraw ? '#FFD700' : (vikingWon ? '#00FF00' : '#FF6B6B')}; font-weight: bold; text-align: center; min-width: 65px; background: rgba(${isDraw ? '255,215,0' : (vikingWon ? '0,255,0' : '255,107,107')},0.1); padding: 6px 10px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 16px; border: 1px solid ${isDraw ? '#FFD700' : (vikingWon ? '#00FF00' : '#FF6B6B')};">
+                ${gameState.vikingScore} - ${gameState.opponentScore}
+            </div>
+            
+            <!-- MOTSTANDER SIDE -->
+            <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                <img src="${opponentLogo}" style="width: 28px; height: 28px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none';">
+                <div style="color: white; font-family: 'Courier New', monospace; font-size: 13px; font-weight: bold;">${currentTeam ? currentTeam.name.toUpperCase() : 'MOTSTANDER'}</div>
+            </div>
+        </div>
+    `;
+    
+    // ANDRE KAMPER (KOMPAKT)
+    if (gameState.roundResults && gameState.roundResults.length > 0) {
+        gameState.roundResults.forEach(result => {
+            const team1Logo = getTeamLogoPath(result.team1);
+            const team2Logo = getTeamLogoPath(result.team2);
+            
+            html += `
+                <div style="display: flex; align-items: center; gap: 15px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    
+                    <!-- HJEMMELAG -->
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; justify-content: flex-end;">
+                        <div style="color: white; font-family: 'Courier New', monospace; font-size: 12px; text-align: right;">${result.team1}</div>
+                        <img src="${team1Logo}" style="width: 24px; height: 24px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none';">
+                    </div>
+                    
+                    <!-- RESULTAT -->
+                    <div style="color: #00FF00; font-weight: bold; text-align: center; min-width: 55px; background: rgba(0,255,0,0.1); padding: 4px 8px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 13px;">
+                        ${result.team1Goals} - ${result.team2Goals}
+                    </div>
+                    
+                    <!-- BORTELAG -->
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                        <img src="${team2Logo}" style="width: 24px; height: 24px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none';">
+                        <div style="color: white; font-family: 'Courier New', monospace; font-size: 12px;">${result.team2}</div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+    
+    return html;
+}
+
+function generateTopScorersWithImagesHTML() {
+    if (!gameState.topScorers || gameState.topScorers.length === 0) {
+        return '<div style="text-align: center; color: #888; font-style: italic; font-size: 18px; margin-top: 100px;">Ingen mål ennå</div>';
+    }
+
+    let html = '';
+    gameState.topScorers.slice(0, 10).forEach((scorer, index) => {
+        const isViking = scorer.team === 'Viking FK';
+        let playerTeam = isViking ? vikingTeam : teams.find(t => t.name === scorer.team);
+        let playerData = playerTeam?.players?.find(p => p.name === scorer.name);
+        const teamFolder = getTeamFolderName(scorer.team);
+        const playerImage = playerData ? `assets/players/${teamFolder}/${playerData.image}.png` : null;
+
+        html += `
+            <div style="display: flex; align-items: center; gap: 10px; padding: 5px 15px; border-bottom: 1px solid rgba(0,255,0,0.2); margin: 0 auto; max-width: 700px;">
+                
+                <div style="color: #FFD700; font-weight: bold; min-width: 25px; text-align: center; font-family: 'Courier New', monospace; font-size: 14px;">
+                    ${index + 1}
+                </div>
+                
+                <div style="width: 30px; height: 30px; border-radius: 50%; overflow: hidden; border: 2px solid ${isViking ? '#FFD700' : '#00FF00'}; flex-shrink: 0;">
+                    ${playerImage ? 
+                        `<img src="${playerImage}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#333;font-size:12px;\\'>${scorer.emoji}</div>';">` :
+                        `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#333;font-size:12px;">${scorer.emoji}</div>`
+                    }
+                </div>
+                
+                <div style="flex: 1; min-width: 0;">
+                    <div style="color: ${isViking ? '#FFD700' : 'white'}; font-weight: ${isViking ? 'bold' : 'normal'}; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${scorer.name}
+                    </div>
+                    <div style="color: #888; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${scorer.team}
+                    </div>
+                </div>
+                
+                <div style="color: #00FF00; font-weight: bold; font-family: 'Courier New', monospace; font-size: 15px; min-width: 35px; text-align: center;">
+                    ${scorer.goals}
+                </div>
+            </div>
+        `;
+    });
+    return html;
+}
+
+function generateCupTopScorersHTML() {
+    if (!cupTopScorers || cupTopScorers.length === 0) {
+        return '<div style="text-align: center; color: #888; font-style: italic; font-size: 18px; margin-top: 100px;">Ingen cup-mål ennå</div>';
+    }
+
+    let html = '';
+    cupTopScorers.slice(0, 10).forEach((scorer, index) => {
+        const isViking = scorer.team === 'Viking FK';
+        let playerTeam = isViking ? vikingTeam : teams.find(t => t.name === scorer.team);
+        let playerData = playerTeam?.players?.find(p => p.name === scorer.name);
+        const teamFolder = getTeamFolderName(scorer.team);
+        const playerImage = playerData ? `assets/players/${teamFolder}/${playerData.image}.png` : null;
+
+        html += `
+            <div style="display: flex; align-items: center; gap: 10px; padding: 5px 15px; border-bottom: 1px solid rgba(255,107,107,0.2); margin: 0 auto; max-width: 700px;">
+                
+                <div style="color: #FF6B6B; font-weight: bold; min-width: 25px; text-align: center; font-family: 'Courier New', monospace; font-size: 14px;">
+                    ${index + 1}
+                </div>
+                
+                <div style="width: 30px; height: 30px; border-radius: 50%; overflow: hidden; border: 2px solid ${isViking ? '#FFD700' : '#FF6B6B'}; flex-shrink: 0;">
+                    ${playerImage ? 
+                        `<img src="${playerImage}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#333;font-size:12px;\\'>${scorer.emoji}</div>';">` :
+                        `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#333;font-size:12px;">${scorer.emoji}</div>`
+                    }
+                </div>
+                
+                <div style="flex: 1; min-width: 0;">
+                    <div style="color: ${isViking ? '#FFD700' : 'white'}; font-weight: ${isViking ? 'bold' : 'normal'}; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${scorer.name}
+                    </div>
+                    <div style="color: #888; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${scorer.team}
+                    </div>
+                </div>
+                
+                <div style="color: #FF6B6B; font-weight: bold; font-family: 'Courier New', monospace; font-size: 15px; min-width: 35px; text-align: center;">
+                    ${scorer.goals}
+                </div>
+            </div>
+        `;
+    });
+    return html;
+}
+
+function parseMatchResult(result) {
+    if (Array.isArray(result)) {
+        // Allerede et array [homeGoals, awayGoals]
+        return result;
+    } else if (typeof result === 'string' && result.includes(' - ')) {
+        // String format "2 - 1"
+        return result.split(' - ').map(g => parseInt(g));
+    } else {
+        // Fallback
+        return [0, 0];
+    }
+}
+
+function generateCompactLeagueTableHTML() {
+    const allTeams = [vikingTeam, ...teams];
+    allTeams.sort((a, b) => {
+        if (b.points !== a.points) return b.points - a.points;
+        const aGoalDiff = a.goalsFor - a.goalsAgainst;
+        const bGoalDiff = b.goalsFor - b.goalsAgainst;
+        if (bGoalDiff !== aGoalDiff) return bGoalDiff - aGoalDiff;
+        return b.goalsFor - a.goalsFor;
+    });
+
+    // Kompakt header med tettere kolonner
+    let tableHTML = `<div style="display: grid; grid-template-columns: 25px 30px 3fr 25px 25px 25px 25px 45px 30px; gap: 4px; font-family: 'Courier New', monospace; font-size: 12px; margin-bottom: 6px; font-weight: bold; color: #00FF00; border-bottom: 2px solid #00FF00; padding-bottom: 4px; max-width: 600px; margin-left: auto; margin-right: auto;">`;
+    tableHTML += `<div style="text-align: center;">#</div><div></div><div>LAG</div><div>K</div><div>S</div><div>U</div><div>T</div><div>MÅL</div><div>P</div></div>`;
+
+    allTeams.forEach((team, index) => {
+        const isViking = team.name === 'Viking FK';
+        const teamLogo = getTeamLogoPath(team.name);
+        
+        tableHTML += `<div style="display: grid; grid-template-columns: 25px 30px 3fr 25px 25px 25px 25px 45px 30px; gap: 4px; font-family: 'Courier New', monospace; font-size: 9px; padding: 2px 0; border-bottom: 1px solid rgba(0,255,0,0.1); color: ${isViking ? '#FFD700' : 'white'}; font-weight: ${isViking ? 'bold' : 'normal'}; max-width: 600px; margin-left: auto; margin-right: auto;">`;
+        tableHTML += `<div style="text-align: center; color: #FFD700; font-weight: bold; font-size: 10px;">${index + 1}</div>`;
+        tableHTML += `<div><img src="${teamLogo}" style="width: 20px; height: 20px; object-fit: contain;" onerror="this.style.display='none';"></div>`;
+        tableHTML += `<div style="overflow: hidden; text-overflow: ellipsis; font-size: 10px;">${team.name}</div>`;
+        tableHTML += `<div style="text-align: center; color: #00FF00; font-size: 10px;">${team.played}</div>`;
+        tableHTML += `<div style="text-align: center; color: #00FF00; font-size: 9px;">${team.won}</div>`;
+        tableHTML += `<div style="text-align: center; color: #00FF00; font-size: 9px;">${team.draws || 0}</div>`;
+        tableHTML += `<div style="text-align: center; color: #00FF00; font-size: 9px;">${team.lost}</div>`;
+        tableHTML += `<div style="text-align: center; color: #00FF00; font-size: 8px;">${team.goalsFor}-${team.goalsAgainst}</div>`;
+        tableHTML += `<div style="text-align: center; color: #00FF00; font-weight: bold; font-size: 10px;">${team.points}</div>`;
+        tableHTML += `</div>`;
+    });
+
+    return tableHTML;
+}
+
+function showCupIntro(round, opponent) {
+    const cupIntro = document.createElement('div');
+    cupIntro.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #000, #1a1a1a);
+        padding: 40px 60px;
+        border-radius: 20px;
+        text-align: center;
+        z-index: 1000;
+        border: 4px solid #FFD700;
+        box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+    `;
+    
+    cupIntro.innerHTML = `
+        <div style="font-size: 48px; margin-bottom: 20px;">🏆</div>
+        <div style="color: #FFD700; font-size: 28px; font-weight: bold; margin-bottom: 10px; font-family: 'Courier New', monospace;">
+            NM-CUP 2025
+        </div>
+        <div style="color: #FFA500; font-size: 20px; margin-bottom: 20px;">
+            ${cupData.roundNames[round]}
+        </div>
+        <div style="color: white; font-size: 18px;">
+            VIKING FK vs ${opponent.toUpperCase()}
+        </div>
+    `;
+    
+    document.body.appendChild(cupIntro);
+    
+    setTimeout(() => {
+        if (cupIntro.parentNode) {
+            cupIntro.parentNode.removeChild(cupIntro);
+        }
+    }, 1500);
+}
+
+function generateCupDrawHTML(currentRound) {
+    const nextRound = parseInt(currentRound) + 1;
+    
+    if (nextRound > 7) {
+        return '<div style="text-align: center; color: #FF6B6B; font-size: 24px; margin-top: 100px; font-family: \'Courier New\', monospace;">🏆 CUP FERDIG! 🏆</div>';
+    }
+    
+    const roundNames = {
+        2: '2. RUNDE',
+        3: '3. RUNDE', 
+        4: '4. RUNDE',
+        5: 'KVARTFINALE',
+        6: 'SEMIFINALE',
+        7: 'FINALE'
+    };
+    
+    let html = `
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="color: #FF6B6B; font-family: 'Courier New', monospace; font-size: 20px; margin-bottom: 20px;">
+                🏆 ${roundNames[nextRound] || 'NESTE RUNDE'}
+            </h2>
+        </div>
+    `;
+    
+    // Finn Viking sin faktiske neste cupkamp
+    const vikingNextCupMatch = vikingSchedule.find(m => m.type === 'cup' && m.round === nextRound);
+    
+    if (vikingNextCupMatch) {
+        html += `
+            <div style="margin-bottom: 30px; text-align: center;">
+                <h3 style="color: #FFD700; margin-bottom: 15px;">⚽ VIKING FK sin neste cupkamp:</h3>
+                <div style="background: rgba(255,215,0,0.1); border: 2px solid #FFD700; border-radius: 10px; padding: 20px; max-width: 400px; margin: 0 auto;">
+                    <div style="color: #FFD700; font-size: 18px; font-weight: bold;">
+                        VIKING FK vs ${vikingNextCupMatch.opponent.toUpperCase()}
+                    </div>
+                    <div style="color: white; font-size: 14px; margin-top: 5px;">
+                        ${vikingNextCupMatch.home ? 'Hjemme' : 'Borte'}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Vis andre kamper hvis de finnes
+    if (nextRound >= 2 && nextRound <= 7) {
+        let nextRoundMatches = [];
+        
+        if (nextRound <= 4) {
+            nextRoundMatches = cupData.otherResults[nextRound] || [];
+        } else {
+            // For runde 5+ bruk fixedMatches
+            nextRoundMatches = cupData.fixedMatches[nextRound] || [];
+        }
+        
+        if (nextRoundMatches.length > 0) {
+            html += '<h3 style="color: #FF6B6B; text-align: center; margin-bottom: 20px;">Andre kamper i ' + roundNames[nextRound] + ':</h3>';
+            html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin: 20px 0;">';
+            
+            nextRoundMatches.slice(0, 6).forEach(match => {
+                // HÅNDTER BEGGE FORMATER:
+                let team1, team2;
+                
+                if (nextRound <= 4) {
+                    // Tidlige runder: { home: 'team', away: 'team' }
+                    team1 = match.home;
+                    team2 = match.away;
+                } else {
+                    // Senere runder: { team1: 'team', team2: 'team' }
+                    team1 = match.team1;
+                    team2 = match.team2;
+                }
+                
+                // SJEKK AT team1 og team2 ikke er undefined
+                if (!team1 || !team2) {
+                    return; // Skip denne kampen hvis data mangler
+                }
+                
+                const team1Logo = getTeamLogoPath(team1);
+                const team2Logo = getTeamLogoPath(team2);
+                
+                html += `
+                    <div style="background: rgba(255,107,107,0.1); border: 1px solid #FF6B6B; border-radius: 10px; padding: 15px; text-align: center;">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                            <div style="display: flex; align-items: center; gap: 8px; flex: 1; justify-content: flex-end;">
+                                <span style="color: white; font-size: 12px;">${team1}</span>
+                                <img src="${team1Logo}" style="width: 24px; height: 24px; object-fit: contain;" onerror="this.style.display='none';">
+                            </div>
+                            <div style="color: #FF6B6B; font-weight: bold;">VS</div>
+                            <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                                <img src="${team2Logo}" style="width: 24px; height: 24px; object-fit: contain;" onerror="this.style.display='none';">
+                                <span style="color: white; font-size: 12px;">${team2}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+        }
+    }
+    
+    return html;
+}
+
+function getTeamLogoPath(teamName) {
+    // Spesiell håndtering for Molde (.jpg)
+    if (teamName === 'Molde FK' || teamName === 'Molde') {
+        return 'assets/teams/molde-fk.jpg';
+    }
+    
+    // Prøv først å finne team med definert logo
+    const team = findTeamByName(teamName);
+    if (team && team.logo) {
+        return `assets/teams/${team.logo}`;
+    }
+    
+    // Fallback til algoritmisk generering (.png)
+    const logoName = teamName
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/ø/g, 'o')
+        .replace(/å/g, 'a') 
+        .replace(/æ/g, 'ae')
+        .replace(/\//g, '-')
+        .replace(/[^\w\-]/g, '')
+        .replace(/--+/g, '-')
+        .replace(/^-|-$/g, '');
+    
+    return `assets/teams/${logoName}.png`;
+}
+
+function getTeamFolderName(teamName) {
+    return teamName
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/ø/g, 'o')
+        .replace(/å/g, 'a')
+        .replace(/æ/g, 'ae')
+        .replace(/\//g, '-')
+        .replace(/[^\w\-]/g, '')
+        .replace(/--+/g, '-')
+        .replace(/^-|-$/g, '');
+}
+
+function generateOtherResults() {
+    const currentOpponent = getCurrentOpponent();
+    const otherTeams = teams.filter(team => team.name !== currentOpponent?.name);
+    const results = [];
+
+    for (let i = 0; i < otherTeams.length - 1; i += 2) {
+        if (otherTeams[i + 1]) {
+            const team1 = otherTeams[i];
+            const team2 = otherTeams[i + 1];
+            const team1Strength = 6 - team1.difficulty;
+            const team2Strength = 6 - team2.difficulty;
+
+            let team1Goals = Math.floor(Math.random() * 4);
+            let team2Goals = Math.floor(Math.random() * 4);
+
+            if (team1Strength > team2Strength) {
+                team1Goals += Math.floor(Math.random() * 2);
+            } else if (team2Strength > team1Strength) {
+                team2Goals += Math.floor(Math.random() * 2);
+            }
+
+            // Oppdater mål for/imot
+            team1.goalsFor += team1Goals;
+            team1.goalsAgainst += team2Goals;
+            team2.goalsFor += team2Goals;
+            team2.goalsAgainst += team1Goals;
+
+            // Oppdater poeng og statistikk (inkludert uavgjort)
+            if (team1Goals > team2Goals) {
+                team1.won++;
+                team1.points += 3;
+                team2.lost++;
+            } else if (team2Goals > team1Goals) {
+                team2.won++;
+                team2.points += 3;
+                team1.lost++;
+            } else {
+                // UAVGJORT
+                team1.draws++;
+                team1.points += 1;
+                team2.draws++;
+                team2.points += 1;
+            }
+
+            team1.played++;
+            team2.played++;
+
+            // Legg til målscorere for andre lag
+            for (let j = 0; j < team1Goals; j++) {
+                const scorer = getRandomPlayer(team1);
+                if (scorer) addToTopScorers(scorer, team1);
+            }
+            for (let j = 0; j < team2Goals; j++) {
+                const scorer = getRandomPlayer(team2);
+                if (scorer) addToTopScorers(scorer, team2);
+            }
+
+            results.push({
+                team1: team1.name,
+                team1Goals: team1Goals,
+                team2Goals: team2Goals,
+                team2: team2.name
+            });
+        }
+    }
+
+    return results;
+}
+
+function generateCupResults(vikingCupRound) {
+    const cupResults = [];
+    
+    // Legg til Viking-kampen først
+    const currentOpponent = getCurrentOpponent();
+    if (currentOpponent) {
+        const currentMatch = vikingSchedule[gameState.currentMatchIndex];
+        cupResults.push({
+            team1: currentMatch.home ? 'Viking FK' : currentOpponent.name,
+            team1Goals: currentMatch.home ? gameState.vikingScore : gameState.opponentScore,
+            team2Goals: currentMatch.home ? gameState.opponentScore : gameState.vikingScore,
+            team2: currentMatch.home ? currentOpponent.name : 'Viking FK'
+        });
+    }
+    
+    // Legg til andre resultater basert på cupData
+    if (vikingCupRound <= 4) {
+        const otherMatches = cupData.otherResults[vikingCupRound] || [];
+        otherMatches.forEach(match => {
+            cupResults.push({
+                team1: match.home,
+                team1Goals: match.result[0],
+                team2Goals: match.result[1],
+                team2: match.away
+            });
+        });
+    }
+
+     else {
+        // LEGG TIL DETTE for runde 5+:
+        const otherMatches = cupData.cupResults[vikingCupRound] || [];
+        otherMatches.forEach(match => {
+            cupResults.push({
+                team1: match.team1,
+                team1Goals: match.team1Goals,
+                team2Goals: match.team2Goals,
+                team2: match.team2
+            });
+        });
+    }
+    
+    return cupResults;
+}
+
+function generateQualifiedTeams(currentRound) {
+    const teams = [];
+    
+    // Legg til Viking (vi vet Viking gikk videre)
+    teams.push('Viking FK');
+    
+    // Legg til andre kvalifiserte lag basert på cupdata
+    const roundMatches = cupData.otherResults[currentRound] || [];
+    
+    roundMatches.forEach(match => {
+        if (match.home !== 'Viking' && match.away !== 'Viking' && match.result !== '-') {
+            // Bruk parseMatchResult for å håndtere både array og string formater
+            const [homeGoals, awayGoals] = parseMatchResult(match.result);
+            const winner = homeGoals > awayGoals ? match.home : match.away;
+            if (!teams.includes(winner)) {
+                teams.push(winner);
+            }
+        }
+    });
+    
+    // Fyll opp med dummy-lag hvis nødvendig
+    const targetCount = Math.pow(2, 7 - currentRound); // 32, 16, 8, 4, 2
+    while (teams.length < targetCount) {
+        teams.push(`Lag ${teams.length + 1}`);
+    }
+    
+    // Bland lagene for realistisk trekning
+    return teams.sort(() => Math.random() - 0.5).slice(0, targetCount);
+}
+
+function addCupGoalsForCompletedRound(roundNumber) {
+    console.log(`🏆 Adding cup goals for completed round ${roundNumber}`);
+    
+    // Bare prosesser mål for denne spesifikke runden
+    const roundMatches = cupData.otherResults[roundNumber] || [];
+    
+    roundMatches.forEach(match => {
+        const [homeGoals, awayGoals] = parseMatchResult(match.result);
+        
+        // Hjemmelag mål
+        if (homeGoals > 0) {
+            const homeTeam = findTeamByName(match.home) || createDummyTeam(match.home);
+            for (let i = 0; i < homeGoals; i++) {
+                const scorer = getRandomPlayer(homeTeam);
+                if (scorer) addToCupTopScorers(scorer, homeTeam);
+            }
+        }
+        
+        // Bortelag mål
+        if (awayGoals > 0) {
+            const awayTeam = findTeamByName(match.away) || createDummyTeam(match.away);
+            for (let i = 0; i < awayGoals; i++) {
+                const scorer = getRandomPlayer(awayTeam);
+                if (scorer) addToCupTopScorers(scorer, awayTeam);
+            }
+        }
+    });
+    
+    cupTopScorers.sort((a, b) => b.goals - a.goals);
+    console.log(`✅ Cup top scorers updated after round ${roundNumber}:`, cupTopScorers.length, 'scorers');
+}
+function createDummyTeam(teamName) {
+    return {
+        name: teamName,
+        players: [
+            {name: 'Lokal helt', emoji: '⚽', image: 'unknown'},
+            {name: 'Va goe ein gang', emoji: '🏆', image: 'unknown'}
+        ]
+    };
+}
+
+
+
+function continueToNextRound() {
+    nextMatch();
+}
+
+function nextMatch() {
+    console.log('🔄 WORKING nextMatch called');
+    
+    // Hide summary
+    const roundSummary = document.getElementById('roundSummary');
+    if (roundSummary) roundSummary.style.display = 'none';
+    
+    // Move to next match
+    gameState.currentMatchIndex++;
+    
+    // Check if season finished
+    if (gameState.currentMatchIndex >= vikingSchedule.length) {
+        showSeasonEndSummary();
+        return;
+    }
+    
+    const nextMatchData = vikingSchedule[gameState.currentMatchIndex];
+    if (nextMatchData.type === 'serie') {
+        gameState.currentRound = nextMatchData.round;
+    }
+    
+    // FULL RESET for new match
+    gameState.currentHalf = 1;
+    gameState.matchTime = 0;      // VIKTIG: Null ut matchTime
+    gameState.matchStartTime = null;
+    gameState.halfTimeBreak = false;
+    gameState.sidesSwapped = false;
+    gameState.gameActive = true;
+    
+    console.log('🔄 New match state set:', {
+        currentHalf: gameState.currentHalf,
+        matchTime: gameState.matchTime,
+        halfTimeBreak: gameState.halfTimeBreak,
+        currentMatchIndex: gameState.currentMatchIndex
+    });
+    
+    // Reset scores
+    gameState.vikingScore = 0;
+    gameState.opponentScore = 0;
+    
+    // Reset player positions to first half
+    const viking = document.getElementById('viking');
+    const opponent = document.getElementById('opponent');
+    if (viking) {
+        viking.style.left = '40px';
+        viking.style.right = 'auto';
+    }
+    if (opponent) {
+        opponent.style.right = '40px'; 
+        opponent.style.left = 'auto';
+    }
+    
+    // Reset ball completely
+    resetBallCompletely();
+    
+    // Update UI for new match
+    const homeScore = document.getElementById('homeScore');
+    const awayScore = document.getElementById('awayScore');
+    if (homeScore) homeScore.textContent = '0';
+    if (awayScore) awayScore.textContent = '0';
+    
+    // Update logos back to first half positions
+    const leftLogo = document.getElementById('leftLogo');
+    const rightLogo = document.getElementById('rightLogo');
+    const newOpponent = getCurrentOpponent();
+    
+    if (leftLogo && rightLogo && newOpponent) {
+        // First half: Viking left, opponent right
+        leftLogo.src = 'assets/teams/viking-fk.png';
+        rightLogo.src = getTeamLogoPath(newOpponent.name);
+    }
+    
+    updateUI();
+    updateOpponentJersey();
+
+    if (nextMatchData && nextMatchData.type === 'cup') {
+    showCupIntro(nextMatchData.round, nextMatchData.opponent);
+}
+    
+    const clockElement = document.getElementById('matchClock');
+    if (clockElement) {
+        clockElement.textContent = '0\'';
+    }
+    
+    // Start new match
+    console.log('🔄 Starting new match kickoff');
+    kickOff('viking');
+}
+
+function forceUpdateScoreboard() {
+    console.log('📊 Force updating scoreboard'); // DEBUG
+    const homeScore = document.getElementById('homeScore');
+    const awayScore = document.getElementById('awayScore');
+    const homeTeamName = document.getElementById('homeTeamName');
+    const awayTeamName = document.getElementById('awayTeamName');
+    
+    // FORCE CLEAR
+    if (homeScore) homeScore.textContent = '';
+    if (awayScore) awayScore.textContent = '';
+    if (homeTeamName) homeTeamName.textContent = '';
+    if (awayTeamName) awayTeamName.textContent = '';
+    
+    // VENT LITT, SÅ OPPDATER
+    setTimeout(() => {
+        if (homeScore) homeScore.textContent = gameState.vikingScore;
+        if (awayScore) awayScore.textContent = gameState.opponentScore;
+        updateUI(); // Dette vil sette riktige lagnavn
+    }, 50);
+}
+
+function resetMatchState() {
+    console.log('🔄 resetMatchState called');
+
+    gameState.currentHalf = 1;
+    gameState.matchTime = 0;
+    gameState.matchStartTime = null;
+    gameState.halfTimeBreak = false;
+    gameState.sidesSwapped = false;
+
+    resetBallCompletely();
+    
+    // TILBAKESTILL SPILLERPOSISJONER til 1. omgang
+    const viking = document.getElementById('viking');
+    const opponent = document.getElementById('opponent');
+    gameState.vikingY = 250; // Sentrer Viking-spilleren
+    gameState.opponentY = 250; // Sentrer motstanderen
+    
+    if (viking) {
+        viking.style.left = '40px';
+        viking.style.right = 'auto';
+    }
+    
+    if (opponent) {
+        opponent.style.right = '40px'; 
+        opponent.style.left = 'auto';
+    }
+    
+    // Fjern eventuelle gjenværende UI-elementer
+    const halfTimeScreen = document.getElementById('halfTimeScreen');
+    if (halfTimeScreen) {
+        try {
+            document.body.removeChild(halfTimeScreen);
+        } catch (e) {
+            console.log('Pauseskjerm allerede fjernet');
+        }
+    }
+    
+    // Fjern alle målscorer-displayer
+    const goalScorers = document.querySelectorAll('.goal-scorer-display');
+    goalScorers.forEach(element => {
+        try {
+            if (element.parentNode) {
+                element.parentNode.removeChild(element);
+            }
+        } catch (e) {
+            console.log('Målscorer-display allerede fjernet');
+        }
+    });
+}
+function forceRestartGame() {
+    console.log('🔄 Force restart game'); // DEBUG
+    
+    // STOPP ALT
+    gameState.gameActive = false;
+    gameState.paused = false;
+    
+    // NULLSTILL BALL KOMPLETT
+    gameState.ballX = 550;
+    gameState.ballY = 350;
+    gameState.ballVelX = 0;
+    gameState.ballVelY = 0;
+    
+    // OPPDATER UI
+    updateUI();
+    updateOpponentJersey();
+    updateClockDisplay();
+    
+    // SETT BALL VISUELT
+    ball.style.left = '550px';
+    ball.style.top = '350px';
+    
+    // START PÅ NYTT
+    setTimeout(() => {
+        kickOff('viking');
+    }, 300);
+}
+
+function showSeasonEndSummary() {
+    const finalPosition = [...[vikingTeam, ...teams]].sort((a, b) => {
+        if (b.points !== a.points) return b.points - a.points;
+        const aGoalDiff = a.goalsFor - a.goalsAgainst;
+        const bGoalDiff = b.goalsFor - b.goalsAgainst;
+        if (bGoalDiff !== aGoalDiff) return bGoalDiff - aGoalDiff;
+        return b.goalsFor - a.goalsFor;
+    }).findIndex(team => team.name === 'Viking FK') + 1;
+
+    let cupResult = '';
+    if (gameState.cupEliminated) {
+        cupResult = 'Ude av cupen:()';
+    } else {
+        cupResult = '🏆 CUP-MESTER 2025 - EUROPA LEAGUE TE STAVANGER!';
+    }
+
+    const messageText = document.getElementById('messageText');
+    const gameMessage = document.getElementById('gameMessage');
+    
+    messageText.innerHTML = `
+        <h2 style="color: #FFD700; margin-bottom: 20px;">🎉 SESONGEN FERDIG! 🎉</h2>
+        <div style="color: #00FF00; font-size: 18px; margin: 15px 0;">
+            <strong>ELITESERIEN:</strong> ${finalPosition}. plass
+        </div>
+        <div style="color: #FF6B6B; font-size: 16px; margin: 15px 0;">
+            <strong>CUP:</strong> ${cupResult}
+        </div>
+        <div style="color: #FFFFFF; margin: 20px 0;">
+            Kamper spilt: ${vikingTeam.played}<br>
+            Mål scoret: ${vikingTeam.goalsFor}<br>
+            Poeng: ${vikingTeam.points}
+        </div>
+    `;
+    gameMessage.style.display = 'block';
+}
+
+// GJØR FUNKSJONENE GLOBALT TILGJENGELIGE
+window.showSummaryPage = showSummaryPage;
+window.continueToNextRound = continueToNextRound;
+
+        function displayMessage(text, duration = 2500) {
+            const tempMessage = document.createElement('div');
+            tempMessage.style.position = 'fixed';
+            tempMessage.style.top = '40%';
+            tempMessage.style.left = '50%';
+            tempMessage.style.transform = 'translate(-50%, -50%)';
+            tempMessage.style.background = 'linear-gradient(135deg, #000000, #1a1a1a)';
+            tempMessage.style.color = '#00FF00';
+            tempMessage.style.padding = '20px 30px';
+            tempMessage.style.borderRadius = '15px';
+            tempMessage.style.fontSize = '20px';
+            tempMessage.style.zIndex = '300';
+            tempMessage.style.border = '2px solid #00FF00';
+            tempMessage.style.fontWeight = 'bold';
+            tempMessage.style.textAlign = 'center';
+            tempMessage.style.fontFamily = "'Courier New', monospace";
+            tempMessage.style.textShadow = '0 0 10px #00FF00';
+            tempMessage.style.backdropFilter = 'blur(10px)';
+            tempMessage.textContent = text;
+
+            document.body.appendChild(tempMessage);
+
+            setTimeout(() => {
+                if (tempMessage.parentNode) {
+                    tempMessage.parentNode.removeChild(tempMessage);
+                }
+            }, duration);
+        }
+
+        function resetBallCompletely() {
+    console.log('🔄 resetBallCompletely called - old velocity:', gameState.ballVelX, gameState.ballVelY);
+    
+    // FULL STOP
+    gameState.ballVelX = 0;
+    gameState.ballVelY = 0;
+    gameState.ballX = 550;
+    gameState.ballY = 350;
+    
+    const ball = document.getElementById('ball');
+    if (ball) {
+        ball.style.left = '550px';
+        ball.style.top = '350px';
+    }
+    
+    console.log('🔄 Ball completely reset to center with zero velocity');
+}
+
+
+        // ===== GLOBALE FUNKSJONER =====
+        window.togglePause = function() {
+            gameState.paused = !gameState.paused;
+            document.getElementById('pauseBtn').textContent = gameState.paused ? 'FORTSETT' : 'PAUSE';
+        };
+
+        window.startSecondHalf = function() {
+    console.log('🔄 WORKING startSecondHalf called');
+    
+    // Remove halftime screen
+    const halfTimeScreen = document.getElementById('halfTimeScreen');
+    if (halfTimeScreen && halfTimeScreen.parentNode) {
+        halfTimeScreen.parentNode.removeChild(halfTimeScreen);
+    }
+    
+    // NULLSTILL BALL FØRST
+    resetBallCompletely();
+    
+    // Set second half state
+    gameState.currentHalf = 2;
+    gameState.matchTime = 0;  // VIKTIG: Null ut matchTime
+    gameState.matchStartTime = Date.now();
+    gameState.halfTimeBreak = false;
+    gameState.gameActive = true;
+    
+    console.log('🔄 Second half state set:', {
+        currentHalf: gameState.currentHalf,
+        matchTime: gameState.matchTime,
+        halfTimeBreak: gameState.halfTimeBreak
+    });
+    
+    // Swap sides if not already done
+    if (!gameState.sidesSwapped) {
+        gameState.sidesSwapped = true;
+        
+        const viking = document.getElementById('viking');
+        const opponent = document.getElementById('opponent');
+        
+        if (viking) {
+            viking.style.left = 'auto';
+            viking.style.right = '40px';
+        }
+        if (opponent) {
+            opponent.style.right = 'auto'; 
+            opponent.style.left = '40px';
+        }
+        
+        // Update logos
+        const leftLogo = document.getElementById('leftLogo');
+        const rightLogo = document.getElementById('rightLogo');
+        const opponentTeam = getCurrentOpponent();
+        
+        if (leftLogo && rightLogo && opponentTeam) {
+            leftLogo.src = getTeamLogoPath(opponentTeam.name);
+            rightLogo.src = 'assets/teams/viking-fk.png';
+        }
+        
+        updateUI();
+        updateOpponentJersey();
+    }
+    
+    const clockElement = document.getElementById('matchClock');
+    if (clockElement) {
+        clockElement.textContent = '0\'';
+    }
+    
+    // Start kickoff
+    console.log('🔄 Starting second half kickoff');
+    kickOff(gameState.vikingScore > gameState.opponentScore ? 'opponent' : 'viking');
+};
+
+        window.restartSeason = function() {
+            gameState.currentRound = 1;
+            gameState.currentMatchIndex = 0;
+            gameState.cupEliminated = false;
+            gameState.topScorers = [];
+            
+            vikingTeam.played = 0;
+            vikingTeam.won = 0;
+            vikingTeam.lost = 0;
+            vikingTeam.points = 0;
+            vikingTeam.goalsFor = 0;
+            vikingTeam.goalsAgainst = 0;
+
+            teams.forEach(team => {
+                team.played = 0;
+                team.won = 0;
+                team.lost = 0;
+                team.draws = 0; 
+                team.points = 0;
+                team.goalsFor = 0;
+                team.goalsAgainst = 0;
+            });
+
+            const roundSummary = document.getElementById('roundSummary');
+            if (roundSummary) {
+                roundSummary.style.display = 'none';
+            }
+            
+            initializeGame();
+        };
+
+        function checkMobile() {
+            if (window.innerWidth <= 768) {
+                document.querySelector('.mobile-instruction').style.display = 'block';
+                setTimeout(() => {
+                    document.querySelector('.mobile-instruction').style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // ===== START SEKVENS =====
+        document.addEventListener('DOMContentLoaded', function() {
+            soundSystem.init();
+            startIntroSequence();
+            checkMobile();
+        });
+
+        document.addEventListener('click', function startIntroOnClick() {
+    if (!introStarted) {
+        startIntroSequence();
+    }
+    // Start intro-lyd når bruker klikker
+    soundSystem.startIntro();
+    document.removeEventListener('click', startIntroOnClick);
+}, { once: true });
+        
+    </script>
+</body>
+</html>

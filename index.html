@@ -716,6 +716,36 @@ body {
     display: none;
 }
 
+.mobile-controls {
+    display: none; /* Skjul på desktop */
+}
+
+.touch-area {
+    display: none; /* Skjul på desktop */
+}
+
+@media (max-width: 768px) {
+    .mobile-controls {
+        display: block;
+    }
+    
+    .touch-area {
+        display: block;
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.8);
+        color: #FFD700;
+        padding: 10px;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 12px;
+        z-index: 100;
+        border: 1px solid #FFD700;
+    }
+}
+
 /* ======= ANIMASJONER ======= */
 @keyframes crowdPulse {
     0%, 100% { opacity: 0.3; }
@@ -1067,7 +1097,7 @@ body {
 
         <div class="mobile-controls">
             <div class="touch-area" id="touchArea">
-                Berør og dra for å kontrollere Viking-spilleren
+Berør fotballbanen for å kontrollere spilleren
             </div>
         </div>
 
@@ -1552,17 +1582,23 @@ playVAR() {
         }
 
         function startMainGame() {
-            const introScreen = document.getElementById('introScreen');
-            
-            soundSystem.stopIntro();
-            
-            if (introScreen) {
-                introScreen.style.display = 'none';
-            }
-            
-            console.log('🎮 Starter hovedspill');
-            initializeGame();
-        }
+    const introScreen = document.getElementById('introScreen');
+    
+    soundSystem.stopIntro();
+    
+    if (introScreen) {
+        introScreen.style.display = 'none';
+    }
+    
+    console.log('🎮 Starter hovedspill');
+    
+    // Aktiver fullskjerm touch-kontroller etter at intro er fjernet
+    if (window.innerWidth <= 768) {
+        setupFullScreenTouch();
+    }
+    
+    initializeGame();
+}
 
         // ===== KAMPDATA =====
         const cupData = {
@@ -4672,12 +4708,17 @@ window.continueToNextRound = continueToNextRound;
             }, 2500);
         }
         
-        setupFullScreenTouch();
         
         // Hindre zoom og scroll
-        document.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-        }, { passive: false });
+document.addEventListener('touchmove', (e) => {
+    // Ikke blokker events på knapper
+    if (e.target.tagName === 'BUTTON' || 
+        e.target.closest('button') ||
+        e.target.closest('.button')) {
+        return;
+    }
+    e.preventDefault();
+}, { passive: false });
         
         // Hindre context menu
         document.addEventListener('contextmenu', (e) => {
@@ -4690,11 +4731,30 @@ function setupFullScreenTouch() {
     document.body.style.touchAction = 'none';
     document.body.style.userSelect = 'none';
     
-    document.addEventListener('touchstart', handleFullScreenTouch, {passive: false});
-    document.addEventListener('touchmove', handleFullScreenTouch, {passive: false});
+    // Kun legg til touch handlers etter at spillet har startet
+    // Ikke under intro-skjermen
+    if (!document.getElementById('introScreen')) {
+        document.addEventListener('touchstart', handleFullScreenTouch, {passive: false});
+        document.addEventListener('touchmove', handleFullScreenTouch, {passive: false});
+    }
 }
 
 function handleFullScreenTouch(e) {
+    // IKKE blokker events på knapper, input-elementer eller andre interaktive elementer
+    const target = e.target;
+    if (target.tagName === 'BUTTON' || 
+        target.tagName === 'INPUT' || 
+        target.tagName === 'A' ||
+        target.closest('button') ||
+        target.closest('.button') ||
+        target.id === 'startGameBtn') {
+        return; // La normal klikk-håndtering fungere
+    }
+    
+    // Kun håndter touch på spillområdet
+    const gameField = document.getElementById('gameField');
+    if (!gameField) return;
+    
     e.preventDefault();
     
     if (e.touches.length > 0) {
@@ -4736,10 +4796,26 @@ function optimizeForMobile() {
 
         // ===== START SEKVENS =====
         document.addEventListener('DOMContentLoaded', function() {
-            soundSystem.init();
-            startIntroSequence();
-            checkMobile();
-        });
+    soundSystem.init();
+    startIntroSequence();
+    checkMobile();
+    
+    // Legg til backup event listener for start-knappen på mobile
+    setTimeout(() => {
+        const startBtn = document.getElementById('startGameBtn');
+        if (startBtn) {
+            startBtn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                startMainGame();
+            }, {passive: false});
+            
+            startBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                startMainGame();
+            });
+        }
+    }, 1000);
+});
 
         document.addEventListener('click', function startIntroOnClick() {
     if (!introStarted) {

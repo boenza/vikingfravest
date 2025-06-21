@@ -6,7 +6,7 @@
     <title>Viking Pong Fotball – Eliteserien 2025</title>
     <style>
         
-        /* ======= GENERELL STYLING ======= */
+ /* ======= GENERELL STYLING ======= */
 body {
     margin: 0;
     padding: 0;
@@ -202,7 +202,7 @@ body {
 /* ======= UI OG SCOREBOARD ======= */
 #ui {
     position: absolute;
-    top: 50px;          /* Økt fra 20px - mye lavere */
+    top: 50px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 100;
@@ -228,9 +228,9 @@ body {
 
 .scoreboard {
     background: linear-gradient(135deg, #1a1a1a, #2a2a2a, #1a1a1a);
-    border: 4px solid #444444;  /* Redusert fra 6px */
-    border-radius: 6px;         /* Redusert fra 8px */
-    padding: 6px 20px;          /* Redusert fra 8px */
+    border: 4px solid #444444;
+    border-radius: 6px;
+    padding: 6px 20px;
     box-shadow: 
         0 0 40px rgba(0,0,0,0.9),
         inset 0 0 30px rgba(255,215,0,0.05),
@@ -238,7 +238,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;                   /* Redusert fra 4px */
+    gap: 3px;
     backdrop-filter: blur(10px);
     min-width: 480px;
     position: relative;
@@ -250,7 +250,7 @@ body {
     gap: 10px;
     width: 100%;
     justify-content: space-between;
-    flex-wrap: nowrap;  /* Tvinger elementene til å være på samme linje */
+    flex-wrap: nowrap;
 }
 
 .team-name-led {
@@ -262,11 +262,11 @@ body {
         0 0 8px #FFD700,
         0 0 16px #FFD700;
     letter-spacing: 1px;
-    min-width: 120px;   /* Redusert litt for å spare plass */
-    max-width: 120px;   /* Legg til max-width */
+    min-width: 120px;
+    max-width: 120px;
     text-align: left;
-    overflow: hidden;   /* Skjul overflødig tekst */
-    white-space: nowrap; /* Ingen linjeskift */
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .score-led {
@@ -283,8 +283,8 @@ body {
     border: 2px solid #333;
     min-width: 50px;
     text-align: center;
-    margin-right: 90px;  /* Økt litt for klokka */
-    flex-shrink: 0;     /* Forhindrer at score krymper */
+    margin-right: 90px;
+    flex-shrink: 0;
 }
 
 .clock-led {
@@ -295,15 +295,16 @@ body {
     color: #FFD700;
     font-family: 'Courier New', monospace;
     font-weight: bold;
-    font-size: 18px;    /* Redusert fra 20px */
+    font-size: 18px;
     text-shadow: 
         0 0 10px #FFD700,
         0 0 20px #FFD700;
     background: #000;
-    padding: 8px 12px; /* Redusert fra 10px 15px */
+    padding: 8px 12px;
     border-radius: 6px;
     border: 2px solid #333;
 }
+
 /* ======= INTROSCREEN ======= */
 #introScreen {
     position: fixed;
@@ -414,17 +415,6 @@ body {
     font-weight: bold;
     z-index: 100;
     pointer-events: auto;
-}
-
-@keyframes cupPulse {
-    0%, 100% { 
-        transform: translateY(-50%) scale(1); 
-        box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
-    }
-    50% { 
-        transform: translateY(-50%) scale(1.05); 
-        box-shadow: 0 0 50px rgba(255, 215, 0, 1);
-    }
 }
 
 /* ======= MELDINGER OG POPUPS ======= */
@@ -693,17 +683,24 @@ body {
 /* ======= MOBILE TOUCH KONTROLLER ======= */
 .mobile-controls {
     position: fixed;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 35vh;
     display: none;
-    z-index: 100;
+    z-index: 150;
+    background: linear-gradient(180deg, transparent, rgba(0,0,0,0.3));
+    pointer-events: none;
 }
 
 .touch-area {
-    height: 200px;
-    background: rgba(255,255,255,0.1);
-    border: 2px solid #FFD700;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    height: 120px;
+    background: rgba(0,33,102,0.2);
+    border: 2px solid #002166;
     border-radius: 15px;
     display: flex;
     align-items: center;
@@ -711,6 +708,8 @@ body {
     color: #FFD700;
     font-weight: bold;
     backdrop-filter: blur(5px);
+    pointer-events: auto;
+    touch-action: none;
 }
 
 .mobile-instruction {
@@ -718,12 +717,12 @@ body {
     top: 10px;
     left: 10px;
     right: 10px;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.9);
     color: #FFD700;
-    padding: 10px;
-    border-radius: 10px;
+    padding: 8px;
+    border-radius: 8px;
     text-align: center;
-    font-size: 14px;
+    font-size: 12px;
     z-index: 1000;
     display: none;
 }
@@ -750,6 +749,23 @@ body {
     50% { color: #FFFF00; }
 }
 
+@keyframes cupPulse {
+    0%, 100% { 
+        transform: translateY(-50%) scale(1); 
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    }
+    50% { 
+        transform: translateY(-50%) scale(1.05); 
+        box-shadow: 0 0 50px rgba(255, 215, 0, 1);
+    }
+}
+
+@keyframes countdownScale {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
 /* ======= RESPONSIVE DESIGN ======= */
 @media (max-width: 1200px) {
     #roundSummary {
@@ -758,52 +774,150 @@ body {
 }
 
 @media (max-width: 768px) {
+    /* FJERN ROTASJON - Spill normalt på mobil */
     #gameField {
         width: 95vw;
-        height: 80vh;
-        transform: rotate(90deg);
-        transform-origin: center center;
+        height: 50vh;
+        /* Fjernet: transform: rotate(90deg); */
+        /* Fjernet: transform-origin: center center; */
     }
     
     #gameContainer {
         justify-content: center;
-        align-items: center;
+        align-items: flex-start;
+        padding-top: 20px;
     }
     
     .mobile-controls {
         display: block;
     }
     
+    /* KOMPAKT UI FOR MOBIL */
+    #ui {
+        top: 10px;
+        transform: translateX(-50%) scale(0.8);
+    }
+    
     .scoreboard-container {
-        gap: 15px;
+        gap: 10px;
     }
     
     .field-logo {
-        width: 60px;
-        height: 60px;
-        padding: 3px;
+        width: 40px;
+        height: 40px;
+        padding: 2px;
     }
     
     .scoreboard {
-        padding: 10px 15px;
-        gap: 6px;
-        min-width: 280px;
+        padding: 6px 12px;
+        gap: 4px;
+        min-width: 220px;
     }
     
     .team-name-led {
-        font-size: 12px;
-        min-width: 100px;
+        font-size: 10px;
+        min-width: 70px;
     }
     
     .score-led {
-        font-size: 28px;
-        padding: 3px 10px;
+        font-size: 18px;
+        padding: 2px 6px;
+        margin-right: 40px;
     }
     
     .clock-led {
+        font-size: 12px;
+        padding: 4px 8px;
+        right: 10px;
+    }
+    
+    /* KOMPAKTE POPUPS */
+    .goal-scorer-display {
+        max-width: 250px;
+        padding: 15px 20px;
+    }
+    
+    .goal-scorer-display img,
+    .goal-scorer-display > div:first-child {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 10px;
+        font-size: 25px;
+    }
+    
+    .goal-scorer-name {
         font-size: 16px;
-        padding: 6px 12px;
-        right: 15px;
+    }
+    
+    .goal-scorer-team {
+        font-size: 13px;
+    }
+    
+    .halftime-screen,
+    .var-screen,
+    #gameMessage {
+        max-width: 300px;
+        padding: 20px 25px;
+    }
+    
+    /* SKJUL NAVIGASJONSKNAPPER PÅ MOBIL */
+    .floating-nav-btn {
+        display: none !important;
+    }
+    
+    #roundSummary {
+        padding: 40px 15px 20px 15px;
+    }
+    
+    /* INTRO SKJERM MOBIL */
+    #introScreen img {
+        max-width: 300px;
+        max-height: 200px;
+    }
+    
+    .intro-title {
+        font-size: 18px;
+    }
+    
+    #loadingProgress {
+        width: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    #gameField {
+        height: 45vh;
+    }
+    
+    .scoreboard {
+        min-width: 180px;
+    }
+    
+    .team-name-led {
+        font-size: 9px;
+        min-width: 60px;
+    }
+    
+    .score-led {
+        font-size: 16px;
+    }
+    
+    .clock-led {
+        font-size: 11px;
+        padding: 3px 6px;
+    }
+    
+    #introScreen img {
+        max-width: 250px;
+        max-height: 150px;
+    }
+    
+    .intro-title {
+        font-size: 16px;
+    }
+    
+    #loadingProgress {
+        width: 200px;
     }
 }
 
@@ -944,12 +1058,16 @@ body {
             ballHitAudio: null,
             whistleAudio: null,
             goalCelebrationAudio: null,
+            anthemAudio: null,
+            isEnabled: true,
+
             
             config: {
                 masterVolume: 0.7,
                 supporterVolume: 0.4,
                 introVolume: 0.6,
                 effectVolume: 0.6,
+                anthemVolume: 0.8,
                 fileDuration: 53 * 60,
                 minStartTime: 120,
                 maxStartTime: 45 * 60,
@@ -1012,6 +1130,14 @@ body {
                 this.goalCelebrationAudio.volume = this.config.effectVolume * this.config.masterVolume;
                 this.goalCelebrationAudio.preload = 'auto';
                 this.goalCelebrationAudio.onerror = () => console.log('Celebration-lyd ikke funnet, fortsetter uten');
+
+                // Victory lyd
+        this.victoryAudio = new Audio('assets/sounds/anthem.mp3');
+        this.victoryAudio.volume = this.config.anthemVolume * this.config.masterVolume;
+        this.victoryAudio.preload = 'auto';
+        this.victoryAudio.loop = false;
+        this.victoryAudio.onerror = () => console.log('Victory-lyd ikke funnet, fortsetter uten');
+    
                 
                 this.createSimpleWhistle();
             },
@@ -1118,6 +1244,8 @@ stopAllGoalSounds() {
             },
             
             startSupporters() {
+                    this.stopIntro();
+
                 if (!this.supporterAudio) return;
                 
                 try {
@@ -1227,6 +1355,19 @@ stopAllGoalSounds() {
     }
 },
 
+playAnthem() {
+        if (this.victoryAudio && this.isEnabled) {
+            this.victoryAudio.currentTime = 0;
+            this.victoryAudio.play().catch(e => console.log('Victory sound play failed:', e));
+        }
+    },
+
+stopAnthem() {
+    if (this.victoryAudio) {
+        this.victoryAudio.pause();
+        this.victoryAudio.currentTime = 0;
+    }
+},
 playVAR() {
     if (this.varAudio) {
         this.varAudio.currentTime = 0;
@@ -1631,7 +1772,42 @@ playVAR() {
         {name: 'Nicklas Jakobsen', image: 'nicklas-jakobsen', emoji: '💎', goals2025: 2},
         {name: 'Alfred Scriven', image: 'alfred-scriven', emoji: '💪', goals2025: 2},
         {name: 'Axel Kryger', image: 'axel-kryger', emoji: '⚡', goals2025: 1}
-    ]}
+    ]},
+
+{ name: 'Hana IL', excelName: 'Hana', logo: 'hana-il.png', difficulty: 1, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#228B22', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
+    {name: 'Eirik Skavhaug Larsson', image: 'eirik-skavhaug-larsson', emoji: '⚽', goals2025: 2},
+    {name: 'Brede Fiksdal', image: 'brede-fiksdal', emoji: '🎯', goals2025: 1},
+    {name: 'Theo Svihus Gramstad', image: 'theo-svihus-gramstad', emoji: '💪', goals2025: 1},
+    {name: 'Thomas Gabriel Minde', image: 'thomas-gabriel-minde', emoji: '🚀', goals2025: 0}
+]},
+
+{ name: 'Fløy-Flekkerøy', excelName: 'Fløy-Flekkerøy', logo: 'floy-flekkeroy.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#4A90E2', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
+    {name: 'Henrik Byklum', image: 'henrik-byklum', emoji: '⚽', goals2025: 3},
+    {name: 'Dirirsa Gamachis', image: 'dirirsa-gamachis', emoji: '🎯', goals2025: 2},
+    {name: 'William Drange Johnsen', image: 'william-drange-johnsen', emoji: '💎', goals2025: 1},
+    {name: 'Elias Simossa Rike Nahiry', image: 'elias-simossa-rike-nahiry', emoji: '💪', goals2025: 1}
+]},
+
+{ name: 'Moss FK', excelName: 'Moss', logo: 'moss-fk.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#FFD700', secondaryColor: '#000000', pattern: 'solid', players: [
+    {name: 'Bo Åsulv Hegland', image: 'bo-asulv-hegland', emoji: '👑', goals2025: 4},
+    {name: 'Blerton Isufi', image: 'blerton-isufi', emoji: '⚽', goals2025: 3},
+    {name: 'Artan Memedov', image: 'artan-memedov', emoji: '🎯', goals2025: 2},
+    {name: 'Alexander Lien Håpnes', image: 'alexander-lien-hapnes', emoji: '💪', goals2025: 1}
+]},
+
+{ name: 'Åsane Fotball', excelName: 'Åsane', logo: 'asane-fotball.png', difficulty: 3, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#DC143C', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
+    {name: 'Erling Flotve Myklebust', image: 'erling-flotve-myklebust', emoji: '⚽', goals2025: 3},
+    {name: 'Steffen Lie Skålevik', image: 'steffen-lie-skalevik', emoji: '🎯', goals2025: 2},
+    {name: 'Kristoffer Ramos Barmen', image: 'kristoffer-ramos-barmen', emoji: '💎', goals2025: 1},
+    {name: 'Sebastian Heimvik Haugland', image: 'sebastian-heimvik-haugland', emoji: '💪', goals2025: 1}
+]},
+
+{ name: 'Aalesund', excelName: 'Aalesund', logo: 'aalesund.png', difficulty: 4, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#FFA500', secondaryColor: '#FFFFFF', pattern: 'solid', players: [
+    {name: 'David Snær Johannsson', image: 'david-snaer-johannsson', emoji: '👑', goals2025: 6},
+    {name: 'Claudio Rafael Soares Braga', image: 'claudio-rafael-soares-braga', emoji: '⚽', goals2025: 4},
+    {name: 'Håkon Butli Hammer', image: 'hakon-butli-hammer', emoji: '🎯', goals2025: 3},
+    {name: 'Paul Ngongo Iversen', image: 'paul-ngongo-iversen', emoji: '💪', goals2025: 2}
+]}
         ];
 
     
@@ -1716,18 +1892,7 @@ playVAR() {
                 }
                 
                 if (currentMatch.type === 'cup') {
-                    return {
-                        name: currentMatch.opponent,
-                        excelName: currentMatch.opponent,
-                        difficulty: 2,
-                        color: '#666666',
-                        secondaryColor: '#FFFFFF',
-                        pattern: 'solid',
-                        logo: 'unknown.png',
-                        players: [
-                            {name: 'Lokalhelt', emoji: '⚽', image: 'unknown', goals2025: 0}
-                        ]
-                    };
+                   
                 }
                 
                 let team = findTeamByName(currentMatch.opponent);
@@ -2028,6 +2193,32 @@ function initializeCupTopScorers() {
         function initializeGame() {
             console.log('🎮 Initializing main game...');
             
+            // Legg til etter checkMobile() funksjonen:
+function isMobileDevice() {
+    return (
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        ('ontouchstart' in window) ||
+        window.innerWidth <= 768
+    );
+}
+
+function optimizeForMobile() {
+    if (isMobileDevice()) {
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        document.body.style.height = '100%';
+        
+        // Skjul address bar på mobile browsere
+        setTimeout(() => {
+            window.scrollTo(0, 1);
+        }, 100);
+    }
+}
+
+// Kall denne i initializeGame():
+optimizeForMobile();
+
             initializeCupTopScorers();
             
             // DOM-elementer
@@ -2041,6 +2232,57 @@ function initializeCupTopScorers() {
             
 
             // ===== FUNKSJONER =====
+
+
+            function showCountdown(callback, text = "KAMPSTART") {
+    gameState.gameActive = false;
+    
+    const countdownDiv = document.createElement('div');
+    countdownDiv.id = 'countdown';
+    countdownDiv.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #000000, #1a1a1a);
+        color: #FFD700;
+        padding: 40px 60px;
+        border-radius: 20px;
+        text-align: center;
+        z-index: 1000;
+        border: 4px solid #FFD700;
+        box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+        font-family: 'Courier New', monospace;
+        backdrop-filter: blur(10px);
+    `;
+    
+    countdownDiv.innerHTML = `
+        <div style="font-size: 24px; margin-bottom: 20px; color: #00FF00;">${text}</div>
+        <div id="countdownNumber" style="font-size: 80px; font-weight: bold; transition: all 0.3s ease;">3</div>
+    `;
+    
+    document.body.appendChild(countdownDiv);
+    
+    let count = 3;
+    const countdownNumber = document.getElementById('countdownNumber');
+    
+    const interval = setInterval(() => {
+        count--;
+        if (count > 0) {
+            countdownNumber.textContent = count;
+            countdownNumber.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                countdownNumber.style.transform = 'scale(1)';
+            }, 200);
+        } else {
+    // Ingen "START!" tekst - bare fjern countdown og start
+    document.body.removeChild(countdownDiv);
+    callback();
+    clearInterval(interval);
+}
+    }, 1000);
+}
+
             function kickOff(team) {
     console.log('🏈 kickOff called for:', team, 'halfTimeBreak:', gameState.halfTimeBreak, 'matchTime:', gameState.matchTime);
     gameState.lastKickoffTime = Date.now();
@@ -2307,9 +2549,7 @@ function checkPlayerCollisions() {
             // LEGG TIL DENNE setTimeout FOR VIKING OGSÅ:
             setTimeout(() => {
                 kickOff(scorer === 'viking' ? 'opponent' : 'viking');
-                if (!gameState.halfTimeBreak) {
-                    gameState.gameActive = true;
-                }
+gameState.gameActive = true;
             }, 4000);
         }
     
@@ -2333,9 +2573,7 @@ function checkPlayerCollisions() {
             
             setTimeout(() => {
                 kickOff(scorer === 'viking' ? 'opponent' : 'viking');
-                if (!gameState.halfTimeBreak) {
-                    gameState.gameActive = true;
-                }
+gameState.gameActive = true;
             }, 4000);
         }
     }
@@ -2558,7 +2796,7 @@ function makeVARDecision(scorer, goalScorer, team, varScreen, isVikingFifthGoal 
                 setTimeout(() => {
                     if (!gameState.halfTimeBreak && gameState.matchTime < 90) {
                         kickOff(scorer === 'viking' ? 'opponent' : 'viking');
-                        gameState.gameActive = true;
+gameState.gameActive = true;
                     } else {
                         console.log('🚫 Ikke restart spill - kamp i pause eller ferdig');
                     }
@@ -2607,7 +2845,7 @@ function makeVARDecision(scorer, goalScorer, team, varScreen, isVikingFifthGoal 
                 // NYTT: Samme sjekk her
                 if (!gameState.halfTimeBreak && gameState.matchTime < 90) {
                     kickOff(scorer === 'viking' ? 'opponent' : 'viking');
-                    gameState.gameActive = true;
+gameState.gameActive = true;
                 } else {
                     console.log('🚫 Ikke restart spill - kamp i pause eller ferdig');
                 }
@@ -2981,15 +3219,23 @@ if (!gameState.cupEliminated) {
             }
 
             function handleTouch(e) {
-                e.preventDefault();
-                if (e.touches.length > 0) {
-                    const touch = e.touches[0];
-                    const rect = touchArea.getBoundingClientRect();
-                    const touchRelativeY = touch.clientY - rect.top;
-                    const fieldHeight = gameField.offsetHeight;
-                    gameState.touchY = (touchRelativeY / touchArea.offsetHeight) * fieldHeight;
-                }
-            }
+    e.preventDefault();
+    if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        const rect = touchArea.getBoundingClientRect();
+        
+        // Beregn relativ Y-posisjon i touch-området
+        const touchRelativeY = touch.clientY - rect.top;
+        const touchAreaHeight = rect.height;
+        
+        // Konverter til spillfelt-koordinater
+        const fieldHeight = gameField.offsetHeight - 100; // Plass til spiller
+        gameState.touchY = (touchRelativeY / touchAreaHeight) * fieldHeight;
+        
+        // Sørg for at spilleren holder seg innenfor banen
+        gameState.touchY = Math.max(0, Math.min(fieldHeight, gameState.touchY));
+    }
+}
 
             // Musestyring på desktop
             if (window.innerWidth > 768) {
@@ -3002,7 +3248,10 @@ if (!gameState.cupEliminated) {
             // Start spillet
             updateUI();
             updateOpponentJersey();
-            kickOff('viking');
+            showCountdown(() => {
+    kickOff('viking');
+    gameState.gameActive = true;
+}, "1. OMGANG");
             gameLoop();
         
         window.resetBallCompletely = resetBallCompletely;
@@ -3012,6 +3261,7 @@ if (!gameState.cupEliminated) {
             window.getTeamLogoPath = getTeamLogoPath;
             window.getCurrentOpponent = getCurrentOpponent;
             window.checkPlayerCollisions = checkPlayerCollisions;
+            window.showCountdown = showCountdown;
         
         }
 
@@ -3481,15 +3731,156 @@ function showCupIntro(round, opponent) {
         if (cupIntro.parentNode) {
             cupIntro.parentNode.removeChild(cupIntro);
         }
-    }, 1500);
+    }, 1000);
 }
 
 function generateCupDrawHTML(currentRound) {
     const nextRound = parseInt(currentRound) + 1;
     
-    if (nextRound > 7) {
-        return '<div style="text-align: center; color: #FF6B6B; font-size: 24px; margin-top: 100px; font-family: \'Courier New\', monospace;">🏆 CUP FERDIG! 🏆</div>';
-    }
+if (nextRound > 7) {
+    setTimeout(() => {
+            soundSystem.playAnthem(); // Eller playGoal() eller en annen lyd
+        }, 500); // 0.5 sekunder forsinkelse
+    return `
+        <div style="position: relative; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; background: linear-gradient(135deg, #000428, #004e92, #000428);">
+            
+            <!-- Konfetti animasjon -->
+            <div class="confetti-container">
+                <div class="confetti confetti-1"></div>
+                <div class="confetti confetti-2"></div>
+                <div class="confetti confetti-3"></div>
+                <div class="confetti confetti-4"></div>
+                <div class="confetti confetti-5"></div>
+                <div class="confetti confetti-6"></div>
+                <div class="confetti confetti-7"></div>
+                <div class="confetti confetti-8"></div>
+                <div class="confetti confetti-9"></div>
+                <div class="confetti confetti-10"></div>
+            </div>
+            
+            
+            <!-- Hovedinnhold -->
+            <div style="text-align: center; z-index: 10; animation: victoryBounce 2s ease-out;">
+                
+                <!-- Krone og tittel -->
+                <div style="font-size: 80px; margin-bottom: 20px; animation: crownSpin 3s ease-in-out infinite;">👑</div>
+                
+                <h1 style="color: #FFD700; font-size: 42px; font-weight: bold; margin-bottom: 30px; font-family: 'Courier New', monospace; text-shadow: 0 0 20px #FFD700, 0 0 40px #FFD700; animation: titleGlow 2s ease-in-out infinite alternate;">
+                    🏆 CUPMESTER 2025 🏆
+                </h1>
+                
+                <!-- Viking FK tekst -->
+                <div style="color: #002166; background: linear-gradient(135deg, #FFD700, #FFA500); padding: 15px 40px; border-radius: 20px; font-size: 32px; font-weight: bold; margin-bottom: 40px; border: 4px solid #FFD700; box-shadow: 0 0 30px rgba(255, 215, 0, 0.8); animation: vikingPulse 1.5s ease-in-out infinite;">
+                    VIKING FK
+                </div>
+                
+                <!-- Pokal -->
+                <div style="margin: 30px 0; animation: trophyFloat 3s ease-in-out infinite;">
+                    <img src="assets/images/pokal.png" alt="Kongepokalen" style="width: 200px; height: auto; filter: drop-shadow(0 0 20px #FFD700) drop-shadow(0 0 40px #FFA500); animation: trophyGlow 2s ease-in-out infinite alternate;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div style="display: none; font-size: 120px; animation: trophyGlow 2s ease-in-out infinite alternate;">🏆</div>
+                </div>
+                
+                <!-- Seierstekst -->
+                <div style="color: #00FF00; font-size: 24px; font-weight: bold; margin-top: 20px; font-family: 'Courier New', monospace; text-shadow: 0 0 10px #00FF00; animation: victoryText 1s ease-in-out infinite alternate;">
+                    ⚡ EUROPA LEAGUE TIL STAVANGER! ⚡
+                </div>
+                
+                <!-- Stjerner -->
+                <div style="margin-top: 30px; font-size: 40px; animation: starsRotate 4s linear infinite;">
+                    ⭐ ⭐ ⭐ ⭐ ⭐
+                </div>
+            </div>
+            
+            <style>
+                .confetti-container {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    pointer-events: none;
+                    overflow: hidden;
+                }
+                
+                .confetti {
+                    position: absolute;
+                    width: 10px;
+                    height: 10px;
+                    background: #FFD700;
+                    animation: confettiFall 3s linear infinite;
+                }
+                
+                .confetti-1 { left: 10%; animation-delay: 0s; background: #FFD700; }
+                .confetti-2 { left: 20%; animation-delay: 0.5s; background: #FF6B6B; }
+                .confetti-3 { left: 30%; animation-delay: 1s; background: #4ECDC4; }
+                .confetti-4 { left: 40%; animation-delay: 1.5s; background: #45B7D1; }
+                .confetti-5 { left: 50%; animation-delay: 2s; background: #FFA500; }
+                .confetti-6 { left: 60%; animation-delay: 0.3s; background: #98D8C8; }
+                .confetti-7 { left: 70%; animation-delay: 0.8s; background: #F7DC6F; }
+                .confetti-8 { left: 80%; animation-delay: 1.3s; background: #BB8FCE; }
+                .confetti-9 { left: 90%; animation-delay: 1.8s; background: #85C1E9; }
+                .confetti-10 { left: 15%; animation-delay: 2.3s; background: #F8C471; }
+                
+                @keyframes confettiFall {
+                    0% {
+                        transform: translateY(-100vh) rotate(0deg);
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: translateY(100vh) rotate(360deg);
+                        opacity: 0;
+                    }
+                }
+                
+                @keyframes victoryBounce {
+                    0% { transform: scale(0.5) translateY(50px); opacity: 0; }
+                    50% { transform: scale(1.1) translateY(-10px); opacity: 1; }
+                    100% { transform: scale(1) translateY(0px); opacity: 1; }
+                }
+                
+                @keyframes titleGlow {
+                    0% { text-shadow: 0 0 20px #FFD700, 0 0 40px #FFD700; }
+                    100% { text-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700, 0 0 80px #FFA500; }
+                }
+                
+                @keyframes vikingPulse {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                }
+                
+                @keyframes trophyFloat {
+                    0%, 100% { transform: translateY(0px) rotate(-2deg); }
+                    50% { transform: translateY(-20px) rotate(2deg); }
+                }
+                
+                @keyframes trophyGlow {
+                    0% { filter: drop-shadow(0 0 20px #FFD700) drop-shadow(0 0 40px #FFA500); }
+                    100% { filter: drop-shadow(0 0 30px #FFD700) drop-shadow(0 0 60px #FFA500) drop-shadow(0 0 80px #FFD700); }
+                }
+                
+                @keyframes crownSpin {
+                    0%, 100% { transform: rotate(-10deg) scale(1); }
+                    50% { transform: rotate(10deg) scale(1.1); }
+                }
+                
+                @keyframes victoryText {
+                    0% { transform: scale(1); }
+                    100% { transform: scale(1.05); }
+                }
+                
+                @keyframes starsRotate {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                
+                @keyframes sparkle {
+                    0%, 100% { opacity: 0.3; }
+                    50% { opacity: 0.8; }
+                }
+            </style>
+        </div>
+    `;
+}
     
     const roundNames = {
         2: '2. RUNDE',
@@ -3700,41 +4091,37 @@ function generateOtherResults() {
 function generateCupResults(vikingCupRound) {
     const cupResults = [];
     
-    // Legg til Viking-kampen først
-    const currentOpponent = getCurrentOpponent();
-    if (currentOpponent) {
-        const currentMatch = vikingSchedule[gameState.currentMatchIndex];
-        cupResults.push({
-            team1: currentMatch.home ? 'Viking FK' : currentOpponent.name,
-            team1Goals: currentMatch.home ? gameState.vikingScore : gameState.opponentScore,
-            team2Goals: currentMatch.home ? gameState.opponentScore : gameState.vikingScore,
-            team2: currentMatch.home ? currentOpponent.name : 'Viking FK'
-        });
-    }
+    // IKKE legg til Viking-kampen her - den vises allerede som overskrift i generateAllMatchesHTML()
     
     // Legg til andre resultater basert på cupData
     if (vikingCupRound <= 4) {
         const otherMatches = cupData.otherResults[vikingCupRound] || [];
         otherMatches.forEach(match => {
-            cupResults.push({
-                team1: match.home,
-                team1Goals: match.result[0],
-                team2Goals: match.result[1],
-                team2: match.away
-            });
+            // SKIP Viking-kamper for å unngå duplikasjon
+            if (match.home !== 'Viking' && match.away !== 'Viking' && 
+                match.home !== 'Viking FK' && match.away !== 'Viking FK') {
+                cupResults.push({
+                    team1: match.home,
+                    team1Goals: match.result[0],
+                    team2Goals: match.result[1],
+                    team2: match.away
+                });
+            }
         });
-    }
-
-     else {
-        // LEGG TIL DETTE for runde 5+:
+    } else {
+        // For runde 5+:
         const otherMatches = cupData.cupResults[vikingCupRound] || [];
         otherMatches.forEach(match => {
-            cupResults.push({
-                team1: match.team1,
-                team1Goals: match.team1Goals,
-                team2Goals: match.team2Goals,
-                team2: match.team2
-            });
+            // SKIP Viking-kamper for å unngå duplikasjon
+            if (match.team1 !== 'Viking' && match.team2 !== 'Viking' && 
+                match.team1 !== 'Viking FK' && match.team2 !== 'Viking FK') {
+                cupResults.push({
+                    team1: match.team1,
+                    team1Goals: match.team1Goals,
+                    team2Goals: match.team2Goals,
+                    team2: match.team2
+                });
+            }
         });
     }
     
@@ -3782,19 +4169,23 @@ function addCupGoalsForCompletedRound(roundNumber) {
         
         // Hjemmelag mål
         if (homeGoals > 0) {
-            const homeTeam = findTeamByName(match.home) || createDummyTeam(match.home);
-            for (let i = 0; i < homeGoals; i++) {
-                const scorer = getRandomPlayer(homeTeam);
-                if (scorer) addToCupTopScorers(scorer, homeTeam);
+            const homeTeam = findTeamByName(match.home);
+            if (homeTeam) {  // Kun legg til mål hvis laget eksisterer
+                for (let i = 0; i < homeGoals; i++) {
+                    const scorer = getRandomPlayer(homeTeam);
+                    if (scorer) addToCupTopScorers(scorer, homeTeam);
+                }
             }
         }
         
         // Bortelag mål
         if (awayGoals > 0) {
-            const awayTeam = findTeamByName(match.away) || createDummyTeam(match.away);
-            for (let i = 0; i < awayGoals; i++) {
-                const scorer = getRandomPlayer(awayTeam);
-                if (scorer) addToCupTopScorers(scorer, awayTeam);
+            const awayTeam = findTeamByName(match.away);
+            if (awayTeam) {  // Kun legg til mål hvis laget eksisterer
+                for (let i = 0; i < awayGoals; i++) {
+                    const scorer = getRandomPlayer(awayTeam);
+                    if (scorer) addToCupTopScorers(scorer, awayTeam);
+                }
             }
         }
     });
@@ -3802,19 +4193,11 @@ function addCupGoalsForCompletedRound(roundNumber) {
     cupTopScorers.sort((a, b) => b.goals - a.goals);
     console.log(`✅ Cup top scorers updated after round ${roundNumber}:`, cupTopScorers.length, 'scorers');
 }
-function createDummyTeam(teamName) {
-    return {
-        name: teamName,
-        players: [
-            {name: 'Lokal helt', emoji: '⚽', image: 'unknown'},
-            {name: 'Va goe ein gang', emoji: '🏆', image: 'unknown'}
-        ]
-    };
-}
-
-
 
 function continueToNextRound() {
+    // Stopp anthem hvis den spiller
+    soundSystem.stopAnthem();
+    
     nextMatch();
 }
 
@@ -3903,8 +4286,22 @@ function nextMatch() {
     }
     
     // Start new match
-    console.log('🔄 Starting new match kickoff');
+    // Start new match
+console.log('🔄 Starting new match kickoff with countdown');
+
+let countdownText = "KAMPSTART";
+if (nextMatchData) {
+    if (nextMatchData.type === 'cup') {
+        countdownText = `CUP ${cupData.roundNames[nextMatchData.round] || 'KAMP'}`;
+    } else {
+        countdownText = `RUNDE ${nextMatchData.round}`;
+    }
+}
+
+showCountdown(() => {
     kickOff('viking');
+    gameState.gameActive = true;
+}, countdownText);
 }
 
 function forceUpdateScoreboard() {
@@ -4161,7 +4558,10 @@ window.continueToNextRound = continueToNextRound;
     
     // Start kickoff
     console.log('🔄 Starting second half kickoff');
+    showCountdown(() => {
     kickOff(gameState.vikingScore > gameState.opponentScore ? 'opponent' : 'viking');
+    gameState.gameActive = true;
+}, "2. OMGANG");
 };
 
         window.restartSeason = function() {
@@ -4203,6 +4603,29 @@ window.continueToNextRound = continueToNextRound;
                 }, 5000);
             }
         }
+        // Legg til etter checkMobile() funksjonen:
+function isMobileDevice() {
+    return (
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        ('ontouchstart' in window) ||
+        window.innerWidth <= 768
+    );
+}
+
+function optimizeForMobile() {
+    if (isMobileDevice()) {
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        document.body.style.height = '100%';
+        
+        // Skjul address bar på mobile browsere
+        setTimeout(() => {
+            window.scrollTo(0, 1);
+        }, 100);
+    }
+}
+
 
         // ===== START SEKVENS =====
         document.addEventListener('DOMContentLoaded', function() {

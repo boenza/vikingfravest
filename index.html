@@ -305,7 +305,7 @@ body {
     border: 2px solid #333;
 }
 
-/* ======= INTROSCREEN ======= */
+/* ======= INTROSCREEN (ORIGINAL) ======= */
 #introScreen {
     position: fixed;
     top: 0;
@@ -375,8 +375,28 @@ body {
     font-weight: bold;
     box-shadow: 0 4px 15px rgba(0,170,0,0.3);
     display: none;
+    pointer-events: auto;
 }
 
+/* MOBIL-TILPASNING FOR INTRO */
+@media (max-width: 768px) {
+    #introScreen img {
+        max-width: 250px;
+        max-height: 150px;
+        margin-bottom: 20px;
+    }
+    
+    .intro-title {
+        font-size: 16px;
+        margin-bottom: 15px;
+    }
+    
+    #startGameBtn {
+        padding: 12px 25px;
+        font-size: 16px;
+    }
+}
+        
 /* ======= KNAPPER ======= */
 .button {
     background: linear-gradient(135deg, #8B0000, #CD5C5C);
@@ -965,36 +985,6 @@ body {
     }
 }
 
-/* ======= INTRO-SKJERM MOBIL FIX ======= */
-@media (max-width: 768px) {
-    #introScreen {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        z-index: 1000 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        pointer-events: auto !important;
-    }
-    
-    #startGameBtn {
-        pointer-events: auto !important;
-        touch-action: manipulation !important;
-        cursor: pointer !important;
-        z-index: 1001 !important;
-        position: relative !important;
-        display: block !important;
-    }
-    
-    /* FJERN EVENTUELLE OVERLAYS SOM BLOKKERER */
-    #introScreen * {
-        pointer-events: auto !important;
-    }
-}
     </style>
 </head>
 <body>

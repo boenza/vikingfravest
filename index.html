@@ -730,21 +730,28 @@ body {
     }
     
     .touch-area {
-        display: block;
-        position: fixed;
-        bottom: 10px;
-        left: 10px;
-        right: 10px;
-        background: rgba(0,0,0,0.8);
-        color: #FFD700;
-        padding: 10px;
-        border-radius: 10px;
-        text-align: center;
-        font-size: 12px;
-        z-index: 100;
-        border: 1px solid #FFD700;
-    }
+    display: block;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, rgba(255,215,0,0.8), rgba(255,165,0,0.6));
+    color: #000;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 10px;
+    z-index: 100;
+    border: 3px solid #FFD700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 0 20px rgba(255,215,0,0.5);
 }
+    }
+        
 
 /* ======= ANIMASJONER ======= */
 @keyframes crowdPulse {
@@ -1097,7 +1104,7 @@ body {
 
         <div class="mobile-controls">
             <div class="touch-area" id="touchArea">
-Berør fotballbanen for å kontrollere spilleren
+🎮<br>STYRING
             </div>
         </div>
 

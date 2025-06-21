@@ -2607,7 +2607,7 @@ function checkPlayerCollisions() {
     if (gameState.paused) return;
     
     const targetY = (window.innerWidth <= 768 ? gameState.touchY : gameState.mouseY) - 50;
-    const smoothing = 0.8;
+    const smoothing = window.innerWidth <= 768 ? 0.3 : 0.8; // Mye mindre smoothing på mobil = mindre responsiv
     const newY = gameState.vikingY + (targetY - gameState.vikingY) * smoothing;
     
     const fieldRect = gameField.getBoundingClientRect();
@@ -4758,26 +4758,35 @@ function handleFullScreenTouch(e) {
         return;
     }
     
+    // Kun reagere på berøring av kontroll-sirkelen
+    const touchArea = document.getElementById('touchArea');
+    if (!touchArea || !touchArea.contains(target)) {
+        return; // Ikke gjør noe hvis ikke berørt kontroll-området
+    }
+    
     e.preventDefault();
     
     if (e.touches.length > 0) {
         const touch = e.touches[0];
+        const touchAreaRect = touchArea.getBoundingClientRect();
         
-        // Bruk hele skjermhøyden for kontroll
-        const screenHeight = window.innerHeight;
-        const relativeY = touch.clientY;
+        // Finn posisjon relativt til sirkelen (0 = topp, 1 = bunn)
+        const relativeY = (touch.clientY - touchAreaRect.top) / touchAreaRect.height;
         
-        // Konverter til spillerposisjon (samme som spillfeltets høyde)
+        // Konverter til spillfeltshøyde med mye mindre sensitivitet
         const gameField = document.getElementById('gameField');
         const fieldHeight = gameField ? gameField.offsetHeight : 600;
         
-        // Map fra skjermhøyde til spillfeltshøyde
-        gameState.touchY = (relativeY / screenHeight) * fieldHeight;
+        // Bruk kun øvre og nedre 80% av banen (ikke helt til kantene)
+        const playableHeight = fieldHeight * 0.8;
+        const offsetY = fieldHeight * 0.1; // 10% margin øverst
         
-        // Begrens til spillfeltets dimensjoner
+        gameState.touchY = offsetY + (relativeY * playableHeight);
+        
+        // Ekstra begrensning for sikkerhet
         gameState.touchY = Math.max(50, Math.min(fieldHeight - 150, gameState.touchY));
         
-        console.log('Touch Y:', gameState.touchY, 'Screen:', relativeY, 'Field height:', fieldHeight);
+        console.log('Touch control - relative:', relativeY.toFixed(2), 'gameY:', gameState.touchY.toFixed(0));
     }
 }
         

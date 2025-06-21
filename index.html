@@ -6,7 +6,7 @@
     <title>Viking Pong Fotball – Eliteserien 2025</title>
     <style>
         
- /* ======= GENERELL STYLING ======= */
+        /* ======= GENERELL STYLING ======= */
 body {
     margin: 0;
     padding: 0;
@@ -681,37 +681,6 @@ body {
 }
 
 /* ======= MOBILE TOUCH KONTROLLER ======= */
-.mobile-controls {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 35vh;
-    display: none;
-    z-index: 150;
-    background: linear-gradient(180deg, transparent, rgba(0,0,0,0.3));
-    pointer-events: none;
-}
-
-.touch-area {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
-    height: 120px;
-    background: rgba(0,33,102,0.2);
-    border: 2px solid #002166;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #FFD700;
-    font-weight: bold;
-    backdrop-filter: blur(5px);
-    pointer-events: auto;
-    touch-action: none;
-}
-
 .mobile-instruction {
     position: fixed;
     top: 10px;
@@ -774,90 +743,121 @@ body {
 }
 
 @media (max-width: 768px) {
-    /* FJERN ROTASJON - Spill normalt på mobil */
-    #gameField {
-        width: 95vw;
-        height: 50vh;
-        /* Fjernet: transform: rotate(90deg); */
-        /* Fjernet: transform-origin: center center; */
+    /* OPTIMALISERT FOR STÅENDE SKJERM */
+    body {
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+        height: 100%;
     }
     
     #gameContainer {
-        justify-content: center;
-        align-items: flex-start;
-        padding-top: 20px;
+        padding-top: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
     }
     
-    .mobile-controls {
-        display: block;
-    }
-    
-    /* KOMPAKT UI FOR MOBIL */
+    /* ULTRACOMPAKT UI ØVERST */
     #ui {
-        top: 10px;
-        transform: translateX(-50%) scale(0.8);
+        position: relative;
+        top: 5px;
+        transform: scale(0.5);
+        margin-bottom: -20px;
+        z-index: 100;
     }
     
     .scoreboard-container {
-        gap: 10px;
+        gap: 5px;
     }
     
     .field-logo {
-        width: 40px;
-        height: 40px;
-        padding: 2px;
+        width: 30px;
+        height: 30px;
+        padding: 1px;
     }
     
     .scoreboard {
-        padding: 6px 12px;
-        gap: 4px;
-        min-width: 220px;
+        padding: 3px 6px;
+        gap: 1px;
+        min-width: 140px;
+        border: 2px solid #444444;
     }
     
     .team-name-led {
-        font-size: 10px;
-        min-width: 70px;
+        font-size: 8px;
+        min-width: 40px;
+        max-width: 40px;
     }
     
     .score-led {
-        font-size: 18px;
-        padding: 2px 6px;
-        margin-right: 40px;
+        font-size: 12px;
+        padding: 1px 3px;
+        margin-right: 15px;
     }
     
     .clock-led {
-        font-size: 12px;
-        padding: 4px 8px;
-        right: 10px;
+        font-size: 8px;
+        padding: 2px 4px;
+        right: 3px;
     }
     
-    /* KOMPAKTE POPUPS */
+    /* FOTBALLBANE FYLLER RESTEN */
+    #gameField {
+        width: 95vw;
+        height: calc(100vh - 80px);
+        margin-top: 5px;
+    }
+    
+    /* MINDRE SPILLERE FOR BEDRE OVERSIKT */
+    .player {
+        width: 15px;
+        height: 70px;
+        font-size: 10px;
+    }
+    
+    .ball {
+        width: 15px;
+        height: 15px;
+    }
+    
+    /* ULTRACOMPAKTE POPUPS */
     .goal-scorer-display {
-        max-width: 250px;
-        padding: 15px 20px;
+        max-width: 200px;
+        padding: 10px 15px;
+        border: 2px solid #FFD700;
     }
     
     .goal-scorer-display img,
     .goal-scorer-display > div:first-child {
-        width: 60px;
-        height: 60px;
-        margin-bottom: 10px;
-        font-size: 25px;
+        width: 40px;
+        height: 40px;
+        margin-bottom: 5px;
+        font-size: 18px;
     }
     
     .goal-scorer-name {
-        font-size: 16px;
+        font-size: 12px;
+        margin-bottom: 4px;
     }
     
     .goal-scorer-team {
-        font-size: 13px;
+        font-size: 10px;
     }
     
     .halftime-screen,
     .var-screen,
     #gameMessage {
-        max-width: 300px;
-        padding: 20px 25px;
+        max-width: 250px;
+        padding: 15px 20px;
+    }
+    
+    .var-screen h2,
+    .halftime-screen h2 {
+        font-size: 16px;
+        margin-bottom: 10px;
     }
     
     /* SKJUL NAVIGASJONSKNAPPER PÅ MOBIL */
@@ -865,62 +865,105 @@ body {
         display: none !important;
     }
     
+    /* KOMPAKT RUNDEOVERSIKT */
     #roundSummary {
-        padding: 40px 15px 20px 15px;
+        padding: 30px 10px 15px 10px;
+        font-size: 12px;
+    }
+    
+    .result-row {
+        font-size: 11px;
+        padding: 4px 0;
+        margin: 0 10px;
     }
     
     /* INTRO SKJERM MOBIL */
     #introScreen img {
-        max-width: 300px;
-        max-height: 200px;
-    }
-    
-    .intro-title {
-        font-size: 18px;
-    }
-    
-    #loadingProgress {
-        width: 250px;
-    }
-}
-
-@media (max-width: 480px) {
-    #gameField {
-        height: 45vh;
-    }
-    
-    .scoreboard {
-        min-width: 180px;
-    }
-    
-    .team-name-led {
-        font-size: 9px;
-        min-width: 60px;
-    }
-    
-    .score-led {
-        font-size: 16px;
-    }
-    
-    .clock-led {
-        font-size: 11px;
-        padding: 3px 6px;
-    }
-    
-    #introScreen img {
         max-width: 250px;
         max-height: 150px;
+        margin-bottom: 20px;
     }
     
     .intro-title {
         font-size: 16px;
+        margin-bottom: 15px;
     }
     
     #loadingProgress {
         width: 200px;
+        height: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .intro-text {
+        font-size: 12px;
+        margin-bottom: 20px;
+    }
+    
+    #startGameBtn {
+        padding: 12px 25px;
+        font-size: 16px;
+    }
+    
+    /* PAUSE KNAPP */
+    #pauseBtn {
+        top: 5px;
+        left: 5px;
+        padding: 6px 10px;
+        font-size: 10px;
     }
 }
 
+@media (max-width: 480px) {
+    /* EKSTRA SMALL PHONES */
+    #gameField {
+        height: calc(100vh - 70px);
+    }
+    
+    #ui {
+        transform: scale(0.45);
+        margin-bottom: -25px;
+    }
+    
+    .player {
+        width: 12px;
+        height: 60px;
+    }
+    
+    .ball {
+        width: 12px;
+        height: 12px;
+    }
+    
+    .goal-scorer-display {
+        max-width: 180px;
+        padding: 8px 12px;
+    }
+    
+    .goal-scorer-display img,
+    .goal-scorer-display > div:first-child {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+    }
+    
+    .goal-scorer-name {
+        font-size: 11px;
+    }
+    
+    .goal-scorer-team {
+        font-size: 9px;
+    }
+}
+
+/* LANDSCAPE HINT (hvis de roterer likevel) */
+@media (max-width: 768px) and (orientation: landscape) {
+    .mobile-instruction {
+        display: block !important;
+        background: rgba(0, 170, 0, 0.9);
+        color: white;
+    }
+}
     </style>
 </head>
 <body>
@@ -4596,20 +4639,63 @@ window.continueToNextRound = continueToNextRound;
         };
 
         function checkMobile() {
-            if (window.innerWidth <= 768) {
-                document.querySelector('.mobile-instruction').style.display = 'block';
-                setTimeout(() => {
-                    document.querySelector('.mobile-instruction').style.display = 'none';
-                }, 5000);
-            }
+    if (window.innerWidth <= 768) {
+        const instruction = document.querySelector('.mobile-instruction');
+        if (instruction) {
+            instruction.style.display = 'block';
+            instruction.innerHTML = '👍 Berør fotballbanen for å styre Viking-spilleren';
+            instruction.style.background = 'rgba(0, 170, 0, 0.9)';
+            
+            setTimeout(() => {
+                instruction.style.display = 'none';
+            }, 2500);
         }
-        // Legg til etter checkMobile() funksjonen:
-function isMobileDevice() {
-    return (
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-        ('ontouchstart' in window) ||
-        window.innerWidth <= 768
-    );
+        
+        setupFullScreenTouch();
+        
+        // Hindre zoom og scroll
+        document.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        }, { passive: false });
+        
+        // Hindre context menu
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+    }
+}
+
+function setupFullScreenTouch() {
+    document.body.style.touchAction = 'none';
+    document.body.style.userSelect = 'none';
+    
+    document.addEventListener('touchstart', handleFullScreenTouch, {passive: false});
+    document.addEventListener('touchmove', handleFullScreenTouch, {passive: false});
+}
+
+function handleFullScreenTouch(e) {
+    e.preventDefault();
+    
+    if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        const gameFieldRect = gameField.getBoundingClientRect();
+        
+        // Kun reagere på berøring innenfor fotballbanen
+        if (touch.clientX >= gameFieldRect.left && 
+            touch.clientX <= gameFieldRect.right &&
+            touch.clientY >= gameFieldRect.top && 
+            touch.clientY <= gameFieldRect.bottom) {
+            
+            // Beregn Y-posisjon relativt til spillfeltet
+            const relativeY = touch.clientY - gameFieldRect.top;
+            const fieldHeight = gameFieldRect.height;
+            
+            // Konverter til spillerposisjon (på mobil er spilleren mindre)
+            const playerHeight = window.innerWidth <= 480 ? 60 : 70;
+            const maxY = fieldHeight - playerHeight - 10;
+            gameState.touchY = Math.max(5, Math.min(maxY, relativeY - playerHeight/2));
+        }
+    }
 }
 
 function optimizeForMobile() {

@@ -395,6 +395,69 @@ body {
         padding: 12px 25px;
         font-size: 16px;
     }
+     .viking {
+        left: 50% !important;
+        right: auto !important;
+        bottom: 20px !important;
+        top: auto !important;
+        transform: translateX(-50%);
+        width: 80px !important;
+        height: 15px !important;
+        border-radius: 7px !important;
+    }
+    
+    .opponent {
+        left: 50% !important;
+        right: auto !important;
+        top: 20px !important;
+        bottom: auto !important;
+        transform: translateX(-50%);
+        width: 80px !important;
+        height: 15px !important;
+        border-radius: 7px !important;
+    }
+    
+    /* Skjul side-mål og penalty-områder på mobil */
+    .goal-post.left,
+    .goal-post.right,
+    .penalty-area,
+    .goal-area {
+        display: none !important;
+    }
+    
+    /* Senterlinje blir horisontal */
+    .center-line {
+        left: 5% !important;
+        top: 50% !important;
+        width: 90% !important;
+        height: 4px !important;
+        transform: translateY(-50%) !important;
+    }
+    
+    /* Mål øverst og nederst */
+    #gameField::before {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 30%;
+        right: 30%;
+        height: 3px;
+        background: white;
+        border-radius: 2px;
+        box-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+    
+    #gameField::after {
+        content: '';
+        position: absolute;
+        top: -3px;
+        left: 30%;
+        right: 30%;
+        height: 3px;
+        background: white;
+        border-radius: 2px;
+        box-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
 }
         
 /* ======= KNAPPER ======= */
@@ -1136,6 +1199,9 @@ body {
             roundResults: [],
             paused: false,
             touchY: 350,
+            isMobile: false,
+            vikingX: 300,    // Horisontal posisjon på mobil
+            opponentX: 300,
             topScorers: [],
             audioContext: null,
             currentOpponentTeam: null,
@@ -2322,7 +2388,20 @@ function optimizeForMobile() {
         }, 100);
     }
 }
+gameState.isMobile = window.innerWidth <= 768;
 
+// Initialiser posisjoner basert på plattform
+if (gameState.isMobile) {
+    gameState.vikingX = 300;
+    gameState.opponentX = 300;
+    gameState.ballX = 300;  // Start ball i midten
+    gameState.ballY = 350;
+} else {
+    gameState.vikingY = 300;
+    gameState.opponentY = 300;
+    gameState.ballX = 550;
+    gameState.ballY = 350;
+}
 // Kall denne i initializeGame():
 optimizeForMobile();
 
@@ -2563,7 +2642,8 @@ function checkPlayerCollisions() {
     }
 }     
 
-            function updateOpponent() {
+
+function updateOpponent() {
     if (gameState.paused) return;
     
     const currentTeam = getCurrentOpponent();
@@ -2571,123 +2651,101 @@ function checkPlayerCollisions() {
     
     const difficulty = currentTeam.difficulty;
     const speed = 1.4 + difficulty * 0.4;
-    const accuracy = 0.6 + difficulty * 0.1;
     
-    // Spesiell oppførsel de første sekundene etter avspark
-    const timeSinceKickoff = Date.now() - (gameState.lastKickoffTime || 0);
-    const isKickoffSituation = timeSinceKickoff < 2000; // 2 sekunder
-    
-    let targetY;
-    
-    if (isKickoffSituation) {
-        // Ved avspark, følg ballen tettere
-        targetY = gameState.ballY - 50;
+    if (gameState.isMobile) {
+        // MOBIL: Motstander følger ball horisontalt
+        const targetX = gameState.ballX - 40; // Sentrer på ballen
+        const accuracy = 0.6 + difficulty * 0.1;
+        const error = (Math.random() - 0.5) * (60 / accuracy);
+        const adjustedTarget = targetX + error;
+
+        if (gameState.opponentX < adjustedTarget - speed) {
+            gameState.opponentX += speed;
+        } else if (gameState.opponentX > adjustedTarget + speed) {
+            gameState.opponentX -= speed;
+        }
+
+        const fieldWidth = gameField.offsetWidth;
+        const playerWidth = 80;
+        const maxX = fieldWidth - playerWidth;
+        gameState.opponentX = Math.max(0, Math.min(maxX, gameState.opponentX));
+        
+        const opponent = document.getElementById('opponent');
+        if (opponent) {
+            opponent.style.left = gameState.opponentX + 'px';
+        }
+        
     } else {
-        // Normal prediksjon
+        // DESKTOP: Vertikal bevegelse som før
         const predictedBallY = gameState.ballY + (gameState.ballVelY * 7);
-        targetY = predictedBallY - 50;
+        const targetY = predictedBallY - 50;
+        const accuracy = 0.6 + difficulty * 0.1;
+        const error = (Math.random() - 0.5) * (80 / accuracy);
+        const adjustedTarget = targetY + error;
+
+        if (gameState.opponentY < adjustedTarget - speed) {
+            gameState.opponentY += speed;
+        } else if (gameState.opponentY > adjustedTarget + speed) {
+            gameState.opponentY -= speed;
+        }
+
+        const fieldRect = gameField.getBoundingClientRect();
+        const maxY = fieldRect.height - 140;
+        gameState.opponentY = Math.max(0, Math.min(maxY, gameState.opponentY));
+        
+        const opponent = document.getElementById('opponent');
+        if (opponent) {
+            opponent.style.top = gameState.opponentY + 'px';
+        }
     }
-    
-    const error = (Math.random() - 0.5) * (80 / accuracy);
-    const adjustedTarget = targetY + error;
-
-    if (gameState.opponentY < adjustedTarget - speed) {
-        gameState.opponentY += speed * (isKickoffSituation ? 1.5 : 1); // Raskere ved avspark
-    } else if (gameState.opponentY > adjustedTarget + speed) {
-        gameState.opponentY -= speed * (isKickoffSituation ? 1.5 : 1);
-    }
-
-    const fieldRect = gameField.getBoundingClientRect();
-    const maxY = fieldRect.height - 140;
-    gameState.opponentY = Math.max(0, Math.min(maxY, gameState.opponentY));
-    opponent.style.top = gameState.opponentY + 'px';
-}            
-
-            function updateViking() {
+}
+            
+function updateViking() {
     if (gameState.paused) return;
     
-    const targetY = (window.innerWidth <= 768 ? gameState.touchY : gameState.mouseY) - 50;
-    const smoothing = window.innerWidth <= 768 ? 0.3 : 0.8; // Mye mindre smoothing på mobil = mindre responsiv
-    const newY = gameState.vikingY + (targetY - gameState.vikingY) * smoothing;
-    
-    const fieldRect = gameField.getBoundingClientRect();
-    const maxY = fieldRect.height - 140;
-    gameState.vikingY = Math.max(0, Math.min(maxY, newY));
-    viking.style.top = gameState.vikingY + 'px';
+    if (gameState.isMobile) {
+        // MOBIL: Horisontal bevegelse basert på touch
+        const touchArea = document.getElementById('touchArea');
+        if (!touchArea) return;
+        
+        const touchAreaRect = touchArea.getBoundingClientRect();
+        const fieldWidth = gameField.offsetWidth;
+        
+        // Konverter touch-posisjon til X-koordinat
+        // touchY representerer faktisk horisontell bevegelse på den runde kontrolleren
+        const relativeTouch = gameState.touchY / window.innerHeight;
+        const targetX = relativeTouch * fieldWidth;
+        
+        const smoothing = 0.3;
+        const newX = gameState.vikingX + (targetX - gameState.vikingX) * smoothing;
+        
+        // Begrens til spillfeltets bredde
+        const playerWidth = 80;
+        const maxX = fieldWidth - playerWidth;
+        gameState.vikingX = Math.max(0, Math.min(maxX, newX));
+        
+        const viking = document.getElementById('viking');
+        if (viking) {
+            viking.style.left = gameState.vikingX + 'px';
+        }
+        
+    } else {
+        // DESKTOP: Vertikal bevegelse som før
+        const targetY = gameState.mouseY - 50;
+        const smoothing = 0.8;
+        const newY = gameState.vikingY + (targetY - gameState.vikingY) * smoothing;
+        
+        const fieldRect = gameField.getBoundingClientRect();
+        const maxY = fieldRect.height - 140;
+        gameState.vikingY = Math.max(0, Math.min(maxY, newY));
+        
+        const viking = document.getElementById('viking');
+        if (viking) {
+            viking.style.top = gameState.vikingY + 'px';
+        }
+    }
 }
-
-            function goalScored(scorer) {
-                if (gameState.halfTimeBreak || gameState.matchTime >= 90) {
-        console.log('🚫 Mål ignorert - kampause eller kampen er ferdig');
-        return;
-    }
-    gameState.gameActive = false;
-
-    let goalScorer;
-    let isVikingFifthGoal = false;
-    
-    if (scorer === 'viking') {
-        gameState.vikingScore++;
-        goalScorer = getRandomPlayer(vikingTeam);
-        
-        // SPILL SCORING-LYD UMIDDELBART (før VAR)
-        soundSystem.playScoring();
-        
-        if (gameState.vikingScore === 5) {
-            isVikingFifthGoal = true;
-        }
-        
-        const currentMatch = vikingSchedule[gameState.currentMatchIndex];
-         if (currentMatch && currentMatch.type === 'cup') {
-        addToCupTopScorers(goalScorer, vikingTeam);
-    } else {
-        addToTopScorers(goalScorer, vikingTeam);  // FLYTTET HIT
-    }
-        
-        if (checkForVAR(scorer, goalScorer, vikingTeam, isVikingFifthGoal)) {
-            return; // VAR håndterer bare celebration-lyd
-        } else {
-            // INGEN VAR - spill celebration hvis 5. mål
-            if (isVikingFifthGoal) {
-                setTimeout(() => soundSystem.playViking5Goals(), 2000);
-            }
-            showGoalScorerDisplay(goalScorer, vikingTeam);
             
-            // LEGG TIL DENNE setTimeout FOR VIKING OGSÅ:
-            setTimeout(() => {
-                kickOff(scorer === 'viking' ? 'opponent' : 'viking');
-gameState.gameActive = true;
-            }, 4000);
-        }
-    
-    } else {
-        gameState.opponentScore++;
-        const currentOpponentTeam = getCurrentOpponent();
-        goalScorer = getRandomPlayer(currentOpponentTeam);
-        
-        const currentMatch = vikingSchedule[gameState.currentMatchIndex];
-        if (currentMatch && currentMatch.type === 'cup') {
-        addToCupTopScorers(goalScorer, currentOpponentTeam);
-    } else {
-        addToTopScorers(goalScorer, currentOpponentTeam);  // FLYTTET HIT
-    }
-        
-        if (checkForVAR(scorer, goalScorer, currentOpponentTeam, false)) {
-            return; // VAR håndterer lydene
-        } else {
-            // INGEN VAR - ikke spill scoring-lyd for motstander
-            showGoalScorerDisplay(goalScorer, currentOpponentTeam);
-            
-            setTimeout(() => {
-                kickOff(scorer === 'viking' ? 'opponent' : 'viking');
-gameState.gameActive = true;
-            }, 4000);
-        }
-    }
-
-    updateUI(); // Ikke glem denne!
-}
-   
             function checkForVAR(scorer, goalScorer, team, isVikingFifthGoal = false) {
     if (Math.random() < 0.1) {
         console.log('🎥 VAR-situasjon!');

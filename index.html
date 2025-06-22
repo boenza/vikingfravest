@@ -4522,16 +4522,33 @@ function nextMatch() {
     gameState.vikingScore = 0;
     gameState.opponentScore = 0;
     
-    // Reset player positions to first half
-    const viking = document.getElementById('viking');
-    const opponent = document.getElementById('opponent');
-    if (viking) {
-        viking.style.left = '40px';
-        viking.style.right = 'auto';
-    }
-    if (opponent) {
-        opponent.style.right = '40px'; 
-        opponent.style.left = 'auto';
+    // Reset player positions based on platform
+    if (gameState.isMobile) {
+        // MOBIL: Reset til sentrum
+        const fieldWidth = gameField ? gameField.offsetWidth : window.innerWidth;
+        gameState.vikingX = fieldWidth / 2 - 40;
+        gameState.opponentX = fieldWidth / 2 - 40;
+        
+        const viking = document.getElementById('viking');
+        const opponent = document.getElementById('opponent');
+        if (viking) {
+            viking.style.transform = 'translateX(-50%)';
+        }
+        if (opponent) {
+            opponent.style.transform = 'translateX(-50%)';
+        }
+    } else {
+        // DESKTOP: Reset til sider som før
+        const viking = document.getElementById('viking');
+        const opponent = document.getElementById('opponent');
+        if (viking) {
+            viking.style.left = '40px';
+            viking.style.right = 'auto';
+        }
+        if (opponent) {
+            opponent.style.right = '40px'; 
+            opponent.style.left = 'auto';
+        }
     }
     
     // Reset ball completely
@@ -4556,10 +4573,10 @@ function nextMatch() {
     
     updateUI();
     updateOpponentJersey();
-
+    
     if (nextMatchData && nextMatchData.type === 'cup') {
-    showCupIntro(nextMatchData.round, nextMatchData.opponent);
-}
+        showCupIntro(nextMatchData.round, nextMatchData.opponent);
+    }
     
     const clockElement = document.getElementById('matchClock');
     if (clockElement) {
@@ -4567,25 +4584,23 @@ function nextMatch() {
     }
     
     // Start new match
-    // Start new match
-console.log('🔄 Starting new match kickoff with countdown');
-
-let countdownText = "KAMPSTART";
-if (nextMatchData) {
-    if (nextMatchData.type === 'cup') {
-        countdownText = `CUP ${cupData.roundNames[nextMatchData.round] || 'KAMP'}`;
-    } else {
-        countdownText = `RUNDE ${nextMatchData.round}`;
+    console.log('🔄 Starting new match kickoff with countdown');
+    let countdownText = "KAMPSTART";
+    if (nextMatchData) {
+        if (nextMatchData.type === 'cup') {
+            countdownText = `CUP ${cupData.roundNames[nextMatchData.round] || 'KAMP'}`;
+        } else {
+            countdownText = `RUNDE ${nextMatchData.round}`;
+        }
     }
+    
+    showCountdown(() => {
+        kickOff('viking');
+        gameState.gameActive = true;
+    }, countdownText);
 }
-
-showCountdown(() => {
-    kickOff('viking');
-    gameState.gameActive = true;
-}, countdownText);
-}
-
-function forceUpdateScoreboard() {
+        
+        function forceUpdateScoreboard() {
     console.log('📊 Force updating scoreboard'); // DEBUG
     const homeScore = document.getElementById('homeScore');
     const awayScore = document.getElementById('awayScore');

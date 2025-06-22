@@ -4901,15 +4901,15 @@ document.addEventListener('touchmove', (e) => {
 }
 
 function setupFullScreenTouch() {
+    console.log('🔧 Setting up fullscreen touch');
+    
     document.body.style.touchAction = 'none';
     document.body.style.userSelect = 'none';
     
-    // Kun legg til touch handlers etter at spillet har startet
-    // Ikke under intro-skjermen
-    if (!document.getElementById('introScreen')) {
-        document.addEventListener('touchstart', handleFullScreenTouch, {passive: false});
-        document.addEventListener('touchmove', handleFullScreenTouch, {passive: false});
-    }
+    // Legg til event listeners uansett (fjern intro-sjekken)
+    console.log('🔧 Adding touch event listeners');
+    document.addEventListener('touchstart', handleFullScreenTouch, {passive: false});
+    document.addEventListener('touchmove', handleFullScreenTouch, {passive: false});
 }
 
 function handleFullScreenTouch(e) {

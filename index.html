@@ -205,6 +205,10 @@ body {
     border-radius: 50%;
     box-shadow: 0 0 20px rgba(255,255,255,0.9);
     transition: none;
+    /* Legg til disse linjene: */
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 /* ======= UI OG SCOREBOARD ======= */
@@ -775,48 +779,53 @@ body {
     }
 
     /* UI SKALERING */
-    #ui {
-        position: relative;
-        top: 5px;
-        transform: scale(0.7);
-        margin-bottom: -15px;
+     #ui {
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%) scale(0.9); /* Større og sentrert */
+        margin-bottom: 0;
         z-index: 100;
+        width: 100%;
+        display: flex;
+        justify-content: center;
     }
     
     .scoreboard-container {
-        gap: 8px;
+        gap: 15px;
     }
     
     .field-logo {
-        width: 35px;
-        height: 35px;
+        width: 40px;
+        height: 40px;
         padding: 2px;
     }
     
     .scoreboard {
-        padding: 4px 8px;
-        gap: 2px;
-        min-width: 180px;
+        padding: 6px 12px;
+        gap: 3px;
+        min-width: 220px;
         border: 2px solid #444444;
     }
     
     .team-name-led {
-        font-size: 10px;
-        min-width: 50px;
-        max-width: 50px;
+        font-size: 12px;
+        min-width: 60px;
+        max-width: 60px;
     }
     
     .score-led {
-        font-size: 14px;
-        padding: 2px 4px;
-        margin-right: 20px;
+        font-size: 16px;
+        padding: 3px 6px;
+        margin-right: 25px;
     }
     
     .clock-led {
-        font-size: 10px;
-        padding: 3px 5px;
-        right: 5px;
+        font-size: 12px;
+        padding: 4px 6px;
+        right: 8px;
     }
+}
 
     /* SPILLFELT */
     #gameField {
@@ -852,6 +861,7 @@ body {
     .ball {
         width: 15px;
         height: 15px;
+        transform: translateZ(0); /* Hardware acceleration */
     }
 
     /* FOTBALLBANE-ELEMENTER FOR VERTIKAL SPILLING */
@@ -4792,8 +4802,8 @@ window.continueToNextRound = continueToNextRound;
         halfTimeBreak: gameState.halfTimeBreak
     });
     
-    // Swap sides if not already done
-    if (!gameState.sidesSwapped) {
+    // Swap sides BARE på desktop, ikke mobil
+    if (!gameState.sidesSwapped && !gameState.isMobile) {
         gameState.sidesSwapped = true;
         
         const viking = document.getElementById('viking');
@@ -4820,6 +4830,25 @@ window.continueToNextRound = continueToNextRound;
         
         updateUI();
         updateOpponentJersey();
+        
+    } else if (gameState.isMobile) {
+        // MOBIL: Reset spillere til sentrum, ikke bytt sider
+        const viking = document.getElementById('viking');
+        const opponent = document.getElementById('opponent');
+        const fieldWidth = gameField ? gameField.offsetWidth : window.innerWidth;
+        
+        gameState.vikingX = fieldWidth / 2 - 40;
+        gameState.opponentX = fieldWidth / 2 - 40;
+        
+        if (viking) {
+            viking.style.transform = 'translateX(-50%)';
+        }
+        if (opponent) {
+            opponent.style.transform = 'translateX(-50%)';
+        }
+        
+        updateUI();
+        updateOpponentJersey();
     }
     
     const clockElement = document.getElementById('matchClock');
@@ -4830,11 +4859,10 @@ window.continueToNextRound = continueToNextRound;
     // Start kickoff
     console.log('🔄 Starting second half kickoff');
     showCountdown(() => {
-    kickOff(gameState.vikingScore > gameState.opponentScore ? 'opponent' : 'viking');
-    gameState.gameActive = true;
-}, "2. OMGANG");
+        kickOff(gameState.vikingScore > gameState.opponentScore ? 'opponent' : 'viking');
+        gameState.gameActive = true;
+    }, "2. OMGANG");
 };
-
         window.restartSeason = function() {
             gameState.currentRound = 1;
             gameState.currentMatchIndex = 0;

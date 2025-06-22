@@ -1843,105 +1843,105 @@ playVAR() {
         };
 
         const teams = [
-            { name: 'Bodø/Glimt', excelName: 'Bodø/Glimt', logo: 'bodo-glimt.png', difficulty: 5, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#FFD700', secondaryColor: '#FFD700', pattern: 'solid', players: [
+            { name: 'Bodø/Glimt', isSerieTeam: true, excelName: 'Bodø/Glimt', logo: 'bodo-glimt.png', difficulty: 5, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#FFD700', secondaryColor: '#FFD700', pattern: 'solid', players: [
         {name: 'Kasper Høgh', image: 'kasper-hogh', emoji: '⚽', goals2025: 7},
         {name: 'Ulrik Saltnes', image: 'ulrik-saltnes', emoji: '💪', goals2025: 5},
         {name: 'Ole Blomberg', image: 'ole-blomberg', emoji: '🎯', goals2025: 3},
         {name: 'Jens Petter Hauge', image: 'jens-petter-hauge', emoji: '🚀', goals2025: 1},
         {name: 'Patrick Berg', image: 'patrick-berg', emoji: '🛡️', goals2025: 1}
     ]},
-    { name: 'Rosenborg BK', excelName: 'Rosenborg', logo: 'rosenborg.png', difficulty: 4, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#FFFFFF', secondaryColor: '#000000', pattern: 'solid', players: [
+    { name: 'Rosenborg BK', isSerieTeam: true, excelName: 'Rosenborg', logo: 'rosenborg.png', difficulty: 4, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#FFFFFF', secondaryColor: '#000000', pattern: 'solid', players: [
         {name: 'Marius Broholm', image: 'marius-broholm', emoji: '👑', goals2025: 5},
         {name: 'Sverre Nypan', image: 'sverre-nypan', emoji: '⚡', goals2025: 2},
         {name: 'Ole Sæter', image: 'ole-seter', emoji: '🎯', goals2025: 1},
         {name: 'Adrian Pereira', image: 'adrian-pereira', emoji: '🛡️', goals2025: 1},
         {name: 'Noah Holm', image: 'noah-holm', emoji: '💨', goals2025: 1}
     ]},
-    { name: 'Molde FK', excelName: 'Molde', logo: 'molde-fk.jpg', difficulty: 4, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#4A90E2', secondaryColor: '#FFFFFF', pattern: 'solid', players: [
+    { name: 'Molde FK', isSerieTeam: true, excelName: 'Molde', logo: 'molde-fk.jpg', difficulty: 4, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#4A90E2', secondaryColor: '#FFFFFF', pattern: 'solid', players: [
         {name: 'Kristian Eriksen', image: 'kristian-eriksen', emoji: '⚽', goals2025: 3},
         {name: 'Veton Berisha', image: 'veton-berisha', emoji: '🎯', goals2025: 3},
         {name: 'Martin Linnes', image: 'martin-linnes', emoji: '💎', goals2025: 2},
         {name: 'Fredrik Gulbrandsen', image: 'fredrik-gulbrandsen', emoji: '💪', goals2025: 1},
         {name: 'Magnus Wolff Eikrem', image: 'magnus-wolff-eikrem', emoji: '🚀', goals2025: 1}
     ]},
-    { name: 'Brann', excelName: 'Brann', logo: 'brann.png', difficulty: 3, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#DC143C', secondaryColor: '#DC143C', pattern: 'solid', players: [
+    { name: 'Brann', isSerieTeam: true, excelName: 'Brann', logo: 'brann.png', difficulty: 3, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#DC143C', secondaryColor: '#DC143C', pattern: 'solid', players: [
         {name: 'Aune Heggebø', image: 'aune-heggebo', emoji: '👑', goals2025: 7},
         {name: 'Mads Sande', image: 'mads-sande', emoji: '💎', goals2025: 3},
         {name: 'Bård Finne', image: 'bard-finne', emoji: '💥', goals2025: 3},
         {name: 'Niklas Castro', image: 'niklas-castro', emoji: '🎯', goals2025: 3},
         {name: 'Emil Kornvig', image: 'emil-kornvig', emoji: '⚡', goals2025: 2}
     ]},
-    { name: 'Fredrikstad', excelName: 'Fredrikstad', logo: 'fredrikstad.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#DC143C', secondaryColor: '#FFFFFF', pattern: 'solid', players: [
+    { name: 'Fredrikstad', isSerieTeam: true, excelName: 'Fredrikstad', logo: 'fredrikstad.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#DC143C', secondaryColor: '#FFFFFF', pattern: 'solid', players: [
         {name: 'Sondre Sørløkk', image: 'sondre-sorlokk', emoji: '⚽', goals2025: 3},
         {name: 'Emil Holten', image: 'emil-holten', emoji: '🎯', goals2025: 3},
         {name: 'Oskar Øhlenschlæger', image: 'oskar-ohlenschlaeger', emoji: '✨', goals2025: 2},
         {name: 'Fallou Fall', image: 'fallou-fall', emoji: '💪', goals2025: 1},
         {name: 'Stian Molde', image: 'stian-molde', emoji: '🛡️', goals2025: 1}
     ]},
-    { name: 'Vålerenga', excelName: 'Vålerenga', logo: 'valerenga.png', difficulty: 3, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#4A90E2', secondaryColor: '#DC143C', pattern: 'stripe_thin', players: [
+    { name: 'Vålerenga', isSerieTeam: true, excelName: 'Vålerenga', logo: 'valerenga.png', difficulty: 3, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#4A90E2', secondaryColor: '#DC143C', pattern: 'stripe_thin', players: [
         {name: 'Elias Sørensen', image: 'elias-sorensen', emoji: '⚽', goals2025: 3},
         {name: 'Magnus Riisnæs', image: 'magnus-riisnes', emoji: '💎', goals2025: 2},
         {name: 'Henrik Bjørdal', image: 'henrik-bjordal', emoji: '⚡', goals2025: 2},
         {name: 'Fidel Ambina', image: 'fidel-ambina', emoji: '🚀', goals2025: 1},
         {name: 'Muamer Brajanac', image: 'muamer-brajanac', emoji: '🎯', goals2025: 1}
     ]},
-    { name: 'KFUM Oslo', excelName: 'KFUM', logo: 'kfum-oslo.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#FF6B6B', secondaryColor: '#4A90E2', pattern: 'tricolor', players: [
+    { name: 'KFUM Oslo', isSerieTeam: true, excelName: 'KFUM', logo: 'kfum-oslo.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#FF6B6B', secondaryColor: '#4A90E2', pattern: 'tricolor', players: [
         {name: 'Moussa Njie', image: 'moussa-njie', emoji: '⚽', goals2025: 2},
         {name: 'Johannes Nunez', image: 'johannes-nunez', emoji: '🎯', goals2025: 2},
         {name: 'Simen Hestnes', image: 'simen-hestnes', emoji: '💎', goals2025: 1},
         {name: 'Mame Ndiaye', image: 'mame-ndiaye', emoji: '💪', goals2025: 1},
         {name: 'Teodor Haltvik', image: 'teodor-haltvik', emoji: '🛡️', goals2025: 0}
     ]},
-    { name: 'Haugesund', excelName: 'Haugesund', logo: 'haugesund.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#FFFFFF', secondaryColor: '#4A90E2', pattern: 'solid', players: [
+    { name: 'Haugesund', isSerieTeam: true, excelName: 'Haugesund', logo: 'haugesund.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#FFFFFF', secondaryColor: '#4A90E2', pattern: 'solid', players: [
         {name: 'Madiodio Dia', image: 'madiodio-dia', emoji: '⚽', goals2025: 1},
         {name: 'Julius Eskesen', image: 'julius-eskesen', emoji: '🎯', goals2025: 1},
         {name: 'Sory Ibrahim Diarra', image: 'sory-ibrahim-diarra', emoji: '💪', goals2025: 1},
         {name: 'Troy Nyhammer', image: 'troy-nyhammer', emoji: '🚀', goals2025: 0},
         {name: 'Bruno Leite', image: 'bruno-leite', emoji: '⚡', goals2025: 0}
     ]},
-    { name: 'Kristiansund BK', excelName: 'Kristiansund', logo: 'kristiansund.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#708090', secondaryColor: '#708090', pattern: 'solid', players: [
+    { name: 'Kristiansund BK', isSerieTeam: true, excelName: 'Kristiansund', logo: 'kristiansund.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#708090', secondaryColor: '#708090', pattern: 'solid', players: [
         {name: 'David Tufekcic', image: 'david-tufekcic', emoji: '⚽', goals2025: 3},
         {name: 'Sander Kilen', image: 'sander-kilen', emoji: '🎯', goals2025: 3},
         {name: 'Ruben Alte', image: 'ruben-alte', emoji: '💎', goals2025: 2},
         {name: 'Alioune Ndour', image: 'alioune-ndour', emoji: '💪', goals2025: 2},
         {name: 'Rezan Corlu', image: 'rezan-corlu', emoji: '🚀', goals2025: 1}
     ]},
-    { name: 'Sarpsborg 08', excelName: 'Sarpsborg 08', logo: 'sarpsborg.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#87CEEB', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
+    { name: 'Sarpsborg 08', isSerieTeam: true, excelName: 'Sarpsborg 08', logo: 'sarpsborg.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#87CEEB', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
         {name: 'Daniel Karlsbakk', image: 'daniel-karlsbakk', emoji: '⚽', goals2025: 6},
         {name: 'Harald Nilsen Tangen', image: 'harald-nilsen-tangen', emoji: '💎', goals2025: 2},
         {name: 'Frederik Carstensen', image: 'frederik-carstensen', emoji: '🎯', goals2025: 2},
         {name: 'Sveinn Gudjohnsen', image: 'sveinn-gudjohnsen', emoji: '💪', goals2025: 2},
         {name: 'Sondre Ørjasæter', image: 'sondre-orjaseter', emoji: '⚡', goals2025: 1}
     ]},
-    { name: 'Sandefjord', excelName: 'Sandefjord Fotball', logo: 'sandefjord.png', difficulty: 1, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#4169E1', secondaryColor: '#4169E1', pattern: 'solid', players: [
+    { name: 'Sandefjord', isSerieTeam: true, excelName: 'Sandefjord Fotball', logo: 'sandefjord.png', difficulty: 1, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#4169E1', secondaryColor: '#4169E1', pattern: 'solid', players: [
         {name: 'Stefan Sigurdarson', image: 'stefan-sigurdarson', emoji: '⚽', goals2025: 5},
         {name: 'Jakob Dunsby', image: 'jakob-dunsby', emoji: '🎯', goals2025: 2},
         {name: 'Christopher Cheng', image: 'christopher-cheng', emoji: '💪', goals2025: 2},
         {name: 'Zinedin Smajlovic', image: 'zinedin-smajlovic', emoji: '⚡', goals2025: 1},
         {name: 'Sander Mørk', image: 'sander-mork', emoji: '💎', goals2025: 1}
     ]},
-    { name: 'Strømsgodset', excelName: 'Strømsgodset', logo: 'stromsgodset.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#1E3A8A', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
+    { name: 'Strømsgodset', isSerieTeam: true, excelName: 'Strømsgodset', logo: 'stromsgodset.png', difficulty: 2, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#1E3A8A', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
         {name: 'Marko Farji', image: 'marko-farji', emoji: '⚽', goals2025: 5},
         {name: 'Jonas Therkelsen', image: 'jonas-therkelsen', emoji: '🎯', goals2025: 2},
         {name: 'Logi Tómasson', image: 'logi-tomasson', emoji: '💪', goals2025: 1},
         {name: 'Fredrik Dahl', image: 'fredrik-dahl', emoji: '💎', goals2025: 1},
         {name: 'Herman Stengel', image: 'herman-stengel', emoji: '🚀', goals2025: 1}
     ]},
-    { name: 'Tromsø IL', excelName: 'Tromsø', logo: 'tromso.png', difficulty: 1, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#DC143C', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
+    { name: 'Tromsø IL', isSerieTeam: true, excelName: 'Tromsø', logo: 'tromso.png', difficulty: 1, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#DC143C', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
         {name: 'Daniel Braut', image: 'daniel-braut', emoji: '⚽', goals2025: 5},
         {name: 'Ieltsin Camões', image: 'ieltsin-camoes', emoji: '🎯', goals2025: 3},
         {name: 'Vetle Skjærvik', image: 'vetle-skjaervik', emoji: '💎', goals2025: 2},
         {name: 'August Mikkelsen', image: 'august-mikkelsen', emoji: '💪', goals2025: 1},
         {name: 'Jakob Napoleon Romsaas', image: 'jakob-napoleon-romsaas', emoji: '⚡', goals2025: 1}
     ]},
-    { name: 'HamKam', excelName: 'HamKam', logo: 'hamkam.png', difficulty: 1, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#228B22', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
+    { name: 'HamKam', isSerieTeam: true, excelName: 'HamKam', logo: 'hamkam.png', difficulty: 1, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#228B22', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
         {name: 'Moses Mawa', image: 'moses-mawa', emoji: '⚽', goals2025: 2},
         {name: 'Kristian Lien', image: 'kristian-lien', emoji: '🎯', goals2025: 2},
         {name: 'Snorre Nilsen', image: 'snorre-nilsen', emoji: '💎', goals2025: 1},
         {name: 'Alwande Roaldsøy', image: 'alwande-roaldsoy', emoji: '💪', goals2025: 1},
         {name: 'Tore Sørås', image: 'tore-soras', emoji: '⚡', goals2025: 1}
     ]},
-    { name: 'Bryne FK', excelName: 'Bryne', logo: 'bryne.png', difficulty: 1, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#DC143C', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
+    { name: 'Bryne FK', isSerieTeam: true, excelName: 'Bryne', logo: 'bryne.png', difficulty: 1, played: 0, won: 0, lost: 0, points: 0, goalsFor: 0, goalsAgainst: 0, color: '#DC143C', secondaryColor: '#FFFFFF', pattern: 'stripes', players: [
         {name: 'Duarte Moreira', image: 'duarte-moreira', emoji: '⚽', goals2025: 4},
         {name: 'Sanel Bojadzic', image: 'sanel-bojadzic', emoji: '🎯', goals2025: 3},
         {name: 'Nicklas Jakobsen', image: 'nicklas-jakobsen', emoji: '💎', goals2025: 2},
@@ -2113,9 +2113,10 @@ playVAR() {
             }
 
             function addToTopScorers(player, team) {
-                if (!player || !team || !player.name || !team.name) {
-                    return;
-                }
+    // Kun legg til i serie-toppscorere hvis det er et serielag
+    if (!team.isSerieTeam && team.name !== 'Viking FK') {
+        return; // Ikke legg cuplag i serie-toppscorere
+    }
                 
                 const existingScorer = gameState.topScorers.find(s => s.name === player.name && s.team === team.name);
                 if (existingScorer) {
@@ -3311,8 +3312,8 @@ function cleanupVAR() {
 }
 
             function updateTable() {
-    // Kun serielag (de 16 lagene) - ikke cup-lag
-    const serieLag = teams.filter(team => team.difficulty !== undefined);
+    // Kun serielag (16 lag) - filtrer på isSerieTeam flagg
+    const serieLag = teams.filter(team => team.isSerieTeam === true);
     const allTeams = [vikingTeam, ...serieLag];
     
     allTeams.sort((a, b) => {
@@ -4320,7 +4321,11 @@ function getTeamFolderName(teamName) {
 
 function generateOtherResults() {
     const currentOpponent = getCurrentOpponent();
-    const otherTeams = teams.filter(team => team.name !== currentOpponent?.name);
+    
+    // Kun serielag i andre resultater
+    const serieLag = teams.filter(team => team.isSerieTeam === true);
+    const otherTeams = serieLag.filter(team => team.name !== currentOpponent?.name);
+    
     const results = [];
 
     for (let i = 0; i < otherTeams.length - 1; i += 2) {

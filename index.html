@@ -918,7 +918,7 @@ body {
         width: 100%;
         height: 60px;
         background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,165,0,0.2));
-        color: #FFD700;
+        color: #000000; /* ENDRE TIL SVART */
         text-align: center;
         font-size: 10px;
         z-index: 100;
@@ -991,23 +991,38 @@ body {
     /* NAVIGASJONSKNAPPER */
     .floating-nav-btn {
         position: fixed !important;
-        bottom: 80px !important;
+        bottom: 20px !important; /* Lavere på skjermen */
+        font-size: 14px !important;
+        padding: 12px 20px !important;
+        max-width: 35vw !important;
+        text-align: center !important;
+        z-index: 250 !important;
+    }
+    
+    /* Forrige knapp til venstre */
+    .floating-nav-btn:nth-child(2) {
+        left: 10px !important;
+        right: auto !important;
+        top: auto !important;
+        transform: none !important;
+    }
+    
+    /* Neste knapp til høyre */
+    .floating-nav-btn:nth-child(3) {
+        right: 10px !important;
+        left: auto !important;
+        top: auto !important;
+        transform: none !important;
+    }
+    
+    /* Hovedknapp sentrert nederst */
+    .floating-nav-btn:last-child {
         left: 50% !important;
         right: auto !important;
         top: auto !important;
         transform: translateX(-50%) !important;
-        font-size: 14px !important;
-        padding: 12px 20px !important;
-        max-width: 80vw !important;
-        text-align: center !important;
-    }
-    
-    .floating-nav-btn:nth-child(2) {
-        bottom: 140px !important;
-    }
-    
-    .floating-nav-btn:nth-child(3) {
-        bottom: 200px !important;
+        bottom: 20px !important;
+        max-width: 60vw !important;
     }
 
     /* RUNDEOVERSIKT */
@@ -3296,14 +3311,17 @@ function cleanupVAR() {
 }
 
             function updateTable() {
-                const allTeams = [vikingTeam, ...teams];
-                allTeams.sort((a, b) => {
-                    if (b.points !== a.points) return b.points - a.points;
-                    const aGoalDiff = a.goalsFor - a.goalsAgainst;
-                    const bGoalDiff = b.goalsFor - b.goalsAgainst;
-                    if (bGoalDiff !== aGoalDiff) return bGoalDiff - aGoalDiff;
-                    return b.goalsFor - a.goalsFor;
-                });
+    // Kun serielag (de 16 lagene) - ikke cup-lag
+    const serieLag = teams.filter(team => team.difficulty !== undefined);
+    const allTeams = [vikingTeam, ...serieLag];
+    
+    allTeams.sort((a, b) => {
+        if (b.points !== a.points) return b.points - a.points;
+        const aGoalDiff = a.goalsFor - a.goalsAgainst;
+        const bGoalDiff = b.goalsFor - b.goalsAgainst;
+        if (bGoalDiff !== aGoalDiff) return bGoalDiff - aGoalDiff;
+        return b.goalsFor - a.goalsFor;
+    });
 
                 const tableContent = document.getElementById('tableContent');
                 if (!tableContent) return;

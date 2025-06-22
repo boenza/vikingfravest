@@ -396,7 +396,7 @@ body {
         font-size: 16px;
     }
      .viking {
-        left: 50% !important;
+        left: 50%;
         right: auto !important;
         bottom: 20px !important;
         top: auto !important;
@@ -407,7 +407,7 @@ body {
     }
     
     .opponent {
-        left: 50% !important;
+        left: 50%;
         right: auto !important;
         top: 20px !important;
         bottom: auto !important;
@@ -2796,7 +2796,7 @@ function updateOpponent() {
     
     if (gameState.isMobile) {
         // MOBIL: Motstander følger ball horisontalt
-        const targetX = gameState.ballX - 40; // Sentrer på ballen
+        const targetX = gameState.ballX - 40;
         const accuracy = 0.6 + difficulty * 0.1;
         const error = (Math.random() - 0.5) * (60 / accuracy);
         const adjustedTarget = targetX + error;
@@ -2814,7 +2814,9 @@ function updateOpponent() {
         
         const opponent = document.getElementById('opponent');
         if (opponent) {
-            opponent.style.left = gameState.opponentX + 'px';
+            const centerOffset = (gameState.opponentX - fieldWidth/2) + playerWidth/2;
+            opponent.style.transform = `translateX(calc(-50% + ${centerOffset}px))`;
+            console.log('🤖 Opponent moved to:', gameState.opponentX);
         }
         
     } else {
@@ -2846,15 +2848,18 @@ function updateViking() {
     if (gameState.paused) return;
     
     if (gameState.isMobile) {
-        // MOBIL: Posisjon settes direkte i handleFullScreenTouch
-        // Vi trenger bare å oppdatere DOM-elementet
         const viking = document.getElementById('viking');
         if (viking) {
-            viking.style.left = gameState.vikingX + 'px';
+            // Bruk transform i stedet for left-posisjon
+            const fieldWidth = gameField.offsetWidth;
+            const playerWidth = 80;
+            const centerOffset = (gameState.vikingX - fieldWidth/2) + playerWidth/2;
+            
+            viking.style.transform = `translateX(calc(-50% + ${centerOffset}px))`;
+            console.log('🎮 Viking moved to:', gameState.vikingX, 'transform:', centerOffset);
         }
-        
     } else {
-        // DESKTOP: Vertikal bevegelse som før
+        // DESKTOP: Som før
         const targetY = gameState.mouseY - 50;
         const smoothing = 0.8;
         const newY = gameState.vikingY + (targetY - gameState.vikingY) * smoothing;
@@ -2868,7 +2873,7 @@ function updateViking() {
             viking.style.top = gameState.vikingY + 'px';
         }
     }
-}            
+}
             function checkForVAR(scorer, goalScorer, team, isVikingFifthGoal = false) {
     if (Math.random() < 0.1) {
         console.log('🎥 VAR-situasjon!');

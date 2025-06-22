@@ -2682,32 +2682,47 @@ function updateBall() {
     const ballCenterX = gameState.ballX + 10;
     const ballCenterY = gameState.ballY + 10;
     
-    if (gameState.isMobile) {
+     if (gameState.isMobile) {
         // MOBIL: Horisontale spillere, ball treffer ovenfra/nedenfra
         
-        // Viking-kollisjon (nederst)
-        const vikingTop = gameField.offsetHeight - 40; // Viking er 20px fra bunnen
-        if (ballCenterY >= vikingTop && ballCenterY <= vikingTop + 15 &&
-            ballCenterX >= gameState.vikingX && ballCenterX <= gameState.vikingX + 80) {
+        // Viking-kollisjon (nederst) - bruk faktiske posisjoner
+        const vikingRect = viking.getBoundingClientRect();
+        const gameFieldRect = gameField.getBoundingClientRect();
+        
+        // Konverter til relativ posisjon innenfor spillfeltet
+        const vikingRelativeBottom = gameFieldRect.bottom - vikingRect.top;
+        const vikingRelativeLeft = vikingRect.left - gameFieldRect.left;
+        const vikingRelativeRight = vikingRect.right - gameFieldRect.left;
+        
+        if (ballCenterY >= (gameField.offsetHeight - vikingRelativeBottom) && 
+            ballCenterY <= (gameField.offsetHeight - vikingRelativeBottom + 20) &&
+            ballCenterX >= vikingRelativeLeft && 
+            ballCenterX <= vikingRelativeRight) {
             
-            gameState.ballVelY = -Math.abs(gameState.ballVelY); // Ball går oppover
+            console.log('🏓 Viking hit!');
+            gameState.ballVelY = -Math.abs(gameState.ballVelY);
             
-            // Juster X-hastighet basert på hvor ballen treffer
-            const hitPos = (ballCenterX - gameState.vikingX) / 80;
+            const hitPos = (ballCenterX - vikingRelativeLeft) / (vikingRelativeRight - vikingRelativeLeft);
             gameState.ballVelX = (hitPos - 0.5) * 8;
             
             soundSystem.playBallHit();
         }
         
-        // Motstander-kollisjon (øverst)
-        const opponentBottom = 35; // Motstander er 20px fra toppen
-        if (ballCenterY <= opponentBottom && ballCenterY >= opponentBottom - 15 &&
-            ballCenterX >= gameState.opponentX && ballCenterX <= gameState.opponentX + 80) {
+        // Motstander-kollisjon (øverst) - lignende logikk
+        const opponentRect = opponent.getBoundingClientRect();
+        const opponentRelativeTop = opponentRect.top - gameFieldRect.top;
+        const opponentRelativeLeft = opponentRect.left - gameFieldRect.left;
+        const opponentRelativeRight = opponentRect.right - gameFieldRect.left;
+        
+        if (ballCenterY <= (opponentRelativeTop + 20) && 
+            ballCenterY >= opponentRelativeTop &&
+            ballCenterX >= opponentRelativeLeft && 
+            ballCenterX <= opponentRelativeRight) {
             
-            gameState.ballVelY = Math.abs(gameState.ballVelY); // Ball går nedover
+            console.log('🏓 Opponent hit!');
+            gameState.ballVelY = Math.abs(gameState.ballVelY);
             
-            // Juster X-hastighet basert på hvor ballen treffer
-            const hitPos = (ballCenterX - gameState.opponentX) / 80;
+            const hitPos = (ballCenterX - opponentRelativeLeft) / (opponentRelativeRight - opponentRelativeLeft);
             gameState.ballVelX = (hitPos - 0.5) * 8;
             
             soundSystem.playBallHit();
@@ -4913,6 +4928,8 @@ function setupFullScreenTouch() {
 }
 
 function handleFullScreenTouch(e) {
+    console.log('🔍 Touch event fired on:', e.target.tagName, e.target.id);
+    
     // IKKE blokker events på knapper
     const target = e.target;
     if (target.tagName === 'BUTTON' || 
@@ -4921,25 +4938,34 @@ function handleFullScreenTouch(e) {
         target.closest('button') ||
         target.closest('.button') ||
         target.id === 'startGameBtn') {
+        console.log('🔍 Touch blocked - button detected');
         return;
     }
     
-    // Kun reagere på berøring av kontroll-sirkelen
+    // Enklere sjekk - bare se om touchArea eksisterer
     const touchArea = document.getElementById('touchArea');
-    if (!touchArea || !touchArea.contains(target)) {
+    if (!touchArea) {
+        console.log('🔍 No touchArea found');
         return;
     }
     
-    e.preventDefault();
+    // Sjekk om touch er innenfor touchArea sitt område
+    const touchAreaRect = touchArea.getBoundingClientRect();
+    const touch = e.touches[0];
     
-    if (e.touches.length > 0) {
-        const touch = e.touches[0];
-        const touchAreaRect = touchArea.getBoundingClientRect();
+    if (touch.clientX >= touchAreaRect.left && 
+        touch.clientX <= touchAreaRect.right &&
+        touch.clientY >= touchAreaRect.top && 
+        touch.clientY <= touchAreaRect.bottom) {
+        
+        console.log('🔍 Touch accepted on control area!');
+        e.preventDefault();
         
         // Finn posisjon relativt til sirkelen (0 = venstre, 1 = høyre)
         const relativeX = (touch.clientX - touchAreaRect.left) / touchAreaRect.width;
         
         // Konverter direkte til spillfeltets bredde
+        const gameField = document.getElementById('gameField');
         const fieldWidth = gameField ? gameField.offsetWidth : window.innerWidth;
         const playerWidth = 80;
         const maxX = fieldWidth - playerWidth;
@@ -4947,7 +4973,9 @@ function handleFullScreenTouch(e) {
         // Sett Viking sin X-posisjon direkte
         gameState.vikingX = Math.max(0, Math.min(maxX, relativeX * fieldWidth));
         
-        console.log('Touch control - relativeX:', relativeX.toFixed(2), 'vikingX:', gameState.vikingX.toFixed(0));
+        console.log('🎮 Touch control - relativeX:', relativeX.toFixed(2), 'vikingX:', gameState.vikingX.toFixed(0));
+    } else {
+        console.log('🔍 Touch outside control area');
     }
 }
         

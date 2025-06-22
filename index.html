@@ -2470,26 +2470,64 @@ optimizeForMobile();
 }
 
             function kickOff(team) {
-    console.log('🏈 kickOff called for:', team, 'halfTimeBreak:', gameState.halfTimeBreak, 'matchTime:', gameState.matchTime);
+    console.log('🏈 kickOff called for:', team);
     gameState.lastKickoffTime = Date.now();
 
     // KOMPLETT NULLSTILLING FØRST
     gameState.ballVelX = 0;
     gameState.ballVelY = 0;
     
-    // Start ballen nærmere den som tar avspark
-    const fieldRect = gameField.getBoundingClientRect();
-    const fieldWidth = fieldRect.width - 40;
-    
-    if (team === 'viking') {
-        // Viking tar avspark - start ballen litt til venstre for midten
-        gameState.ballX = gameState.sidesSwapped ? fieldWidth * 0.6 : fieldWidth * 0.4;
+    if (gameState.isMobile) {
+        // MOBIL: Ball starter i midten og går vertikalt
+        const fieldRect = gameField.getBoundingClientRect();
+        const fieldWidth = fieldRect.width - 40;
+        const fieldHeight = fieldRect.height - 40;
+        
+        gameState.ballX = fieldWidth / 2;
+        gameState.ballY = fieldHeight / 2;
+        
+        setTimeout(() => {
+            if (team === 'viking') {
+                gameState.ballVelY = -6; // Ball går oppover (mot motstander)
+            } else {
+                gameState.ballVelY = 6;  // Ball går nedover (mot viking)
+            }
+            
+            // Litt tilfeldig X-hastighet
+            gameState.ballVelX = (Math.random() - 0.5) * 4;
+            
+            console.log('🚀 MOBIL Ball hastighet satt:', gameState.ballVelX, gameState.ballVelY);
+        }, 100);
+        
     } else {
-        // Motstander tar avspark - start ballen litt til høyre for midten
-        gameState.ballX = gameState.sidesSwapped ? fieldWidth * 0.4 : fieldWidth * 0.6;
+        // DESKTOP: Som før (horisontal bevegelse)
+        const fieldRect = gameField.getBoundingClientRect();
+        const fieldWidth = fieldRect.width - 40;
+        
+        if (team === 'viking') {
+            gameState.ballX = gameState.sidesSwapped ? fieldWidth * 0.6 : fieldWidth * 0.4;
+        } else {
+            gameState.ballX = gameState.sidesSwapped ? fieldWidth * 0.4 : fieldWidth * 0.6;
+        }
+        
+        gameState.ballY = 350;
+        
+        setTimeout(() => {
+            if (team === 'viking') {
+                gameState.ballVelX = gameState.sidesSwapped ? -6 : 6;
+            } else {
+                gameState.ballVelX = gameState.sidesSwapped ? 6 : -6;
+            }
+            
+            gameState.ballVelY = (Math.random() - 0.5) * 4;
+            
+            if (Math.abs(gameState.ballVelY) < 1) {
+                gameState.ballVelY = Math.random() > 0.5 ? 1.5 : -1.5;
+            }
+            
+            console.log('🚀 DESKTOP Ball hastighet satt:', gameState.ballVelX, gameState.ballVelY);
+        }, 100);
     }
-    
-    gameState.ballY = 350;
     
     const ball = document.getElementById('ball');
     if (ball) {
@@ -2497,33 +2535,11 @@ optimizeForMobile();
         ball.style.top = gameState.ballY + 'px';
     }
     
-    console.log('⚽ Ball positioned for kickoff at:', gameState.ballX);
-    
     soundSystem.playWhistle();
     soundSystem.startSupporters();
-    
-    // VENT LITT, SÅ SETT HELT NY HASTIGHET
-    setTimeout(() => {
-        // Redusert starthastighet og mer vinkel
-        if (team === 'viking') {
-            gameState.ballVelX = gameState.sidesSwapped ? -6 : 6; // Redusert fra 5
-        } else {
-            gameState.ballVelX = gameState.sidesSwapped ? 6 : -6; // Redusert fra -5
-        }
-        
-        // Større Y-hastighet for å unngå rette linjer
-        gameState.ballVelY = (Math.random() - 0.5) * 4; // Økt fra * 2
-        
-        // Sørg for at ballen ikke går helt rett
-        if (Math.abs(gameState.ballVelY) < 1) {
-            gameState.ballVelY = Math.random() > 0.5 ? 1.5 : -1.5;
-        }
-        
-        console.log('🚀 Ball hastighet satt til FRESH values:', gameState.ballVelX, gameState.ballVelY);
-    }, 100);
 }
             
-            function updateBall() {
+function updateBall() {
     if (gameState.paused) return;
     
     gameState.ballX += gameState.ballVelX;
@@ -2533,88 +2549,126 @@ optimizeForMobile();
     const fieldWidth = fieldRect.width - 40;
     const fieldHeight = fieldRect.height - 40;
 
-    // KONTROLLERT akselerasjon med hard maks-grense
-    const maxSpeed = 10; // Lavere maks-hastighet
-    const acceleration = 1.0001; // Minimal akselerasjon
-    
-    if (Math.abs(gameState.ballVelX) < maxSpeed) {
-        gameState.ballVelX *= acceleration;
-    }
-    
-    // HARD STOPP hvis hastigheten blir for høy
-    if (Math.abs(gameState.ballVelX) > maxSpeed) {
-        console.warn('⚠️ Ball hastighet for høy:', gameState.ballVelX, '- reduserer til', maxSpeed);
-        gameState.ballVelX = gameState.ballVelX > 0 ? maxSpeed : -maxSpeed;
-    }
+    if (gameState.isMobile) {
+        // MOBIL: Ball skal bevege seg vertikalt (opp/ned)
+        // Reflektion fra venstre/høyre vegger
+        if (gameState.ballX <= 10 || gameState.ballX >= fieldWidth - 10) {
+            gameState.ballVelX = -gameState.ballVelX;
+            gameState.ballX = Math.max(10, Math.min(fieldWidth - 10, gameState.ballX));
+            gameState.ballVelX += (Math.random() - 0.5) * 1.5;
+        }
 
-    if (gameState.ballY <= 10 || gameState.ballY >= fieldHeight - 10) {
-        gameState.ballVelY = -gameState.ballVelY;
-        gameState.ballY = Math.max(10, Math.min(fieldHeight - 10, gameState.ballY));
-        gameState.ballVelY += (Math.random() - 0.5) * 1.5;
+        // MÅL: Topp og bunn
+        if (gameState.ballY <= 0) {
+            goalScored('viking'); // Viking scorer når ball når toppen
+        } else if (gameState.ballY >= fieldHeight) {
+            goalScored('opponent'); // Motstander scorer når ball når bunnen
+        }
+
+    } else {
+        // DESKTOP: Ball beveger seg horisontalt som før
+        // Reflektion fra topp/bunn vegger
+        if (gameState.ballY <= 10 || gameState.ballY >= fieldHeight - 10) {
+            gameState.ballVelY = -gameState.ballVelY;
+            gameState.ballY = Math.max(10, Math.min(fieldHeight - 10, gameState.ballY));
+            gameState.ballVelY += (Math.random() - 0.5) * 1.5;
+        }
+
+        // MÅL: Venstre og høyre (som før)
+        if (!gameState.sidesSwapped) {
+            if (gameState.ballX <= 0) {
+                goalScored('opponent');
+            } else if (gameState.ballX >= fieldWidth) {
+                goalScored('viking');
+            }
+        } else {
+            if (gameState.ballX <= 0) {
+                goalScored('viking');
+            } else if (gameState.ballX >= fieldWidth) {
+                goalScored('opponent');
+            }
+        }
     }
 
     checkPlayerCollisions();
 
-    // MÅLLOGIKK
-    if (!gameState.sidesSwapped) {
-        if (gameState.ballX <= 0) {
-            goalScored('opponent');
-        } else if (gameState.ballX >= fieldWidth) {
-            goalScored('viking');
-        }
-    } else {
-        if (gameState.ballX <= 0) {
-            goalScored('viking');
-        } else if (gameState.ballX >= fieldWidth) {
-            goalScored('opponent');
-        }
+    const ball = document.getElementById('ball');
+    if (ball) {
+        ball.style.left = gameState.ballX + 'px';
+        ball.style.top = gameState.ballY + 'px';
     }
+}
+            
 
-    ball.style.left = gameState.ballX + 'px';
-    ball.style.top = gameState.ballY + 'px';
-}       
-function checkPlayerCollisions() {
+            function checkPlayerCollisions() {
     const viking = document.getElementById('viking');
     const opponent = document.getElementById('opponent');
     const ball = document.getElementById('ball');
     
     if (!viking || !opponent || !ball) return;
     
-    const vikingRect = viking.getBoundingClientRect();
-    const opponentRect = opponent.getBoundingClientRect();
-    const ballRect = ball.getBoundingClientRect();
-    const fieldRect = gameField.getBoundingClientRect();
-    
-    // Konverter til relative posisjoner
     const ballCenterX = gameState.ballX + 10;
     const ballCenterY = gameState.ballY + 10;
     
-    // Sjekk kollisjon med Viking-spiller (venstre side i 1. omgang)
-    if (!gameState.sidesSwapped) {
-        // Viking er på venstre side
-        if (gameState.ballX <= 60 && gameState.ballX >= 40 &&
-            ballCenterY >= gameState.vikingY && ballCenterY <= gameState.vikingY + 100) {
-            gameState.ballVelX = Math.abs(gameState.ballVelX);
+    if (gameState.isMobile) {
+        // MOBIL: Horisontale spillere, ball treffer ovenfra/nedenfra
+        
+        // Viking-kollisjon (nederst)
+        const vikingTop = gameField.offsetHeight - 40; // Viking er 20px fra bunnen
+        if (ballCenterY >= vikingTop && ballCenterY <= vikingTop + 15 &&
+            ballCenterX >= gameState.vikingX && ballCenterX <= gameState.vikingX + 80) {
             
-            // Juster Y-hastighet basert på hvor ballen treffer
-            const hitPos = (ballCenterY - gameState.vikingY) / 100;
-            gameState.ballVelY = (hitPos - 0.5) * 8;
+            gameState.ballVelY = -Math.abs(gameState.ballVelY); // Ball går oppover
+            
+            // Juster X-hastighet basert på hvor ballen treffer
+            const hitPos = (ballCenterX - gameState.vikingX) / 80;
+            gameState.ballVelX = (hitPos - 0.5) * 8;
             
             soundSystem.playBallHit();
         }
         
-        // Sjekk kollisjon med motstander (høyre side)
-        const fieldWidth = fieldRect.width - 40;
-        if (gameState.ballX >= fieldWidth - 60 && gameState.ballX <= fieldWidth - 40 &&
-            ballCenterY >= gameState.opponentY && ballCenterY <= gameState.opponentY + 100) {
-            gameState.ballVelX = -Math.abs(gameState.ballVelX);
+        // Motstander-kollisjon (øverst)
+        const opponentBottom = 35; // Motstander er 20px fra toppen
+        if (ballCenterY <= opponentBottom && ballCenterY >= opponentBottom - 15 &&
+            ballCenterX >= gameState.opponentX && ballCenterX <= gameState.opponentX + 80) {
             
-            const hitPos = (ballCenterY - gameState.opponentY) / 100;
-            gameState.ballVelY = (hitPos - 0.5) * 8;
+            gameState.ballVelY = Math.abs(gameState.ballVelY); // Ball går nedover
+            
+            // Juster X-hastighet basert på hvor ballen treffer
+            const hitPos = (ballCenterX - gameState.opponentX) / 80;
+            gameState.ballVelX = (hitPos - 0.5) * 8;
             
             soundSystem.playBallHit();
         }
+        
     } else {
+        // DESKTOP: Vertikale spillere som før
+        const fieldRect = gameField.getBoundingClientRect();
+        
+        if (!gameState.sidesSwapped) {
+            // Viking venstre side
+            if (gameState.ballX <= 60 && gameState.ballX >= 40 &&
+                ballCenterY >= gameState.vikingY && ballCenterY <= gameState.vikingY + 100) {
+                gameState.ballVelX = Math.abs(gameState.ballVelX);
+                
+                const hitPos = (ballCenterY - gameState.vikingY) / 100;
+                gameState.ballVelY = (hitPos - 0.5) * 8;
+                
+                soundSystem.playBallHit();
+            }
+            
+            // Motstander høyre side
+            const fieldWidth = fieldRect.width - 40;
+            if (gameState.ballX >= fieldWidth - 60 && gameState.ballX <= fieldWidth - 40 &&
+                ballCenterY >= gameState.opponentY && ballCenterY <= gameState.opponentY + 100) {
+                gameState.ballVelX = -Math.abs(gameState.ballVelX);
+                
+                const hitPos = (ballCenterY - gameState.opponentY) / 100;
+                gameState.ballVelY = (hitPos - 0.5) * 8;
+                
+                soundSystem.playBallHit();
+            }
+        } else {
         // Byttet side i 2. omgang
         const fieldWidth = fieldRect.width - 40;
         
@@ -4816,10 +4870,10 @@ function handleFullScreenTouch(e) {
         return;
     }
     
-    // Kun reagere på berøring av kontroll-sirkelen
+     // Kun reagere på berøring av kontroll-sirkelen
     const touchArea = document.getElementById('touchArea');
     if (!touchArea || !touchArea.contains(target)) {
-        return; // Ikke gjør noe hvis ikke berørt kontroll-området
+        return;
     }
     
     e.preventDefault();
@@ -4828,23 +4882,13 @@ function handleFullScreenTouch(e) {
         const touch = e.touches[0];
         const touchAreaRect = touchArea.getBoundingClientRect();
         
-        // Finn posisjon relativt til sirkelen (0 = topp, 1 = bunn)
-        const relativeY = (touch.clientY - touchAreaRect.top) / touchAreaRect.height;
+        // Finn posisjon relativt til sirkelen (0 = venstre kant, 1 = høyre kant)
+        const relativeX = (touch.clientX - touchAreaRect.left) / touchAreaRect.width;
         
-        // Konverter til spillfeltshøyde med mye mindre sensitivitet
-        const gameField = document.getElementById('gameField');
-        const fieldHeight = gameField ? gameField.offsetHeight : 600;
+        // Konverter direkte til skjermbredde for mer responsiv kontroll
+        gameState.touchY = relativeX * window.innerHeight; // Bruker height som referanse
         
-        // Bruk kun øvre og nedre 80% av banen (ikke helt til kantene)
-        const playableHeight = fieldHeight * 0.8;
-        const offsetY = fieldHeight * 0.1; // 10% margin øverst
-        
-        gameState.touchY = offsetY + (relativeY * playableHeight);
-        
-        // Ekstra begrensning for sikkerhet
-        gameState.touchY = Math.max(50, Math.min(fieldHeight - 150, gameState.touchY));
-        
-        console.log('Touch control - relative:', relativeY.toFixed(2), 'gameY:', gameState.touchY.toFixed(0));
+        console.log('Touch control - relative:', relativeX.toFixed(2), 'touchY:', gameState.touchY.toFixed(0));
     }
 }
         

@@ -459,7 +459,83 @@ body {
         box-shadow: 0 0 10px rgba(255,255,255,0.5);
     }
 }
-        
+@media (max-width: 768px) {
+    /* Større UI for mobil */
+    #ui {
+        position: relative;
+        top: 5px;
+        transform: scale(0.8); /* Større enn før */
+        margin-bottom: -10px;
+        z-index: 100;
+    }
+    
+    /* Spillfeltet må gi plass til kontrollområdet */
+    #gameField {
+        width: 95vw;
+        height: calc(100vh - 120px); /* Gi plass til kontroller */
+        margin-top: 5px;
+    }
+    
+    /* Kompakte popups */
+    .goal-scorer-display {
+        max-width: 250px;
+        padding: 15px 20px;
+        border: 2px solid #FFD700;
+    }
+    
+    .goal-scorer-display img,
+    .goal-scorer-display > div:first-child {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 8px;
+        font-size: 20px;
+    }
+    
+    .goal-scorer-name {
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+    
+    .goal-scorer-team {
+        font-size: 12px;
+    }
+}       
+        @media (max-width: 768px) {
+    /* Mobiltilpass navigasjonsknapper */
+    .floating-nav-btn {
+        position: fixed !important;
+        bottom: 80px !important; /* Over kontrollområdet */
+        left: 50% !important;
+        right: auto !important;
+        top: auto !important;
+        transform: translateX(-50%) !important;
+        font-size: 14px !important;
+        padding: 12px 20px !important;
+        max-width: 80vw !important;
+        text-align: center !important;
+    }
+    
+    /* Stabel knappene vertikalt på mobil */
+    .floating-nav-btn:nth-child(2) {
+        bottom: 140px !important;
+    }
+    
+    .floating-nav-btn:nth-child(3) {
+        bottom: 200px !important;
+    }
+    
+    /* Kompakt rundeoversikt */
+    #roundSummary {
+        padding: 20px 10px 120px 10px !important; /* Ekstra plass nederst */
+        font-size: 12px !important;
+    }
+    
+    .result-row {
+        font-size: 10px !important;
+        padding: 4px 0 !important;
+        margin: 0 5px !important;
+    }
+}
 /* ======= KNAPPER ======= */
 .button {
     background: linear-gradient(135deg, #8B0000, #CD5C5C);
@@ -793,28 +869,24 @@ body {
     }
     
     .touch-area {
-    display: block;
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 120px;
-    height: 120px;
-    background: linear-gradient(135deg, rgba(255,215,0,0.8), rgba(255,165,0,0.6));
-    color: #000;
-    border-radius: 50%;
-    text-align: center;
-    font-size: 10px;
-    z-index: 100;
-    border: 3px solid #FFD700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    box-shadow: 0 0 20px rgba(255,215,0,0.5);
-}
-    }
-        
+        display: block;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 60px;
+        background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,165,0,0.2));
+        color: #FFD700;
+        text-align: center;
+        font-size: 10px;
+        z-index: 100;
+        border-top: 2px solid #FFD700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }    
 
 /* ======= ANIMASJONER ======= */
 @keyframes crowdPulse {
@@ -1167,7 +1239,7 @@ body {
 
         <div class="mobile-controls">
             <div class="touch-area" id="touchArea">
-🎮<br>STYRING
+Berør her for å styre spilleren
             </div>
         </div>
 
@@ -2361,12 +2433,6 @@ function initializeCupTopScorers() {
     cupTopScorers.sort((a, b) => b.goals - a.goals);
     console.log('✅ Cup top scorers initialized:', cupTopScorers.length, 'scorers');
 }
-
-        // ===== SPILL-FUNKSJONER =====
-        function initializeGame() {
-            console.log('🎮 Initializing main game...');
-            
-            // Legg til etter checkMobile() funksjonen:
 function isMobileDevice() {
     return (
         /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
@@ -2388,32 +2454,39 @@ function optimizeForMobile() {
         }, 100);
     }
 }
-gameState.isMobile = window.innerWidth <= 768;
 
-// Initialiser posisjoner basert på plattform
-if (gameState.isMobile) {
-    gameState.vikingX = 300;
-    gameState.opponentX = 300;
-    gameState.ballX = 300;  // Start ball i midten
-    gameState.ballY = 350;
-} else {
-    gameState.vikingY = 300;
-    gameState.opponentY = 300;
-    gameState.ballX = 550;
-    gameState.ballY = 350;
-}
-// Kall denne i initializeGame():
-optimizeForMobile();
+function initializeGame() {
+    console.log('🎮 Initializing main game...');
+    
+    // Optimaliser for mobil
+    optimizeForMobile();
+    
+    // Sett mobile-modus
+    gameState.isMobile = window.innerWidth <= 768;
 
-            initializeCupTopScorers();
-            
-            // DOM-elementer
-            const gameField = document.getElementById('gameField');
-            const viking = document.getElementById('viking');
-            const opponent = document.getElementById('opponent');
-            const ball = document.getElementById('ball');
-            const touchArea = document.getElementById('touchArea');
+    // Initialiser posisjoner basert på plattform
+    if (gameState.isMobile) {
+        const gameField = document.getElementById('gameField');
+        const fieldWidth = gameField ? gameField.offsetWidth : window.innerWidth;
+        gameState.vikingX = fieldWidth / 2 - 40; // Sentrer Viking (40 = halv spillerbredde)
+        gameState.opponentX = fieldWidth / 2 - 40; // Sentrer motstander
+        gameState.ballX = fieldWidth / 2;
+        gameState.ballY = 350;
+    } else {
+        gameState.vikingY = 300;
+        gameState.opponentY = 300;
+        gameState.ballX = 550;
+        gameState.ballY = 350;
+    }
 
+    initializeCupTopScorers();
+    
+    // DOM-elementer
+    const gameField = document.getElementById('gameField');
+    const viking = document.getElementById('viking');
+    const opponent = document.getElementById('opponent');
+    const ball = document.getElementById('ball');
+    const touchArea = document.getElementById('touchArea');
 
             
 
@@ -4933,8 +5006,6 @@ function setupFullScreenTouch() {
 }
 
 function handleFullScreenTouch(e) {
-    console.log('🔍 Touch event fired on:', e.target.tagName, e.target.id);
-    
     // IKKE blokker events på knapper
     const target = e.target;
     if (target.tagName === 'BUTTON' || 
@@ -4943,31 +5014,19 @@ function handleFullScreenTouch(e) {
         target.closest('button') ||
         target.closest('.button') ||
         target.id === 'startGameBtn') {
-        console.log('🔍 Touch blocked - button detected');
         return;
     }
     
-    // Enklere sjekk - bare se om touchArea eksisterer
-    const touchArea = document.getElementById('touchArea');
-    if (!touchArea) {
-        console.log('🔍 No touchArea found');
-        return;
-    }
-    
-    // Sjekk om touch er innenfor touchArea sitt område
-    const touchAreaRect = touchArea.getBoundingClientRect();
+    // Sjekk om touch er i nederste del av skjermen (kontrollområdet)
     const touch = e.touches[0];
+    const screenHeight = window.innerHeight;
     
-    if (touch.clientX >= touchAreaRect.left && 
-        touch.clientX <= touchAreaRect.right &&
-        touch.clientY >= touchAreaRect.top && 
-        touch.clientY <= touchAreaRect.bottom) {
-        
-        console.log('🔍 Touch accepted on control area!');
+    // Kontrollområdet er nederste 60px + litt margin
+    if (touch.clientY > screenHeight - 100) {
         e.preventDefault();
         
-        // Finn posisjon relativt til sirkelen (0 = venstre, 1 = høyre)
-        const relativeX = (touch.clientX - touchAreaRect.left) / touchAreaRect.width;
+        // Finn posisjon relativt til skjermbredden (0 = venstre, 1 = høyre)
+        const relativeX = touch.clientX / window.innerWidth;
         
         // Konverter direkte til spillfeltets bredde
         const gameField = document.getElementById('gameField');
@@ -4979,11 +5038,9 @@ function handleFullScreenTouch(e) {
         gameState.vikingX = Math.max(0, Math.min(maxX, relativeX * fieldWidth));
         
         console.log('🎮 Touch control - relativeX:', relativeX.toFixed(2), 'vikingX:', gameState.vikingX.toFixed(0));
-    } else {
-        console.log('🔍 Touch outside control area');
     }
 }
-        
+    
 function optimizeForMobile() {
     if (isMobileDevice()) {
         document.body.style.overflow = 'hidden';

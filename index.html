@@ -2759,26 +2759,8 @@ function updateViking() {
     if (gameState.paused) return;
     
     if (gameState.isMobile) {
-        // MOBIL: Horisontal bevegelse basert på touch
-        const touchArea = document.getElementById('touchArea');
-        if (!touchArea) return;
-        
-        const touchAreaRect = touchArea.getBoundingClientRect();
-        const fieldWidth = gameField.offsetWidth;
-        
-        // Konverter touch-posisjon til X-koordinat
-        // touchY representerer faktisk horisontell bevegelse på den runde kontrolleren
-        const relativeTouch = gameState.touchY / window.innerHeight;
-        const targetX = relativeTouch * fieldWidth;
-        
-        const smoothing = 0.3;
-        const newX = gameState.vikingX + (targetX - gameState.vikingX) * smoothing;
-        
-        // Begrens til spillfeltets bredde
-        const playerWidth = 80;
-        const maxX = fieldWidth - playerWidth;
-        gameState.vikingX = Math.max(0, Math.min(maxX, newX));
-        
+        // MOBIL: Posisjon settes direkte i handleFullScreenTouch
+        // Vi trenger bare å oppdatere DOM-elementet
         const viking = document.getElementById('viking');
         if (viking) {
             viking.style.left = gameState.vikingX + 'px';
@@ -2799,8 +2781,7 @@ function updateViking() {
             viking.style.top = gameState.vikingY + 'px';
         }
     }
-}
-            
+}            
             function checkForVAR(scorer, goalScorer, team, isVikingFifthGoal = false) {
     if (Math.random() < 0.1) {
         console.log('🎥 VAR-situasjon!');
@@ -4871,7 +4852,7 @@ function handleFullScreenTouch(e) {
         return;
     }
     
-     // Kun reagere på berøring av kontroll-sirkelen
+    // Kun reagere på berøring av kontroll-sirkelen
     const touchArea = document.getElementById('touchArea');
     if (!touchArea || !touchArea.contains(target)) {
         return;
@@ -4883,13 +4864,18 @@ function handleFullScreenTouch(e) {
         const touch = e.touches[0];
         const touchAreaRect = touchArea.getBoundingClientRect();
         
-        // Finn posisjon relativt til sirkelen (0 = venstre kant, 1 = høyre kant)
+        // Finn posisjon relativt til sirkelen (0 = venstre, 1 = høyre)
         const relativeX = (touch.clientX - touchAreaRect.left) / touchAreaRect.width;
         
-        // Konverter direkte til skjermbredde for mer responsiv kontroll
-        gameState.touchY = relativeX * window.innerHeight; // Bruker height som referanse
+        // Konverter direkte til spillfeltets bredde
+        const fieldWidth = gameField ? gameField.offsetWidth : window.innerWidth;
+        const playerWidth = 80;
+        const maxX = fieldWidth - playerWidth;
         
-        console.log('Touch control - relative:', relativeX.toFixed(2), 'touchY:', gameState.touchY.toFixed(0));
+        // Sett Viking sin X-posisjon direkte
+        gameState.vikingX = Math.max(0, Math.min(maxX, relativeX * fieldWidth));
+        
+        console.log('Touch control - relativeX:', relativeX.toFixed(2), 'vikingX:', gameState.vikingX.toFixed(0));
     }
 }
         

@@ -2538,6 +2538,78 @@ optimizeForMobile();
     soundSystem.playWhistle();
     soundSystem.startSupporters();
 }
+
+function goalScored(scorer) {
+                if (gameState.halfTimeBreak || gameState.matchTime >= 90) {
+        console.log('🚫 Mål ignorert - kampause eller kampen er ferdig');
+        return;
+    }
+    gameState.gameActive = false;
+
+    let goalScorer;
+    let isVikingFifthGoal = false;
+    
+    if (scorer === 'viking') {
+        gameState.vikingScore++;
+        goalScorer = getRandomPlayer(vikingTeam);
+        
+        // SPILL SCORING-LYD UMIDDELBART (før VAR)
+        soundSystem.playScoring();
+        
+        if (gameState.vikingScore === 5) {
+            isVikingFifthGoal = true;
+        }
+        
+        const currentMatch = vikingSchedule[gameState.currentMatchIndex];
+         if (currentMatch && currentMatch.type === 'cup') {
+        addToCupTopScorers(goalScorer, vikingTeam);
+    } else {
+        addToTopScorers(goalScorer, vikingTeam);  // FLYTTET HIT
+    }
+        
+        if (checkForVAR(scorer, goalScorer, vikingTeam, isVikingFifthGoal)) {
+            return; // VAR håndterer bare celebration-lyd
+        } else {
+            // INGEN VAR - spill celebration hvis 5. mål
+            if (isVikingFifthGoal) {
+                setTimeout(() => soundSystem.playViking5Goals(), 2000);
+            }
+            showGoalScorerDisplay(goalScorer, vikingTeam);
+            
+            // LEGG TIL DENNE setTimeout FOR VIKING OGSÅ:
+            setTimeout(() => {
+                kickOff(scorer === 'viking' ? 'opponent' : 'viking');
+gameState.gameActive = true;
+            }, 4000);
+        }
+    
+    } else {
+        gameState.opponentScore++;
+        const currentOpponentTeam = getCurrentOpponent();
+        goalScorer = getRandomPlayer(currentOpponentTeam);
+        
+        const currentMatch = vikingSchedule[gameState.currentMatchIndex];
+        if (currentMatch && currentMatch.type === 'cup') {
+        addToCupTopScorers(goalScorer, currentOpponentTeam);
+    } else {
+        addToTopScorers(goalScorer, currentOpponentTeam);  // FLYTTET HIT
+    }
+        
+        if (checkForVAR(scorer, goalScorer, currentOpponentTeam, false)) {
+            return; // VAR håndterer lydene
+        } else {
+            // INGEN VAR - ikke spill scoring-lyd for motstander
+            showGoalScorerDisplay(goalScorer, currentOpponentTeam);
+            
+            setTimeout(() => {
+                kickOff(scorer === 'viking' ? 'opponent' : 'viking');
+gameState.gameActive = true;
+            }, 4000);
+        }
+    }
+
+    updateUI(); // Ikke glem denne!
+}
             
 function updateBall() {
     if (gameState.paused) return;

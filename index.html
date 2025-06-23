@@ -3709,24 +3709,24 @@ function createFullscreenButton(text, onclick, side, color1, color2) {
     btn.textContent = text;
     btn.style.cssText = `
         position: fixed;
-        ${side}: 150px;
-        top: 50%;
-        transform: translateY(-50%);
+        ${side}: 15px;
+        bottom: 80px;
         background: linear-gradient(135deg, ${color1}, ${color2});
-        font-size: 16px;
-        padding: 15px 25px;
-        border-radius: 30px;
-        box-shadow: 0 0 25px rgba(${side === 'right' ? '74, 144, 226' : '102, 102, 102'}, 0.6);
-        border: 3px solid #FFD700;
+        font-size: 14px;
+        padding: 12px 20px;
+        border-radius: 25px;
+        box-shadow: 0 0 20px rgba(${side === 'right' ? '74, 144, 226' : '102, 102, 102'}, 0.6);
+        border: 2px solid #FFD700;
         z-index: 250;
         color: white;
         font-weight: bold;
         cursor: pointer;
         backdrop-filter: blur(10px);
+        max-width: 35vw;
+        text-align: center;
     `;
     return btn;
 }
-
 function createFullscreenMainButton() {
     const btn = document.createElement('button');
     btn.className = 'floating-nav-btn button';
@@ -3735,58 +3735,41 @@ function createFullscreenMainButton() {
     
     btn.onclick = isSeasonEnd ? window.restartSeason : continueToNextRound;
     
-    // Sjekk om neste kamp er cup
     const nextMatch = vikingSchedule[gameState.currentMatchIndex + 1];
     const isCupMatch = nextMatch && nextMatch.type === 'cup';
     
     btn.style.cssText = `
         position: fixed;
-        right: 120px;
-        top: 50%;
-        transform: translateY(-50%);
+        right: 15px;
+        bottom: 80px;
         background: ${isCupMatch ? 
-            'linear-gradient(135deg, #FFD700, #FFA500)' : // Gull for cup
+            'linear-gradient(135deg, #FFD700, #FFA500)' : 
             isSeasonEnd ? 'linear-gradient(135deg, #FF6B6B, #FF4444)' : 
             'linear-gradient(135deg, #00AA00, #00FF00)'};
         color: ${isCupMatch || isSeasonEnd ? '#000' : '#000'};
-        font-size: 16px;
-        padding: 15px 25px;
-        border-radius: 30px;
-        box-shadow: 0 0 30px rgba(${isCupMatch ? '255, 215, 0' : 
+        font-size: 14px;
+        padding: 12px 20px;
+        border-radius: 25px;
+        box-shadow: 0 0 25px rgba(${isCupMatch ? '255, 215, 0' : 
             isSeasonEnd ? '255, 107, 107' : '0, 255, 0'}, 0.8);
-        border: 3px solid ${isCupMatch ? '#FFA500' : '#FFD700'};
+        border: 2px solid ${isCupMatch ? '#FFA500' : '#FFD700'};
         z-index: 250;
         font-weight: bold;
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 10px;
         backdrop-filter: blur(10px);
         animation: ${isCupMatch ? 'cupPulse 2s infinite' : 'none'};
+        max-width: 40vw;
+        text-align: center;
     `;
     
     if (isSeasonEnd) {
-        btn.innerHTML = 'Start ny sesong';
+        btn.innerHTML = 'Ny sesong';
     } else if (nextMatch) {
-        const nextOpponent = findTeamByName(nextMatch.opponent) || { name: nextMatch.opponent };
-        const opponentLogo = getTeamLogoPath(nextOpponent.name);
-        
         if (isCupMatch) {
             const roundName = cupData.roundNames[nextMatch.round] || 'CUP';
-            btn.innerHTML = `
-                <div style="text-align: center;">
-                    <div style="font-size: 20px; margin-bottom: 5px;">🏆 NM-CUP 🏆</div>
-                    <div style="font-size: 14px; font-weight: normal;">${roundName}</div>
-                    <div style="font-size: 12px; margin-top: 3px;">vs ${nextOpponent.name}</div>
-                </div>
-                ${opponentLogo ? `<img src="${opponentLogo}" style="width: 30px; height: 30px; object-fit: contain; border-radius: 4px;" onerror="this.style.display='none';">` : ''}
-            `;
+            btn.innerHTML = `🏆 ${roundName}`;
         } else {
-            const matchType = '⚽';
-            btn.innerHTML = `
-                ${matchType} Spill neste kamp!
-                ${opponentLogo ? `<img src="${opponentLogo}" style="width: 24px; height: 24px; object-fit: contain; border-radius: 4px;" onerror="this.style.display='none';">` : ''}
-            `;
+            btn.innerHTML = `Neste kamp`;
         }
     }
     

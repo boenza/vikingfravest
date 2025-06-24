@@ -2702,27 +2702,7 @@ function updateBall() {
         ball.style.top = gameState.ballY + 'px';
     }
 }
-    // KALL checkPlayerCollisions() FUNKSJONEN
-    checkPlayerCollisions();
-    
-    // BEGRENS MAKSIMAL HASTIGHET for å forhindre ukontrollerbar ball
-    const maxSpeed = 7; // Økt fra 6 til 7 for mer action
-    if (Math.abs(gameState.ballVelX) > maxSpeed) {
-        gameState.ballVelX = gameState.ballVelX > 0 ? maxSpeed : -maxSpeed;
-    }
-    if (Math.abs(gameState.ballVelY) > maxSpeed) {
-        gameState.ballVelY = gameState.ballVelY > 0 ? maxSpeed : -maxSpeed;
-    }
-    
-    // Oppdater ball visuelt
-    const ball = document.getElementById('ball');
-    if (ball) {
-        ball.style.left = gameState.ballX + 'px';
-        ball.style.top = gameState.ballY + 'px';
-    }
-} // <- DENNE MANGLET!
 
-// FLYTT checkPlayerCollisions() UT SOM EN EGEN FUNKSJON
 function checkPlayerCollisions() {
     const viking = document.getElementById('viking');
     const opponent = document.getElementById('opponent');

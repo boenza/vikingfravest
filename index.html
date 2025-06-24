@@ -2492,9 +2492,9 @@ function initializeGame() {
         
         setTimeout(() => {
             if (team === 'viking') {
-                gameState.ballVelY = -3; // Ball går oppover (mot motstander)
+                gameState.ballVelY = -4; // Ball går oppover (mot motstander)
             } else {
-                gameState.ballVelY = 3;  // Ball går nedover (mot viking)
+                gameState.ballVelY = 4;  // Ball går nedover (mot viking)
             }
             
             // Litt tilfeldig X-hastighet
@@ -2762,7 +2762,7 @@ function checkPlayerCollisions() {
                 gameState.ballVelX = Math.abs(gameState.ballVelX);
                 
                 const hitPos = (ballCenterY - gameState.vikingY) / 100;
-                gameState.ballVelY = (hitPos - 0.5) * 5; // ØKT fra 2.5 til 5 for skrå skudd!
+                gameState.ballVelY = (hitPos - 0.5) * 6; // ØKT fra 2.5 til 5 for skrå skudd!
                 
                 soundSystem.playBallHit();
             }

@@ -1295,11 +1295,14 @@ Berør her for å styre spilleren
                 this.varAudio.onerror = () => console.log('VAR-lyd ikke funnet');
 
                 // Viking feiring
-                this.goalCelebrationAudio = new Audio('assets/sounds/viking_celebration.mp3');
-                this.goalCelebrationAudio.volume = this.config.effectVolume * this.config.masterVolume;
-                this.goalCelebrationAudio.preload = 'auto';
-                this.goalCelebrationAudio.onerror = () => console.log('Celebration-lyd ikke funnet, fortsetter uten');
-
+                // Viking feiring
+this.goalCelebrationAudio = new Audio('assets/sounds/viking_celebration.mp3');
+this.goalCelebrationAudio.volume = this.config.effectVolume * this.config.masterVolume;
+this.goalCelebrationAudio.preload = 'auto';
+this.goalCelebrationAudio.onerror = () => {
+    console.log('⚠️ viking_celebration.mp3 ikke funnet, bruker scoring-lyd i stedet');
+    this.goalCelebrationAudio = null; // Sett til null så vi bruker fallback
+};
                 // Victory lyd
         this.victoryAudio = new Audio('assets/sounds/anthem.mp3');
         this.victoryAudio.volume = this.config.anthemVolume * this.config.masterVolume;
@@ -1545,11 +1548,22 @@ playVAR() {
 },
 
             playViking5Goals() {
-                if (this.goalCelebrationAudio) {
-                    this.goalCelebrationAudio.currentTime = 0;
-                    this.goalCelebrationAudio.play().catch(e => console.log('Viking celebration lyd ikke tilgjengelig'));
-                }
-            },
+    console.log('🎉 Prøver å spille Viking 5-mål celebration...');
+    if (this.goalCelebrationAudio) {
+        this.goalCelebrationAudio.currentTime = 0;
+        this.goalCelebrationAudio.play()
+            .then(() => console.log('🎉 Viking celebration lyd spiller!'))
+            .catch(e => {
+                console.log('⚠️ Viking celebration lyd feilet, bruker scoring-lyd:', e);
+                // Fallback til scoring-lyd
+                this.playScoring();
+            });
+    } else {
+        console.log('🎉 Celebration-fil ikke tilgjengelig, bruker scoring-lyd som fallback');
+        // Fallback til scoring-lyd
+        this.playScoring();
+    }
+},
 
             setVolume(volume) {
                 [this.supporterAudio, this.ballHitAudio, this.whistleAudio, this.goalCelebrationAudio].forEach(audio => {
@@ -2576,8 +2590,10 @@ function goalScored(scorer) {
         } else {
             // INGEN VAR - spill celebration hvis 5. mål
             if (isVikingFifthGoal) {
-                setTimeout(() => soundSystem.playViking5Goals(), 2000);
-            }
+setTimeout(() => {
+    console.log('🎉 Spiller Viking 5-mål celebration (ingen VAR)...');
+    soundSystem.playViking5Goals();
+}, 3000); // Økt fra 2000 til 3000ms for å unngå konflikt med scoring-lyd            }
             showGoalScorerDisplay(goalScorer, vikingTeam);
             
             // LEGG TIL DENNE setTimeout FOR VIKING OGSÅ:
@@ -2618,6 +2634,9 @@ gameState.gameActive = true;
 function updateBall() {
     if (gameState.paused) return;
     
+    // SJEKK KOLLISJON FØRST (før ball beveger seg)
+    checkPlayerCollisions();
+    
     gameState.ballX += gameState.ballVelX;
     gameState.ballY += gameState.ballVelY;
 
@@ -2631,14 +2650,14 @@ function updateBall() {
         if (gameState.ballX <= 10 || gameState.ballX >= fieldWidth - 10) {
             gameState.ballVelX = -gameState.ballVelX;
             gameState.ballX = Math.max(10, Math.min(fieldWidth - 10, gameState.ballX));
-            gameState.ballVelX += (Math.random() - 0.5) * 0.3; // Økt fra 0.2 til 0.3
+            gameState.ballVelX += (Math.random() - 0.5) * 0.3;
         }
 
         // MÅL: Topp og bunn
         if (gameState.ballY <= 0) {
-            goalScored('viking'); // Viking scorer når ball når toppen
+            goalScored('viking');
         } else if (gameState.ballY >= fieldHeight) {
-            goalScored('opponent'); // Motstander scorer når ball når bunnen
+            goalScored('opponent');
         }
 
     } else {
@@ -2647,7 +2666,7 @@ function updateBall() {
         if (gameState.ballY <= 10 || gameState.ballY >= fieldHeight - 10) {
             gameState.ballVelY = -gameState.ballVelY;
             gameState.ballY = Math.max(10, Math.min(fieldHeight - 10, gameState.ballY));
-            gameState.ballVelY += (Math.random() - 0.5) * 0.3; // Økt fra 0.2 til 0.3
+            gameState.ballVelY += (Math.random() - 0.5) * 0.3;
         }
 
         // MÅL: Venstre og høyre (som før)
@@ -2666,6 +2685,22 @@ function updateBall() {
         }
     }
 
+    // BEGRENS MAKSIMAL HASTIGHET for å forhindre ukontrollerbar ball
+    const maxSpeed = 7;
+    if (Math.abs(gameState.ballVelX) > maxSpeed) {
+        gameState.ballVelX = gameState.ballVelX > 0 ? maxSpeed : -maxSpeed;
+    }
+    if (Math.abs(gameState.ballVelY) > maxSpeed) {
+        gameState.ballVelY = gameState.ballVelY > 0 ? maxSpeed : -maxSpeed;
+    }
+    
+    // Oppdater ball visuelt
+    const ball = document.getElementById('ball');
+    if (ball) {
+        ball.style.left = gameState.ballX + 'px';
+        ball.style.top = gameState.ballY + 'px';
+    }
+}
     // KALL checkPlayerCollisions() FUNKSJONEN
     checkPlayerCollisions();
     
@@ -3069,11 +3104,14 @@ function makeVARDecision(scorer, goalScorer, team, varScreen, isVikingFifthGoal 
     if (goalStands) {
         // MÅL GODKJENT - SPILL SCORING-LYD PÅ NYTT!
         if (scorer === 'viking') {
-            soundSystem.playScoring(); // SPILL SCORING IGJEN ETTER VAR
-            if (isVikingFifthGoal) {
-                setTimeout(() => soundSystem.playViking5Goals(), 2000); // Celebration etter scoring
-            }
-        }
+    soundSystem.playScoring(); // SPILL SCORING IGJEN ETTER VAR
+    if (isVikingFifthGoal) {
+        setTimeout(() => {
+            console.log('🎉 Spiller Viking 5-mål celebration (etter VAR)...');
+            soundSystem.playViking5Goals();
+        }, 4000); // Økt til 4000ms for å gi scoring-lyd tid til å fullføres
+    }
+}
         
         // OPPDATER UI UMIDDELBART
         updateUI();

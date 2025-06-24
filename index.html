@@ -3312,7 +3312,7 @@ function cleanupVAR() {
 }
 
             function updateTable() {
-    // Kun serielag (16 lag) - filtrer på isSerieTeam flagg
+    // BARE serielag (isSerieTeam: true) - samme logikk som i andre funksjoner
     const serieLag = teams.filter(team => team.isSerieTeam === true);
     const allTeams = [vikingTeam, ...serieLag];
     
@@ -3324,37 +3324,36 @@ function cleanupVAR() {
         return b.goalsFor - a.goalsFor;
     });
 
-                const tableContent = document.getElementById('tableContent');
-                if (!tableContent) return;
+    const tableContent = document.getElementById('tableContent');
+    if (!tableContent) return;
 
-                let tableHTML = `<div class="table-row table-header-row">
-                    <div class="table-pos">#</div>
-                    <div class="table-team">LAG</div>
-                    <div class="table-stat">K</div>
-                    <div class="table-stat">S</div>
-                    <div class="table-stat">T</div>
-                    <div class="table-stat">MÅL</div>
-                    <div class="table-stat">P</div>
-                </div>`;
+    let tableHTML = `<div class="table-row table-header-row">
+        <div class="table-pos">#</div>
+        <div class="table-team">LAG</div>
+        <div class="table-stat">K</div>
+        <div class="table-stat">S</div>
+        <div class="table-stat">T</div>
+        <div class="table-stat">MÅL</div>
+        <div class="table-stat">P</div>
+    </div>`;
 
-                allTeams.slice(0, 8).forEach((team, index) => {
-                    const isViking = team.name === 'Viking FK';
-                    const teamName = isViking ? 'VIKING' : team.name.split(' ')[0].toUpperCase();
-                    
-                    tableHTML += `<div class="table-row">
-                        <div class="table-pos">${index + 1}</div>
-                        <div class="table-team ${isViking ? 'viking' : ''}">${teamName}</div>
-                        <div class="table-stat">${team.played}</div>
-                        <div class="table-stat">${team.won}</div>
-                        <div class="table-stat">${team.lost}</div>
-                        <div class="table-stat">${team.goalsFor}-${team.goalsAgainst}</div>
-                        <div class="table-stat">${team.points}</div>
-                    </div>`;
-                });
+    allTeams.slice(0, 8).forEach((team, index) => {
+        const isViking = team.name === 'Viking FK';
+        const teamName = isViking ? 'VIKING' : team.name.split(' ')[0].toUpperCase();
+        
+        tableHTML += `<div class="table-row">
+            <div class="table-pos">${index + 1}</div>
+            <div class="table-team ${isViking ? 'viking' : ''}">${teamName}</div>
+            <div class="table-stat">${team.played}</div>
+            <div class="table-stat">${team.won}</div>
+            <div class="table-stat">${team.lost}</div>
+            <div class="table-stat">${team.goalsFor}-${team.goalsAgainst}</div>
+            <div class="table-stat">${team.points}</div>
+        </div>`;
+    });
 
-                tableContent.innerHTML = tableHTML;
-            }
-
+    tableContent.innerHTML = tableHTML;
+}
             
             function updateMatchClock() {
     if (!gameState.gameActive || gameState.paused || gameState.halfTimeBreak) return;

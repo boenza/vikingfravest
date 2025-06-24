@@ -3604,40 +3604,43 @@ function showSummaryPage(pageNumber) {
     const isCup = currentMatch && currentMatch.type === 'cup';
 
     if (pageNumber === 1) {
-        // ===== SIDE 1: KAMPRESULTATER =====
-        content = `
-            <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); max-width: 900px; margin: 0 auto;">
-                <div style="flex: 1; background: linear-gradient(135deg, #1a1a1a, #2a2a2a); padding: 20px; border-radius: 15px; border: 2px solid ${isCup ? '#FF6B6B' : '#FFD700'}; overflow: hidden;">
-                    ${generateAllMatchesHTML()}
-                </div>
+    // ===== SIDE 1: KAMPRESULTATER =====
+    content = `
+        <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); max-width: 900px; margin: 0 auto; padding-top: 70px;">
+            <div style="flex: 1; background: linear-gradient(135deg, #1a1a1a, #2a2a2a); padding: 20px; border-radius: 15px; border: 2px solid ${isCup ? '#FF6B6B' : '#FFD700'}; overflow: hidden;">
+                ${generateAllMatchesHTML()}
             </div>
-        `;
-    } else if (pageNumber === 2) {
-        // ===== SIDE 2: TOPPSCORERE (SERIE ELLER CUP) =====
-        content = `
-            <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); max-width: 900px; margin: 0 auto;">
-                <div style="flex: 1; background: linear-gradient(135deg, #1a1a1a, #2a2a2a); padding: 20px; border-radius: 15px; border: 2px solid ${isCup ? '#FF6B6B' : '#FFD700'}; overflow: hidden;">
-                    ${isCup ? generateCupTopScorersHTML() : generateTopScorersWithImagesHTML()}
-                </div>
+        </div>
+    `;
+} else if (pageNumber === 2) {
+    // ===== SIDE 2: TOPPSCORERE (SERIE ELLER CUP) =====
+    content = `
+        <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); max-width: 900px; margin: 0 auto; padding-top: 70px;">
+            <div style="flex: 1; background: linear-gradient(135deg, #1a1a1a, #2a2a2a); padding: 20px; border-radius: 15px; border: 2px solid ${isCup ? '#FF6B6B' : '#FFD700'}; overflow: hidden;">
+                ${isCup ? generateCupTopScorersHTML() : generateTopScorersWithImagesHTML()}
             </div>
-        `;
-    } else if (pageNumber === 3) {
-        // ===== SIDE 3: TABELL ELLER CUP-TREKNING =====
-        content = `
-            <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); max-width: 900px; margin: 0 auto;">
-                <div style="flex: 1; background: linear-gradient(135deg, #1a1a1a, #2a2a2a); padding: 20px; border-radius: 15px; border: 2px solid ${isCup ? '#FF6B6B' : '#FFD700'}; overflow: hidden;">
-                    ${isCup ? generateCupDrawHTML(currentMatch.round) : generateCompactLeagueTableHTML()}
-                </div>
+        </div>
+    `;
+} else if (pageNumber === 3) {
+    // ===== SIDE 3: TABELL ELLER CUP-TREKNING =====
+    content = `
+        <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); max-width: 900px; margin: 0 auto; padding-top: 70px;">
+            <div style="flex: 1; background: linear-gradient(135deg, #1a1a1a, #2a2a2a); padding: 20px; border-radius: 15px; border: 2px solid ${isCup ? '#FF6B6B' : '#FFD700'}; overflow: hidden;">
+                ${isCup ? generateCupDrawHTML(currentMatch.round) : generateCompactLeagueTableHTML()}
             </div>
-        `;
-    }
-
+        </div>
+    `;
+}
     roundSummaryContent.innerHTML = content;
     roundSummary.style.display = 'block';
     
-    // FJERN ALLE EKSISTERENDE KNAPPER
-    const existingButtons = roundSummary.querySelectorAll('.floating-nav-btn');
-    existingButtons.forEach(btn => btn.remove());
+    // FJERN ALLE EKSISTERENDE KNAPPER OG TITLER
+const existingButtons = roundSummary.querySelectorAll('.floating-nav-btn, .summary-nav-btn, .summary-main-btn, .summary-title');
+existingButtons.forEach(btn => {
+    if (btn.parentNode) {
+        btn.parentNode.removeChild(btn);
+    }
+});
     
     // LEGG TIL FULLSKJERM ELEMENTER
     addFullscreenElements(pageNumber, isCup);

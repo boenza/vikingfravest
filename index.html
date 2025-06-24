@@ -2754,7 +2754,7 @@ function checkPlayerCollisions() {
             gameState.ballVelY = -Math.abs(gameState.ballVelY) - 0.3; // Litt økt fra 0.2 til 0.3
             
             const hitPos = (ballCenterX - vikingLeft) / (vikingRight - vikingLeft);
-            gameState.ballVelX = (hitPos - 0.5) * 5; // ØKT fra 2 til 5 for skrå skudd!
+            gameState.ballVelX = (hitPos - 0.5) * 7; // ØKT fra 2 til 5 for skrå skudd!
             
             // Flytt ball ut av spilleren
             gameState.ballY = vikingTop - 25;

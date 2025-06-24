@@ -3960,7 +3960,10 @@ function parseMatchResult(result) {
 }
 
 function generateCompactLeagueTableHTML() {
-    const allTeams = [vikingTeam, ...teams];
+    // BARE serielag (isSerieTeam: true)
+    const serieLag = teams.filter(team => team.isSerieTeam === true);
+    const allTeams = [vikingTeam, ...serieLag];
+    
     allTeams.sort((a, b) => {
         if (b.points !== a.points) return b.points - a.points;
         const aGoalDiff = a.goalsFor - a.goalsAgainst;

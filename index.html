@@ -3648,25 +3648,27 @@ function showSummaryPage(pageNumber) {
 function addFullscreenElements(pageNumber, isCup = false) {
     const roundSummary = document.getElementById('roundSummary');
     
-    // FULLSKJERM OVERSKRIFT ØVERST
+    // FULLSKJERM OVERSKRIFT SENTRERT
     const title = document.createElement('div');
-    title.className = 'floating-nav-btn';
+    title.className = 'summary-title'; // Bruk egen klasse
     title.style.cssText = `
-        position: fixed;
-        top: 25px;
-        left: 50%;
-        transform: translateX(-50%);
+        position: fixed !important;
+        top: 20px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
         background: linear-gradient(135deg, #000000, #1a1a1a);
         color: ${isCup ? '#FF6B6B' : '#FFD700'};
-        padding: 8px 25px;
+        padding: 10px 30px;
         border-radius: 15px;
         font-family: 'Courier New', monospace;
         font-weight: bold;
-        font-size: 16px;
+        font-size: 14px;
         border: 2px solid ${isCup ? '#FF6B6B' : '#FFD700'};
         z-index: 250;
         backdrop-filter: blur(10px);
         box-shadow: 0 0 20px rgba(${isCup ? '255,107,107' : '255,215,0'},0.3);
+        max-width: 70vw;
+        text-align: center;
     `;
     
     if (pageNumber === 1) {
@@ -3686,50 +3688,56 @@ function addFullscreenElements(pageNumber, isCup = false) {
     
     // NAVIGASJONSKNAPPER
     if (pageNumber === 1) {
-        const nextBtn = createFullscreenButton('Neste →', 'showSummaryPage(2)', 'right', '#4A90E2', '#357ABD');
+        // Bare "Neste →" til høyre
+        const nextBtn = createNavButton('Neste →', 'showSummaryPage(2)', 'right', '#4A90E2', '#357ABD');
         roundSummary.appendChild(nextBtn);
     } else if (pageNumber === 2) {
-        const prevBtn = createFullscreenButton('← Forrige', 'showSummaryPage(1)', 'left', '#666', '#888');
-        const nextBtn = createFullscreenButton('Neste →', 'showSummaryPage(3)', 'right', '#4A90E2', '#357ABD');
+        // "← Forrige" til venstre og "Neste →" til høyre
+        const prevBtn = createNavButton('← Forrige', 'showSummaryPage(1)', 'left', '#666', '#888');
+        const nextBtn = createNavButton('Neste →', 'showSummaryPage(3)', 'right', '#4A90E2', '#357ABD');
         roundSummary.appendChild(prevBtn);
         roundSummary.appendChild(nextBtn);
     } else if (pageNumber === 3) {
-        const prevBtn = createFullscreenButton('← Forrige', 'showSummaryPage(2)', 'left', '#666', '#888');
+        // "← Forrige" til venstre og hovedknapp til høyre
+        const prevBtn = createNavButton('← Forrige', 'showSummaryPage(2)', 'left', '#666', '#888');
+        const mainBtn = createMainNavButton();
         roundSummary.appendChild(prevBtn);
-        
-        const mainBtn = createFullscreenMainButton();
         roundSummary.appendChild(mainBtn);
     }
 }
 
-function createFullscreenButton(text, onclick, side, color1, color2) {
+function createNavButton(text, onclick, side, color1, color2) {
     const btn = document.createElement('button');
-    btn.className = 'floating-nav-btn button';
+    btn.className = 'summary-nav-btn'; // Egen klasse for å unngå konflikter
     btn.onclick = new Function(onclick);
     btn.textContent = text;
     btn.style.cssText = `
-        position: fixed;
-        ${side}: 15px;
-        bottom: 80px;
-        background: linear-gradient(135deg, ${color1}, ${color2});
-        font-size: 14px;
-        padding: 12px 20px;
-        border-radius: 25px;
-        box-shadow: 0 0 20px rgba(${side === 'right' ? '74, 144, 226' : '102, 102, 102'}, 0.6);
-        border: 2px solid #FFD700;
-        z-index: 250;
-        color: white;
-        font-weight: bold;
-        cursor: pointer;
-        backdrop-filter: blur(10px);
-        max-width: 35vw;
-        text-align: center;
+        position: fixed !important;
+        ${side}: 15px !important;
+        bottom: 80px !important;
+        background: linear-gradient(135deg, ${color1}, ${color2}) !important;
+        font-size: 14px !important;
+        padding: 12px 20px !important;
+        border-radius: 25px !important;
+        box-shadow: 0 0 20px rgba(${side === 'right' ? '74, 144, 226' : '102, 102, 102'}, 0.6) !important;
+        border: 2px solid #FFD700 !important;
+        z-index: 250 !important;
+        color: white !important;
+        font-weight: bold !important;
+        cursor: pointer !important;
+        backdrop-filter: blur(10px) !important;
+        max-width: 35vw !important;
+        text-align: center !important;
+        left: ${side === 'left' ? '15px' : 'auto'} !important;
+        right: ${side === 'right' ? '15px' : 'auto'} !important;
+        transform: none !important;
     `;
     return btn;
 }
-function createFullscreenMainButton() {
+
+function createMainNavButton() {
     const btn = document.createElement('button');
-    btn.className = 'floating-nav-btn button';
+    btn.className = 'summary-main-btn'; // Egen klasse
     
     const isSeasonEnd = gameState.currentMatchIndex >= vikingSchedule.length;
     
@@ -3739,27 +3747,29 @@ function createFullscreenMainButton() {
     const isCupMatch = nextMatch && nextMatch.type === 'cup';
     
     btn.style.cssText = `
-        position: fixed;
-        right: 15px;
-        bottom: 80px;
+        position: fixed !important;
+        right: 15px !important;
+        bottom: 80px !important;
+        left: auto !important;
         background: ${isCupMatch ? 
             'linear-gradient(135deg, #FFD700, #FFA500)' : 
             isSeasonEnd ? 'linear-gradient(135deg, #FF6B6B, #FF4444)' : 
-            'linear-gradient(135deg, #00AA00, #00FF00)'};
-        color: ${isCupMatch || isSeasonEnd ? '#000' : '#000'};
-        font-size: 14px;
-        padding: 12px 20px;
-        border-radius: 25px;
+            'linear-gradient(135deg, #00AA00, #00FF00)'} !important;
+        color: ${isCupMatch || isSeasonEnd ? '#000' : '#000'} !important;
+        font-size: 14px !important;
+        padding: 12px 20px !important;
+        border-radius: 25px !important;
         box-shadow: 0 0 25px rgba(${isCupMatch ? '255, 215, 0' : 
-            isSeasonEnd ? '255, 107, 107' : '0, 255, 0'}, 0.8);
-        border: 2px solid ${isCupMatch ? '#FFA500' : '#FFD700'};
-        z-index: 250;
-        font-weight: bold;
-        cursor: pointer;
-        backdrop-filter: blur(10px);
-        animation: ${isCupMatch ? 'cupPulse 2s infinite' : 'none'};
-        max-width: 40vw;
-        text-align: center;
+            isSeasonEnd ? '255, 107, 107' : '0, 255, 0'}, 0.8) !important;
+        border: 2px solid ${isCupMatch ? '#FFA500' : '#FFD700'} !important;
+        z-index: 250 !important;
+        font-weight: bold !important;
+        cursor: pointer !important;
+        backdrop-filter: blur(10px) !important;
+        animation: ${isCupMatch ? 'cupPulse 2s infinite' : 'none'} !important;
+        max-width: 40vw !important;
+        text-align: center !important;
+        transform: none !important;
     `;
     
     if (isSeasonEnd) {
@@ -3775,6 +3785,7 @@ function createFullscreenMainButton() {
     
     return btn;
 }
+
 
 function generateAllMatchesHTML() {
     const currentTeam = gameState.lastMatchOpponent || getCurrentOpponent();

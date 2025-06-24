@@ -2631,7 +2631,7 @@ function updateBall() {
         if (gameState.ballX <= 10 || gameState.ballX >= fieldWidth - 10) {
             gameState.ballVelX = -gameState.ballVelX;
             gameState.ballX = Math.max(10, Math.min(fieldWidth - 10, gameState.ballX));
-            gameState.ballVelX += (Math.random() - 0.5) * 0.2; // Redusert fra 0.5 til 0.2
+            gameState.ballVelX += (Math.random() - 0.5) * 0.3; // Økt fra 0.2 til 0.3
         }
 
         // MÅL: Topp og bunn
@@ -2647,7 +2647,7 @@ function updateBall() {
         if (gameState.ballY <= 10 || gameState.ballY >= fieldHeight - 10) {
             gameState.ballVelY = -gameState.ballVelY;
             gameState.ballY = Math.max(10, Math.min(fieldHeight - 10, gameState.ballY));
-            gameState.ballVelY += (Math.random() - 0.5) * 0.2; // Redusert fra 0.5 til 0.2
+            gameState.ballVelY += (Math.random() - 0.5) * 0.3; // Økt fra 0.2 til 0.3
         }
 
         // MÅL: Venstre og høyre (som før)
@@ -2670,7 +2670,7 @@ function updateBall() {
     checkPlayerCollisions();
     
     // BEGRENS MAKSIMAL HASTIGHET for å forhindre ukontrollerbar ball
-    const maxSpeed = 6; // Redusert fra 8 til 6
+    const maxSpeed = 7; // Økt fra 6 til 7 for mer action
     if (Math.abs(gameState.ballVelX) > maxSpeed) {
         gameState.ballVelX = gameState.ballVelX > 0 ? maxSpeed : -maxSpeed;
     }
@@ -2716,10 +2716,10 @@ function checkPlayerCollisions() {
             ballCenterX <= (vikingRight + 5)) {
             
             console.log('🏓 Viking hit!');
-            gameState.ballVelY = -Math.abs(gameState.ballVelY) - 0.2; // Redusert fra -0.5 til -0.2
+            gameState.ballVelY = -Math.abs(gameState.ballVelY) - 0.3; // Litt økt fra 0.2 til 0.3
             
             const hitPos = (ballCenterX - vikingLeft) / (vikingRight - vikingLeft);
-            gameState.ballVelX = (hitPos - 0.5) * 2; // Redusert fra 3 til 2
+            gameState.ballVelX = (hitPos - 0.5) * 5; // ØKT fra 2 til 5 for skrå skudd!
             
             // Flytt ball ut av spilleren
             gameState.ballY = vikingTop - 25;
@@ -2740,10 +2740,10 @@ function checkPlayerCollisions() {
             ballCenterX <= (opponentRight + 5)) {
             
             console.log('🏓 Opponent hit!');
-            gameState.ballVelY = Math.abs(gameState.ballVelY) + 0.2; // Redusert fra +0.5 til +0.2
+            gameState.ballVelY = Math.abs(gameState.ballVelY) + 0.3; // Litt økt fra 0.2 til 0.3
             
             const hitPos = (ballCenterX - opponentLeft) / (opponentRight - opponentLeft);
-            gameState.ballVelX = (hitPos - 0.5) * 2; // Redusert fra 3 til 2
+            gameState.ballVelX = (hitPos - 0.5) * 5; // ØKT fra 2 til 5 for skrå skudd!
             
             // Flytt ball ut av spilleren
             gameState.ballY = opponentBottom + 5;
@@ -2762,7 +2762,7 @@ function checkPlayerCollisions() {
                 gameState.ballVelX = Math.abs(gameState.ballVelX);
                 
                 const hitPos = (ballCenterY - gameState.vikingY) / 100;
-                gameState.ballVelY = (hitPos - 0.5) * 2.5; // Redusert fra 4 til 2.5
+                gameState.ballVelY = (hitPos - 0.5) * 5; // ØKT fra 2.5 til 5 for skrå skudd!
                 
                 soundSystem.playBallHit();
             }
@@ -2774,7 +2774,7 @@ function checkPlayerCollisions() {
                 gameState.ballVelX = -Math.abs(gameState.ballVelX);
                 
                 const hitPos = (ballCenterY - gameState.opponentY) / 100;
-                gameState.ballVelY = (hitPos - 0.5) * 2.5; // Redusert fra 4 til 2.5
+                gameState.ballVelY = (hitPos - 0.5) * 5; // ØKT fra 2.5 til 5 for skrå skudd!
                 
                 soundSystem.playBallHit();
             }
@@ -2788,7 +2788,7 @@ function checkPlayerCollisions() {
                 gameState.ballVelX = -Math.abs(gameState.ballVelX);
                 
                 const hitPos = (ballCenterY - gameState.vikingY) / 100;
-                gameState.ballVelY = (hitPos - 0.5) * 2.5; // Redusert fra 4 til 2.5
+                gameState.ballVelY = (hitPos - 0.5) * 5; // ØKT fra 2.5 til 5 for skrå skudd!
                 
                 soundSystem.playBallHit();
             }
@@ -2799,7 +2799,7 @@ function checkPlayerCollisions() {
                 gameState.ballVelX = Math.abs(gameState.ballVelX);
                 
                 const hitPos = (ballCenterY - gameState.opponentY) / 100;
-                gameState.ballVelY = (hitPos - 0.5) * 2.5; // Redusert fra 4 til 2.5
+                gameState.ballVelY = (hitPos - 0.5) * 5; // ØKT fra 2.5 til 5 for skrå skudd!
                 
                 soundSystem.playBallHit();
             }

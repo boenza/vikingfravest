@@ -2666,7 +2666,19 @@ function updateBall() {
         }
     }
 
-    function checkPlayerCollisions() {
+    // KALL checkPlayerCollisions() FUNKSJONEN
+    checkPlayerCollisions();
+    
+    // Oppdater ball visuelt
+    const ball = document.getElementById('ball');
+    if (ball) {
+        ball.style.left = gameState.ballX + 'px';
+        ball.style.top = gameState.ballY + 'px';
+    }
+} // <- DENNE MANGLET!
+
+// FLYTT checkPlayerCollisions() UT SOM EN EGEN FUNKSJON
+function checkPlayerCollisions() {
     const viking = document.getElementById('viking');
     const opponent = document.getElementById('opponent');
     const ball = document.getElementById('ball');
@@ -2728,7 +2740,7 @@ function updateBall() {
             gameState.ballY = opponentBottom + 5;
             
             soundSystem.playBallHit();
-        } // DENNE } MANGLET!
+        }
         
     } else {
         // DESKTOP: Vertikale spillere som før

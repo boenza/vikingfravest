@@ -2558,7 +2558,7 @@ function initializeGame() {
 }
 
 function goalScored(scorer) {
-                if (gameState.halfTimeBreak || gameState.matchTime >= 90) {
+    if (gameState.halfTimeBreak || gameState.matchTime >= 90) {
         console.log('🚫 Mål ignorert - kampause eller kampen er ferdig');
         return;
     }
@@ -2579,29 +2579,30 @@ function goalScored(scorer) {
         }
         
         const currentMatch = vikingSchedule[gameState.currentMatchIndex];
-         if (currentMatch && currentMatch.type === 'cup') {
-        addToCupTopScorers(goalScorer, vikingTeam);
-    } else {
-        addToTopScorers(goalScorer, vikingTeam);  // FLYTTET HIT
-    }
+        if (currentMatch && currentMatch.type === 'cup') {
+            addToCupTopScorers(goalScorer, vikingTeam);
+        } else {
+            addToTopScorers(goalScorer, vikingTeam);
+        }
         
         if (checkForVAR(scorer, goalScorer, vikingTeam, isVikingFifthGoal)) {
             return; // VAR håndterer bare celebration-lyd
         } else {
             // INGEN VAR - spill celebration hvis 5. mål
             if (isVikingFifthGoal) {
-setTimeout(() => {
-    console.log('🎉 Spiller Viking 5-mål celebration (ingen VAR)...');
-    soundSystem.playViking5Goals();
-}, 3000); // Økt fra 2000 til 3000ms for å unngå konflikt med scoring-lyd            }
+                setTimeout(() => {
+                    console.log('🎉 Spiller Viking 5-mål celebration (ingen VAR)...');
+                    soundSystem.playViking5Goals();
+                }, 3000); // Økt fra 2000 til 3000ms for å unngå konflikt med scoring-lyd
+            }
             showGoalScorerDisplay(goalScorer, vikingTeam);
             
             // LEGG TIL DENNE setTimeout FOR VIKING OGSÅ:
             setTimeout(() => {
                 kickOff(scorer === 'viking' ? 'opponent' : 'viking');
-gameState.gameActive = true;
+                gameState.gameActive = true;
             }, 4000);
-        
+        }
     
     } else {
         gameState.opponentScore++;
@@ -2610,10 +2611,10 @@ gameState.gameActive = true;
         
         const currentMatch = vikingSchedule[gameState.currentMatchIndex];
         if (currentMatch && currentMatch.type === 'cup') {
-        addToCupTopScorers(goalScorer, currentOpponentTeam);
-    } else {
-        addToTopScorers(goalScorer, currentOpponentTeam);  // FLYTTET HIT
-    }
+            addToCupTopScorers(goalScorer, currentOpponentTeam);
+        } else {
+            addToTopScorers(goalScorer, currentOpponentTeam);
+        }
         
         if (checkForVAR(scorer, goalScorer, currentOpponentTeam, false)) {
             return; // VAR håndterer lydene
@@ -2623,14 +2624,14 @@ gameState.gameActive = true;
             
             setTimeout(() => {
                 kickOff(scorer === 'viking' ? 'opponent' : 'viking');
-gameState.gameActive = true;
+                gameState.gameActive = true;
             }, 4000);
         }
     }
 
     updateUI(); // Ikke glem denne!
 }
-            
+    
 function updateBall() {
     if (gameState.paused) return;
     

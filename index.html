@@ -2447,9 +2447,9 @@ function initializeGame() {
     `;
     
     countdownDiv.innerHTML = `
-        <div style="font-size: 24px; margin-bottom: 20px; color: #00FF00;">${text}</div>
-        <div id="countdownNumber" style="font-size: 80px; font-weight: bold; transition: all 0.3s ease;">3</div>
-    `;
+    <div style="font-size: 20px; margin-bottom: 20px; color: #00FF00; white-space: nowrap;">${text}</div>
+    <div id="countdownNumber" style="font-size: 80px; font-weight: bold; transition: all 0.3s ease;">3</div>
+`;
     
     document.body.appendChild(countdownDiv);
     
@@ -2687,50 +2687,59 @@ function updateBall() {
     const ballCenterY = gameState.ballY + 10;
     
      if (gameState.isMobile) {
-        // MOBIL: Horisontale spillere, ball treffer ovenfra/nedenfra
+    // MOBIL: Horisontale spillere, ball treffer ovenfra/nedenfra
+    
+    // Viking-kollisjon (nederst)
+    const vikingRect = viking.getBoundingClientRect();
+    const gameFieldRect = gameField.getBoundingClientRect();
+    
+    const vikingTop = vikingRect.top - gameFieldRect.top;
+    const vikingLeft = vikingRect.left - gameFieldRect.left;
+    const vikingRight = vikingRect.right - gameFieldRect.left;
+    const vikingBottom = vikingRect.bottom - gameFieldRect.top;
+    
+    // Forbedret kollisjon - sjekk om ball er nær spilleren
+    if (ballCenterY >= (vikingTop - 10) && 
+        ballCenterY <= (vikingBottom + 5) &&
+        ballCenterX >= (vikingLeft - 5) && 
+        ballCenterX <= (vikingRight + 5)) {
         
-        // Viking-kollisjon (nederst) - bruk faktiske posisjoner
-        const vikingRect = viking.getBoundingClientRect();
-        const gameFieldRect = gameField.getBoundingClientRect();
+        console.log('🏓 Viking hit!');
+        gameState.ballVelY = -Math.abs(gameState.ballVelY) - 1; // Litt mer kraft
         
-        // Konverter til relativ posisjon innenfor spillfeltet
-        const vikingRelativeBottom = gameFieldRect.bottom - vikingRect.top;
-        const vikingRelativeLeft = vikingRect.left - gameFieldRect.left;
-        const vikingRelativeRight = vikingRect.right - gameFieldRect.left;
+        const hitPos = (ballCenterX - vikingLeft) / (vikingRight - vikingLeft);
+        gameState.ballVelX = (hitPos - 0.5) * 6; // Redusert fra 8 til 6
         
-        if (ballCenterY >= (gameField.offsetHeight - vikingRelativeBottom) && 
-            ballCenterY <= (gameField.offsetHeight - vikingRelativeBottom + 20) &&
-            ballCenterX >= vikingRelativeLeft && 
-            ballCenterX <= vikingRelativeRight) {
-            
-            console.log('🏓 Viking hit!');
-            gameState.ballVelY = -Math.abs(gameState.ballVelY);
-            
-            const hitPos = (ballCenterX - vikingRelativeLeft) / (vikingRelativeRight - vikingRelativeLeft);
-            gameState.ballVelX = (hitPos - 0.5) * 8;
-            
-            soundSystem.playBallHit();
-        }
+        // Flytt ball ut av spilleren
+        gameState.ballY = vikingTop - 25;
         
-        // Motstander-kollisjon (øverst) - lignende logikk
-        const opponentRect = opponent.getBoundingClientRect();
-        const opponentRelativeTop = opponentRect.top - gameFieldRect.top;
-        const opponentRelativeLeft = opponentRect.left - gameFieldRect.left;
-        const opponentRelativeRight = opponentRect.right - gameFieldRect.left;
+        soundSystem.playBallHit();
+    }
+    
+    // Motstander-kollisjon (øverst) - lignende forbedring
+    const opponentRect = opponent.getBoundingClientRect();
+    const opponentTop = opponentRect.top - gameFieldRect.top;
+    const opponentLeft = opponentRect.left - gameFieldRect.left;
+    const opponentRight = opponentRect.right - gameFieldRect.left;
+    const opponentBottom = opponentRect.bottom - gameFieldRect.top;
+    
+    if (ballCenterY <= (opponentBottom + 10) && 
+        ballCenterY >= (opponentTop - 5) &&
+        ballCenterX >= (opponentLeft - 5) && 
+        ballCenterX <= (opponentRight + 5)) {
         
-        if (ballCenterY <= (opponentRelativeTop + 20) && 
-            ballCenterY >= opponentRelativeTop &&
-            ballCenterX >= opponentRelativeLeft && 
-            ballCenterX <= opponentRelativeRight) {
-            
-            console.log('🏓 Opponent hit!');
-            gameState.ballVelY = Math.abs(gameState.ballVelY);
-            
-            const hitPos = (ballCenterX - opponentRelativeLeft) / (opponentRelativeRight - opponentRelativeLeft);
-            gameState.ballVelX = (hitPos - 0.5) * 8;
-            
-            soundSystem.playBallHit();
-        }
+        console.log('🏓 Opponent hit!');
+        gameState.ballVelY = Math.abs(gameState.ballVelY) + 1; // Litt mer kraft
+        
+        const hitPos = (ballCenterX - opponentLeft) / (opponentRight - opponentLeft);
+        gameState.ballVelX = (hitPos - 0.5) * 6; // Redusert fra 8 til 6
+        
+        // Flytt ball ut av spilleren
+        gameState.ballY = opponentBottom + 5;
+        
+        soundSystem.playBallHit();
+    }
+}
         
     } else {
         // DESKTOP: Vertikale spillere som før
@@ -4290,6 +4299,22 @@ function getTeamLogoPath(teamName) {
         return `assets/teams/${team.logo}`;
     }
     
+    // Spesielle cup-lag som ikke er i teams-arrayet
+    const cupLogos = {
+        'Hana': 'hana-il.png',
+        'Hana IL': 'hana-il.png',
+        'Fløy-Flekkerøy': 'floy-flekkeroy.png',
+        'Moss': 'moss-fk.png',
+        'Moss FK': 'moss-fk.png',
+        'Åsane': 'asane-fotball.png',
+        'Åsane Fotball': 'asane-fotball.png',
+        'Aalesund': 'aalesund.png'
+    };
+    
+    if (cupLogos[teamName]) {
+        return `assets/teams/${cupLogos[teamName]}`;
+    }
+    
     // Fallback til algoritmisk generering (.png)
     const logoName = teamName
         .toLowerCase()
@@ -4987,27 +5012,29 @@ function handleFullScreenTouch(e) {
         return;
     }
     
-    // Sjekk om touch er i nederste del av skjermen (kontrollområdet)
+    // Sjekk om touch er i nederste del av skjermen
     const touch = e.touches[0];
     const screenHeight = window.innerHeight;
     
-    // Kontrollområdet er nederste 60px + litt margin
     if (touch.clientY > screenHeight - 100) {
         e.preventDefault();
         
-        // Finn posisjon relativt til skjermbredden (0 = venstre, 1 = høyre)
         const relativeX = touch.clientX / window.innerWidth;
         
-        // Konverter direkte til spillfeltets bredde
         const gameField = document.getElementById('gameField');
         const fieldWidth = gameField ? gameField.offsetWidth : window.innerWidth;
         const playerWidth = 80;
         const maxX = fieldWidth - playerWidth;
         
-        // Sett Viking sin X-posisjon direkte
-        gameState.vikingX = Math.max(0, Math.min(maxX, relativeX * fieldWidth));
+        // SMOOTHING: Gjør bevegelsen mindre følsom
+        const targetX = relativeX * fieldWidth;
+        const smoothing = 0.3; // Redusert fra 1.0 til 0.3 for mindre følsomhet
+        gameState.vikingX = gameState.vikingX + (targetX - gameState.vikingX) * smoothing;
         
-        console.log('🎮 Touch control - relativeX:', relativeX.toFixed(2), 'vikingX:', gameState.vikingX.toFixed(0));
+        // Sikre at spilleren holder seg innenfor banen
+        gameState.vikingX = Math.max(0, Math.min(maxX, gameState.vikingX));
+        
+        console.log('🎮 Smooth touch control - targetX:', targetX.toFixed(0), 'vikingX:', gameState.vikingX.toFixed(0));
     }
 }
     

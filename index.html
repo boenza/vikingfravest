@@ -2568,16 +2568,20 @@ function goalScored(scorer) {
     let isVikingFifthGoal = false;
     
     if (scorer === 'viking') {
-        gameState.vikingScore++;
-        goalScorer = getRandomPlayer(vikingTeam);
+    gameState.vikingScore++;
+    goalScorer = getRandomPlayer(vikingTeam);
+    
+    // SPILL SCORING-LYD UMIDDELBART (før VAR)
+    soundSystem.playScoring();
+    
+    if (gameState.vikingScore === 5) {
+        isVikingFifthGoal = true;
         
-        // SPILL SCORING-LYD UMIDDELBART (før VAR)
-        soundSystem.playScoring();
-        
-        if (gameState.vikingScore === 5) {
-            isVikingFifthGoal = true;
-        }
-        
+        // SPILL CELEBRATION DIREKTE - INGEN VAR-PROBLEMER!
+        setTimeout(() => {
+            soundSystem.playViking5Goals();
+        }, 3000);
+    }
         const currentMatch = vikingSchedule[gameState.currentMatchIndex];
         if (currentMatch && currentMatch.type === 'cup') {
             addToCupTopScorers(goalScorer, vikingTeam);
@@ -5114,36 +5118,7 @@ function optimizeForMobile() {
     soundSystem.startIntro();
     document.removeEventListener('click', startIntroOnClick);
 }, { once: true });
-    </script>
-
-<!-- TEST-KNAPP HER -->
-<button id="celebrationTestBtn" style="
-    position: fixed;
-    bottom: 80px;
-    left: 20px;
-    z-index: 1001;
-    background: #FFD700;
-    color: #000;
-    padding: 15px 20px;
-    border: none;
-    border-radius: 10px;
-    font-weight: bold;
-    font-size: 16px;
-    box-shadow: 0 0 10px rgba(255,215,0,0.5);
-" onclick="testCelebrationMobile()">
-    🎉 TEST CELEBRATION
-</button>
-
-<script>
-function testCelebrationMobile() {
-    alert('Tester Viking celebration lyd...');
-    soundSystem.playViking5Goals();
-    
-    // Test også med delay
-    setTimeout(() => {
-        soundSystem.playViking5Goals();
-    }, 3000);
-}    
+     
     </script>
 </body>
 </html>

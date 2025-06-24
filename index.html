@@ -2575,13 +2575,16 @@ function goalScored(scorer) {
     soundSystem.playScoring();
     
     if (gameState.vikingScore === 5) {
-        isVikingFifthGoal = true;
-        
-        // SPILL CELEBRATION DIREKTE - INGEN VAR-PROBLEMER!
-        setTimeout(() => {
-            soundSystem.playViking5Goals();
-        }, 1000);
-    }
+    isVikingFifthGoal = true;
+    
+    // SAMME KODE SOM TESTKNAPPEN SOM FUNGERER
+    setTimeout(() => {
+        if (soundSystem.goalCelebrationAudio) {
+            soundSystem.goalCelebrationAudio.currentTime = 0;
+            soundSystem.goalCelebrationAudio.play();
+        }
+    }, 1000);
+}
         const currentMatch = vikingSchedule[gameState.currentMatchIndex];
         if (currentMatch && currentMatch.type === 'cup') {
             addToCupTopScorers(goalScorer, vikingTeam);

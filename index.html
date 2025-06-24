@@ -2596,12 +2596,7 @@ function goalScored(scorer) {
             return; // VAR håndterer bare celebration-lyd
         } else {
             // INGEN VAR - spill celebration hvis 5. mål
-            if (isVikingFifthGoal) {
-                setTimeout(() => {
-                    console.log('🎉 Spiller Viking 5-mål celebration (ingen VAR)...');
-                    soundSystem.playViking5Goals();
-                }, 3000); // Økt fra 2000 til 3000ms for å unngå konflikt med scoring-lyd
-            }
+            
             showGoalScorerDisplay(goalScorer, vikingTeam);
             
             // LEGG TIL DENNE setTimeout FOR VIKING OGSÅ:

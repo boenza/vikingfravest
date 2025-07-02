@@ -964,6 +964,24 @@ body {
         padding: 12px 18px;
         border: 2px solid #FFD700;
     }
+        /* Mørkeblå styling for Viking målscorere */
+.goal-scorer-display.viking {
+    border: 3px solid #002166 !important;
+    box-shadow: 0 0 40px rgba(0,33,102,0.5) !important;
+}
+
+.goal-scorer-display.viking img {
+    border: 4px solid #002166 !important;
+    box-shadow: 0 0 20px rgba(0,33,102,0.3) !important;
+    background: #002166 !important;
+}
+
+.goal-scorer-display.viking .goal-scorer-name {
+    color: #87CEEB !important;
+    text-shadow: 
+        0 0 8px #87CEEB,
+        0 0 16px #87CEEB !important;
+}
     
     .goal-scorer-display img,
     .goal-scorer-display > div:first-child {
@@ -3219,7 +3237,8 @@ function cleanupVAR() {
 
             function showGoalScorerDisplay(player, team) {
                 const scorerDisplay = document.createElement('div');
-                scorerDisplay.className = 'goal-scorer-display';
+                const isViking = team.name === 'Viking FK';
+scorerDisplay.className = isViking ? 'goal-scorer-display viking' : 'goal-scorer-display';
                 
                 const displayId = 'goalScorer_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 scorerDisplay.id = displayId;

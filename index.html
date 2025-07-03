@@ -837,8 +837,8 @@ body {
     
     /* STØRRE TRANSPARENTE LOGOER */
     .field-logo {
-        width: 60px;          /* Økt fra 40px */
-        height: 60px;         /* Økt fra 40px */
+        width: 75px;          /* Økt fra 60px til 75px */
+        height: 75px;         /* Økt fra 60px til 75px */
         padding: 3px;
         background: transparent;  /* Transparent bakgrunn */
         box-shadow: none;     /* Fjern skygge */
@@ -1006,12 +1006,12 @@ body {
         margin-bottom: 20px;
     }
 
-    /* POPUPS - TILBAKE TIL ORIGINAL STØRRELSE, BARE FIKSE POSISJON */
+    /* POPUPS - STØRRE SCORINGSPLAKET FOR BEDRE PROPORSJONER */
     .goal-scorer-display {
-        max-width: 220px;            /* Tilbake til original størrelse */
-        padding: 12px 18px;          /* Tilbake til original padding */
+        max-width: 260px;            /* Økt fra 220px */
+        padding: 18px 25px;          /* Økt padding for mer rom */
         border: 2px solid #FFD700;
-        /* FIKSE SENTRERING - IKKE ENDRE BILDESTØRRELSE */
+        /* FIKSE SENTRERING */
         position: fixed;
         top: 50%;
         left: 50%;
@@ -1025,11 +1025,11 @@ body {
     
     .goal-scorer-display img,
     .goal-scorer-display > div:first-child {
-        width: 45px;                 /* TILBAKE til original størrelse */
-        height: 45px;                /* TILBAKE til original størrelse */
-        margin-bottom: 6px;
-        font-size: 18px;
-        margin-left: 0;              /* FIKSE: Sentrer bildet (fjern -5px) */
+        width: 50px;                 /* Økt litt fra 45px for bedre proporsjoner */
+        height: 50px;                /* Økt litt fra 45px for bedre proporsjoner */
+        margin-bottom: 8px;          /* Økt margin */
+        font-size: 20px;             /* Økt font for større plaket */
+        margin-left: 0;              /* Sentrer bildet */
         margin-right: 0;             /* Sørg for sentrering */
         align-self: center;          /* Sentrer bildet i flex container */
     }
@@ -1045,13 +1045,13 @@ body {
     }
     
     .goal-scorer-name {
-        font-size: 13px;
-        margin-bottom: 4px;
+        font-size: 15px;            /* Økt fra 13px for større plaket */
+        margin-bottom: 6px;         /* Økt margin */
         text-align: center;          /* Sentrer tekst */
     }
     
     .goal-scorer-team {
-        font-size: 11px;
+        font-size: 13px;            /* Økt fra 11px for større plaket */
         text-align: center;          /* Sentrer tekst */
     }
     
@@ -1126,29 +1126,29 @@ body {
     }
     
     .field-logo {
-        width: 50px;
-        height: 50px;
+        width: 60px;                /* Økt fra 50px */
+        height: 60px;               /* Økt fra 50px */
     }
     
     .goal-scorer-display {
-        max-width: 190px;
-        padding: 10px 15px;
+        max-width: 230px;           /* Økt fra 190px */
+        padding: 15px 20px;         /* Økt padding */
     }
     
     .goal-scorer-display img,
     .goal-scorer-display > div:first-child {
-        width: 35px;
-        height: 35px;
-        font-size: 16px;
+        width: 40px;                /* Økt fra 35px */
+        height: 40px;               /* Økt fra 35px */
+        font-size: 18px;            /* Økt font */
         margin-left: 0;              /* Sentrer også på små skjermer */
     }
     
     .goal-scorer-name {
-        font-size: 11px;
+        font-size: 13px;            /* Økt fra 11px */
     }
     
     .goal-scorer-team {
-        font-size: 9px;
+        font-size: 11px;            /* Økt fra 9px */
     }
 }
 

@@ -794,7 +794,7 @@ body {
 }
 
 /* ================================================
-   MOBIL RESPONSIV DESIGN - KOMPLETT FIKSED VERSJON
+   MOBIL RESPONSIV DESIGN - KORRIGERT VERSJON
    ================================================ */
 
 @media (max-width: 768px) {
@@ -817,104 +817,100 @@ body {
 
     /* UI SKALERING - FIKSED SCOREBOARD SENTRERING */
     #ui {
-        position: fixed !important;
-        top: 10px !important;
-        left: 50% !important;
-        transform: translateX(-50%) scale(0.9) !important;
-        margin-bottom: 0 !important;
-        z-index: 100 !important;
-        width: 100% !important;
-        display: flex !important;
-        justify-content: center !important;
-        pointer-events: none !important;  /* VIKTIG for sentrering */
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%) scale(0.9);
+        margin-bottom: 0;
+        z-index: 100;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        pointer-events: none;  /* BARE på UI, ikke på spillere */
     }
     
     .scoreboard-container {
-        gap: 15px !important;
-        height: 90px !important;
-        align-items: center !important;
-        display: flex !important;
-        justify-content: center !important;
+        gap: 15px;
+        height: 90px;
+        align-items: center;
     }
     
     /* STØRRE TRANSPARENTE LOGOER */
     .field-logo {
-        width: 60px !important;          /* Økt fra 40px */
-        height: 60px !important;         /* Økt fra 40px */
-        padding: 3px !important;
-        background: transparent !important;  /* Transparent bakgrunn */
-        box-shadow: none !important;     /* Fjern skygge */
-        border: none !important;
-        object-fit: contain !important;
+        width: 60px;          /* Økt fra 40px */
+        height: 60px;         /* Økt fra 40px */
+        padding: 3px;
+        background: transparent;  /* Transparent bakgrunn */
+        box-shadow: none;     /* Fjern skygge */
+        border: none;
+        object-fit: contain;
     }
     
     .scoreboard {
-        padding: 6px 12px !important;
-        gap: 3px !important;
-        min-width: 280px !important;
-        border: 2px solid #444444 !important;
-        height: 80px !important;
-        min-height: 80px !important;
+        padding: 6px 12px;
+        gap: 3px;
+        min-width: 280px;
+        border: 2px solid #444444;
+        height: 80px;
+        min-height: 80px;
     }
     
     .team-name-led {
-        font-size: 12px !important;
-        min-width: 100px !important;
-        max-width: 100px !important;
+        font-size: 12px;
+        min-width: 100px;
+        max-width: 100px;
     }
     
     .score-led {
-        font-size: 16px !important;
-        padding: 3px 6px !important;
-        margin-right: 25px !important;
+        font-size: 16px;
+        padding: 3px 6px;
+        margin-right: 25px;
     }
     
     .clock-led {
-        font-size: 12px !important;
-        padding: 4px 6px !important;
-        right: 8px !important;
+        font-size: 12px;
+        padding: 4px 6px;
+        right: 8px;
     }
 
-    /* SPILLFELT - FIKSED POSISJONERING */
+    /* SPILLFELT - MER PLASS OPPE OG NEDE */
     #gameField {
-        width: 95vw !important;
-        margin-top: 120px !important;        /* Økt for mer plass fra scoreboard */
-        height: calc(100vh - 240px) !important;  /* Redusert for mer plass fra touch-area */
-        z-index: 50 !important;
-        position: relative !important;
+        width: 95vw;
+        margin-top: 100px;           /* Redusert fra 120px - mer plass oppe */
+        height: calc(100vh - 180px); /* Økt fra 240px - mer plass nede */
+        z-index: 50;
+        position: relative;
     }
 
-    /* SPILLERE - VERTIKAL SPILLING MED MER AVSTAND FRA KANTER */
+    /* SPILLERE - TILBAKE TIL ORIGINAL FUNKSJONALITET */
     .player.viking {
-        left: 50% !important;
+        left: 50%;
         right: auto !important;
-        bottom: 30px !important;          /* Økt fra 20px */
+        bottom: 20px !important;     /* Tilbake til original 20px */
         top: auto !important;
-        transform: translateX(-50%) !important;
+        transform: translateX(-50%);
         width: 80px !important;
         height: 15px !important;
         border-radius: 7px !important;
-        position: absolute !important;
+        /* IKKE pointer-events: none her - spilleren må kunne styres */
     }
     
     .opponent {
-        left: 50% !important;
+        left: 50%;
         right: auto !important;
-        top: 30px !important;             /* Økt fra 20px */
+        top: 20px !important;        /* Tilbake til original 20px */
         bottom: auto !important;
-        transform: translateX(-50%) !important;
+        transform: translateX(-50%);
         width: 80px !important;
         height: 15px !important;
         border-radius: 7px !important;
-        position: absolute !important;
     }
 
     /* BALL */
     .ball {
-        width: 15px !important;
-        height: 15px !important;
-        transform: translateZ(0) !important;
-        position: absolute !important;
+        width: 15px;
+        height: 15px;
+        transform: translateZ(0);
     }
 
     /* FOTBALLBANE-ELEMENTER FOR VERTIKAL SPILLING */
@@ -931,198 +927,145 @@ body {
         width: 90% !important;
         height: 4px !important;
         transform: translateY(-50%) !important;
-        background: white !important;
-        position: absolute !important;
-    }
-    
-    .center-circle {
-        position: absolute !important;
-        left: 50% !important;
-        top: 50% !important;
-        width: 120px !important;
-        height: 120px !important;
-        border: 4px solid white !important;
-        border-radius: 50% !important;
-        transform: translate(-50%, -50%) !important;
-    }
-    
-    .center-spot {
-        position: absolute !important;
-        left: 50% !important;
-        top: 50% !important;
-        width: 8px !important;
-        height: 8px !important;
-        background: white !important;
-        border-radius: 50% !important;
-        transform: translate(-50%, -50%) !important;
     }
     
     #gameField::before {
-        content: '' !important;
-        position: absolute !important;
-        bottom: -3px !important;
-        left: 30% !important;
-        right: 30% !important;
-        height: 3px !important;
-        background: white !important;
-        border-radius: 2px !important;
-        box-shadow: 0 0 10px rgba(255,255,255,0.5) !important;
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 30%;
+        right: 30%;
+        height: 3px;
+        background: white;
+        border-radius: 2px;
+        box-shadow: 0 0 10px rgba(255,255,255,0.5);
     }
     
     #gameField::after {
-        content: '' !important;
-        position: absolute !important;
-        top: -3px !important;
-        left: 30% !important;
-        right: 30% !important;
-        height: 3px !important;
-        background: white !important;
-        border-radius: 2px !important;
-        box-shadow: 0 0 10px rgba(255,255,255,0.5) !important;
+        content: '';
+        position: absolute;
+        top: -3px;
+        left: 30%;
+        right: 30%;
+        height: 3px;
+        background: white;
+        border-radius: 2px;
+        box-shadow: 0 0 10px rgba(255,255,255,0.5);
     }
 
-    /* KONTROLLOMRÅDE - MINDRE HØYDE */
+    /* KONTROLLOMRÅDE */
     .mobile-controls {
-        display: block !important;
+        display: block;
     }
     
     .touch-area {
-        display: block !important;
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        width: 100% !important;
-        height: 50px !important;          /* Redusert fra 60px */
-        background: linear-gradient(135deg, #002166, #003399) !important;
-        color: #FFFFFF !important;
-        text-align: center !important;
-        font-size: 12px !important;
-        z-index: 100 !important;
-        border-top: 2px solid #002166 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        font-weight: bold !important;
+        display: block;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 60px;
+        background: linear-gradient(135deg, #002166, #003399);
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 12px;
+        z-index: 100;
+        border-top: 2px solid #002166;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
     }
 
     /* INTRO SCREEN */
     #introScreen img {
-        max-width: 250px !important;
-        max-height: 150px !important;
-        margin-bottom: 20px !important;
+        max-width: 250px;
+        max-height: 150px;
+        margin-bottom: 20px;
     }
     
     .intro-title {
-        font-size: 16px !important;
-        margin-bottom: 15px !important;
+        font-size: 16px;
+        margin-bottom: 15px;
     }
     
     #startGameBtn {
-        padding: 12px 25px !important;
-        font-size: 16px !important;
+        padding: 12px 25px;
+        font-size: 16px;
     }
     
     #loadingProgress {
-        width: 200px !important;
-        height: 15px !important;
-        margin-bottom: 15px !important;
+        width: 200px;
+        height: 15px;
+        margin-bottom: 15px;
     }
     
     .intro-text {
-        font-size: 12px !important;
-        margin-bottom: 20px !important;
+        font-size: 12px;
+        margin-bottom: 20px;
     }
 
-    /* POPUPS - FIKSED SCORING PLAKET */
+    /* POPUPS - TILBAKE TIL ORIGINAL STØRRELSE, BARE FIKSE POSISJON */
     .goal-scorer-display {
-        position: fixed !important;
-        top: 50% !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        max-width: 240px !important;      /* Økt bredde */
-        padding: 15px 20px !important;    /* Økt padding */
-        border: 2px solid #FFD700 !important;
-        background: linear-gradient(135deg, #000000, #1a1a1a) !important;
-        border-radius: 20px !important;
-        text-align: center !important;
-        z-index: 500 !important;
-        box-shadow: 0 0 40px rgba(255,215,0,0.5) !important;
-        backdrop-filter: blur(10px) !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-    
-    /* VIKING SCORING PLAKET STYLING */
-    .goal-scorer-display.viking {
-        border: 3px solid #002166 !important;
-        box-shadow: 0 0 40px rgba(0,33,102,0.5) !important;
+        max-width: 220px;            /* Tilbake til original størrelse */
+        padding: 12px 18px;          /* Tilbake til original padding */
+        border: 2px solid #FFD700;
+        /* FIKSE SENTRERING - IKKE ENDRE BILDESTØRRELSE */
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;         /* Sentrer innholdet */
+        justify-content: center;
     }
     
     .goal-scorer-display img,
     .goal-scorer-display > div:first-child {
-        width: 60px !important;           /* Økt fra 45px */
-        height: 60px !important;          /* Økt fra 45px */
-        margin-bottom: 10px !important;
-        font-size: 24px !important;      /* Økt font */
-        margin-left: 0 !important;       /* Sentrert - fjernet -5px */
-        border-radius: 50% !important;
-        object-fit: cover !important;
-        border: 4px solid #FFD700 !important;
-        box-shadow: 0 0 20px rgba(255,215,0,0.3) !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        background: #FFD700 !important;
+        width: 45px;                 /* TILBAKE til original størrelse */
+        height: 45px;                /* TILBAKE til original størrelse */
+        margin-bottom: 6px;
+        font-size: 18px;
+        margin-left: 0;              /* FIKSE: Sentrer bildet (fjern -5px) */
+        margin-right: 0;             /* Sørg for sentrering */
+        align-self: center;          /* Sentrer bildet i flex container */
     }
     
     .goal-scorer-display.viking img,
     .goal-scorer-display.viking > div:first-child {
         border: 4px solid #4A90E2 !important;
         box-shadow: 
-            0 0 20px rgba(74, 144, 226, 0.8) !important,
-            0 0 40px rgba(74, 144, 226, 0.6) !important;
+            0 0 15px rgba(74, 144, 226, 0.8) !important,
+            0 0 30px rgba(74, 144, 226, 0.6) !important;
         background: linear-gradient(135deg, #4A90E2, #002166) !important;
+        margin-left: 0 !important;   /* VIKTIG: Fjern offset */
     }
     
     .goal-scorer-name {
-        font-size: 14px !important;      /* Økt fra 13px */
-        margin-bottom: 6px !important;
-        color: #FFD700 !important;
-        font-family: 'Courier New', monospace !important;
-        font-weight: bold !important;
-        text-shadow: 0 0 10px #FFD700 !important;
-        text-align: center !important;
-    }
-    
-    .goal-scorer-display.viking .goal-scorer-name {
-        color: #87CEEB !important;
-        text-shadow: 
-            0 0 8px #87CEEB,
-            0 0 16px #87CEEB !important;
+        font-size: 13px;
+        margin-bottom: 4px;
+        text-align: center;          /* Sentrer tekst */
     }
     
     .goal-scorer-team {
-        font-size: 12px !important;      /* Økt fra 11px */
-        color: #00FF00 !important;
-        font-family: 'Courier New', monospace !important;
-        font-weight: bold !important;
-        text-align: center !important;
+        font-size: 11px;
+        text-align: center;          /* Sentrer tekst */
     }
     
     .halftime-screen,
     .var-screen,
     #gameMessage {
-        max-width: 280px !important;
-        padding: 18px 25px !important;
+        max-width: 280px;
+        padding: 18px 25px;
     }
 
     /* NAVIGASJONSKNAPPER */
     .floating-nav-btn {
         position: fixed !important;
-        bottom: 70px !important;         /* Økt fra 20px for å ikke dekke touch-area */
+        bottom: 20px !important;
         font-size: 14px !important;
         padding: 12px 20px !important;
         max-width: 35vw !important;
@@ -1149,13 +1092,13 @@ body {
         right: auto !important;
         top: auto !important;
         transform: translateX(-50%) !important;
-        bottom: 70px !important;         /* Økt fra 20px */
+        bottom: 20px !important;
         max-width: 60vw !important;
     }
 
     /* RUNDEOVERSIKT */
     #roundSummary {
-        padding: 25px 15px 120px 15px !important;  /* Økt bottom padding */
+        padding: 25px 15px 100px 15px !important;
         font-size: 12px !important;
     }
     
@@ -1174,41 +1117,38 @@ body {
 /* EKSTRA SMÅ TELEFONER */
 @media (max-width: 480px) {
     #gameField {
-        height: calc(100vh - 220px) !important;  /* Justert for mindre skjermer */
-        margin-top: 110px !important;
+        height: calc(100vh - 160px);     /* Mer plass for små skjermer */
+        margin-top: 90px;
     }
     
     #ui {
-        transform: translateX(-50%) scale(0.8) !important;  /* Bedre skalering */
+        transform: translateX(-50%) scale(0.8);
     }
     
     .field-logo {
-        width: 50px !important;
-        height: 50px !important;
+        width: 50px;
+        height: 50px;
     }
     
     .goal-scorer-display {
-        max-width: 200px !important;
-        padding: 12px 16px !important;
+        max-width: 190px;
+        padding: 10px 15px;
     }
     
     .goal-scorer-display img,
     .goal-scorer-display > div:first-child {
-        width: 50px !important;
-        height: 50px !important;
-        font-size: 20px !important;
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+        margin-left: 0;              /* Sentrer også på små skjermer */
     }
     
     .goal-scorer-name {
-        font-size: 12px !important;
+        font-size: 11px;
     }
     
     .goal-scorer-team {
-        font-size: 10px !important;
-    }
-    
-    .touch-area {
-        height: 45px !important;
+        font-size: 9px;
     }
 }
 
@@ -1216,8 +1156,8 @@ body {
 @media (max-width: 768px) and (orientation: landscape) {
     .mobile-instruction {
         display: block !important;
-        background: rgba(0, 170, 0, 0.9) !important;
-        color: white !important;
+        background: rgba(0, 170, 0, 0.9);
+        color: white;
     }
 }
     </style>

@@ -1289,7 +1289,8 @@ body {
             summaryPage: 1,
             currentMatchIndex: 0,
             cupEliminated: false,
-            lastKickoffTime: null
+            lastKickoffTime: null,
+            lastCollisionTime: 0
         };
 
         // ===== FORBEDRET LYDOPPSETT =====
@@ -2801,23 +2802,23 @@ function checkPlayerCollisions() {
         const vikingBottom = vikingRect.bottom - gameFieldRect.top;
         
         // Forbedret kollisjon - sjekk om ball er nær spilleren
-        if (ballCenterY >= (vikingTop - 10) && 
-            ballCenterY <= (vikingBottom + 5) &&
-            ballCenterX >= (vikingLeft - 5) && 
-            ballCenterX <= (vikingRight + 5)) {
-            
-            console.log('🏓 Viking hit!');
-            gameState.ballVelY = -Math.abs(gameState.ballVelY) - 0.3; // Litt økt fra 0.2 til 0.3
-            
-            const hitPos = (ballCenterX - vikingLeft) / (vikingRight - vikingLeft);
-            gameState.ballVelX = (hitPos - 0.5) * 7; // ØKT fra 2 til 5 for skrå skudd!
-            
-            // Flytt ball ut av spilleren
-            gameState.ballY = vikingTop - 25;
-            
-            soundSystem.playBallHit();
-        }
-        
+        if (Date.now() - gameState.lastCollisionTime > 100 &&
+    ballCenterY >= (vikingTop - 10) && 
+    ballCenterY <= (vikingBottom + 5) &&
+    ballCenterX >= (vikingLeft - 5) && 
+    ballCenterX <= (vikingRight + 5)) {
+    
+    console.log('🏓 Viking hit!');
+    gameState.lastCollisionTime = Date.now();
+    
+    const targetVelY = -Math.abs(gameState.ballVelY) - 0.5;
+    gameState.ballVelY = gameState.ballVelY * 0.3 + targetVelY * 0.7;
+    
+    const hitPos = (ballCenterX - vikingLeft) / (vikingRight - vikingLeft);
+    gameState.ballVelX = (hitPos - 0.5) * 6;
+    
+    soundSystem.playBallHit();
+}
         // Motstander-kollisjon (øverst) - lignende forbedring
         const opponentRect = opponent.getBoundingClientRect();
         const opponentTop = opponentRect.top - gameFieldRect.top;
@@ -2825,22 +2826,23 @@ function checkPlayerCollisions() {
         const opponentRight = opponentRect.right - gameFieldRect.left;
         const opponentBottom = opponentRect.bottom - gameFieldRect.top;
         
-        if (ballCenterY <= (opponentBottom + 10) && 
-            ballCenterY >= (opponentTop - 5) &&
-            ballCenterX >= (opponentLeft - 5) && 
-            ballCenterX <= (opponentRight + 5)) {
-            
-            console.log('🏓 Opponent hit!');
-            gameState.ballVelY = Math.abs(gameState.ballVelY) + 0.3; // Litt økt fra 0.2 til 0.3
-            
-            const hitPos = (ballCenterX - opponentLeft) / (opponentRight - opponentLeft);
-            gameState.ballVelX = (hitPos - 0.5) * 5; // ØKT fra 2 til 5 for skrå skudd!
-            
-            // Flytt ball ut av spilleren
-            gameState.ballY = opponentBottom + 5;
-            
-            soundSystem.playBallHit();
-        }
+        if (Date.now() - gameState.lastCollisionTime > 100 &&
+    ballCenterY <= (opponentBottom + 10) && 
+    ballCenterY >= (opponentTop - 5) &&
+    ballCenterX >= (opponentLeft - 5) && 
+    ballCenterX <= (opponentRight + 5)) {
+    
+    console.log('🏓 Opponent hit!');
+    gameState.lastCollisionTime = Date.now();
+    
+    const targetVelY = Math.abs(gameState.ballVelY) + 0.5;
+    gameState.ballVelY = gameState.ballVelY * 0.3 + targetVelY * 0.7;
+    
+    const hitPos = (ballCenterX - opponentLeft) / (opponentRight - opponentLeft);
+    gameState.ballVelX = (hitPos - 0.5) * 5;
+    
+    soundSystem.playBallHit();
+}
         
     } else {
         // DESKTOP: Vertikale spillere som før

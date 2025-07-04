@@ -2802,7 +2802,7 @@ function checkPlayerCollisions() {
         const vikingBottom = vikingRect.bottom - gameFieldRect.top;
         
         // Forbedret kollisjon - sjekk om ball er nær spilleren
-        if (Date.now() - gameState.lastCollisionTime > 100 &&
+        if (Date.now() - gameState.lastCollisionTime > 50 &&
     ballCenterY >= (vikingTop - 10) && 
     ballCenterY <= (vikingBottom + 5) &&
     ballCenterX >= (vikingLeft - 5) && 

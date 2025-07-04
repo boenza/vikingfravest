@@ -2811,7 +2811,7 @@ function checkPlayerCollisions() {
     console.log('🏓 Viking hit!');
     gameState.lastCollisionTime = Date.now();
     
-    const targetVelY = -Math.abs(gameState.ballVelY) - 0.5;
+    const targetVelY = -Math.abs(gameState.ballVelY) - 1.5;
     gameState.ballVelY = gameState.ballVelY * 0.3 + targetVelY * 0.7;
     
     const hitPos = (ballCenterX - vikingLeft) / (vikingRight - vikingLeft);
@@ -2835,7 +2835,7 @@ function checkPlayerCollisions() {
     console.log('🏓 Opponent hit!');
     gameState.lastCollisionTime = Date.now();
     
-    const targetVelY = Math.abs(gameState.ballVelY) + 0.5;
+    const targetVelY = Math.abs(gameState.ballVelY) + 1.5;
     gameState.ballVelY = gameState.ballVelY * 0.3 + targetVelY * 0.7;
     
     const hitPos = (ballCenterX - opponentLeft) / (opponentRight - opponentLeft);

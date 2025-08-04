@@ -426,6 +426,7 @@ body {
     border: 4px solid #FFD700;
     max-width: 280px;
     box-shadow: 0 0 50px rgba(255,215,0,0.5);
+    display: none;  /* <- LEGG TIL DENNE LINJEN */
 }
 
 .var-screen {
@@ -1019,11 +1020,17 @@ function showStartButton() {
 
 function startMainGame() {
     const introScreen = document.getElementById('introScreen');
+    const gameMessage = document.getElementById('gameMessage');
     
     soundSystem.stopIntro();
     
     if (introScreen) {
         introScreen.style.display = 'none';
+    }
+    
+    // SKJUL NY SESONG-KNAPPEN
+    if (gameMessage) {
+        gameMessage.style.display = 'none';
     }
     
     console.log('🎮 Starter hovedspill');
@@ -3309,3 +3316,4 @@ document.addEventListener('click', function startIntroOnClick() {
     </script>
 </body>
 </html>
+

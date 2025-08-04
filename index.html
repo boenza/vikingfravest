@@ -1613,7 +1613,7 @@ function updateNextCupOpponent(completedRound) {
         // Bestem finale-motstander
         const otherSemiWinner = Math.random() > 0.5 ? 
             cupData.fixedMatches[6][1].team1 : cupData.fixedMatches[6][1].team2;
-        // Oppdater fixedMatches for finale
+       // Oppdater fixedMatches for finale
         cupData.fixedMatches[7] = [
             { team1: 'Viking', team2: otherSemiWinner }
         ];
@@ -1704,6 +1704,12 @@ function initializeGame() {
     setTimeout(() => {
         window.scrollTo(0, 1);
     }, 100);
+
+    // SKJUL GAMEMESSAGE VED OPPSTART
+    const gameMessage = document.getElementById('gameMessage');
+    if (gameMessage) {
+        gameMessage.style.display = 'none';
+    }
 
     initializeCupTopScorers();
     
@@ -3218,8 +3224,15 @@ window.restartSeason = function() {
     });
 
     const roundSummary = document.getElementById('roundSummary');
+    const gameMessage = document.getElementById('gameMessage');
+    
     if (roundSummary) {
         roundSummary.style.display = 'none';
+    }
+    
+    // SKJUL GAMEMESSAGE NÅR NY SESONG STARTER
+    if (gameMessage) {
+        gameMessage.style.display = 'none';
     }
     
     initializeGame();

@@ -2809,14 +2809,15 @@ function checkPlayerCollisions() {
     ballCenterX <= (vikingRight + 5)) {
     
     console.log('🏓 Viking hit!');
-    gameState.lastCollisionTime = Date.now();
-    
-    gameState.ballVelY = -Math.abs(gameState.ballVelY) - 1.0;
-    
-    const hitPos = (ballCenterX - vikingLeft) / (vikingRight - vikingLeft);
-    gameState.ballVelX = (hitPos - 0.5) * 6;
-    
-    soundSystem.playBallHit();
+gameState.ballVelY = -Math.abs(gameState.ballVelY) - 0.3;
+
+const hitPos = (ballCenterX - vikingLeft) / (vikingRight - vikingLeft);
+gameState.ballVelX = (hitPos - 0.5) * 7;
+
+// Mindre ballforflytning
+gameState.ballY = vikingTop - 15;
+
+soundSystem.playBallHit();
 }
         // Motstander-kollisjon (øverst) - lignende forbedring
         const opponentRect = opponent.getBoundingClientRect();
@@ -5194,4 +5195,5 @@ function optimizeForMobile() {
     </script>
 </body>
 </html>
+
 

@@ -2077,36 +2077,37 @@ function initializeGame() {
     }
 
     function showVARCheck(scorer, goalScorer, team, isVikingFifthGoal = false) {
-        soundSystem.playVAR();
+    soundSystem.playVAR();
+    
+    setTimeout(() => {
+        const varScreen = document.createElement('div');
+        varScreen.className = 'var-screen';
+        varScreen.id = 'varScreen';
         
+        varScreen.innerHTML = `
+            <img src="assets/images/var-plakat.png" style="width: 200px; height: 140px; margin-bottom: 10px;" onerror="this.style.display='none';">
+            <div style="color: #FF0000; font-size: 24px; font-weight: bold; margin-bottom: 15px; font-family: 'Courier New', monospace;">
+                📹 VAR SJEKK
+            </div>
+            <div style="font-size: 18px; font-weight: bold; margin-bottom: 20px; font-family: 'Courier New', monospace; animation: varPulse 1s ease-in-out infinite;">
+                SJEKKER MULIG OFFSIDE
+            </div>
+            <div style="color: #FFFF00; font-size: 18px; margin-bottom: 20px;">
+                VAR
+            </div>
+            <div style="color: #FFD700; font-size: 16px; font-family: 'Courier New', monospace;">
+                ${goalScorer.name} - ${team.name.toUpperCase()}
+            </div>
+        `;
+        
+        document.body.appendChild(varScreen);
+        
+        // Simuler VAR-sjekk
         setTimeout(() => {
-            const varScreen = document.createElement('div');
-            varScreen.className = 'var-screen';
-            varScreen.id = 'varScreen';
-            
-            varScreen.innerHTML = `
-                <div style="color: #FF0000; font-size: 24px; font-weight: bold; margin-bottom: 15px; font-family: 'Courier New', monospace;">
-                    📹 VAR SJEKK
-                </div>
-                <div style="font-size: 18px; font-weight: bold; margin-bottom: 20px; font-family: 'Courier New', monospace; animation: varPulse 1s ease-in-out infinite;">
-                    SJEKKER MULIG OFFSIDE
-                </div>
-                <div style="color: #FFFF00; font-size: 18px; margin-bottom: 20px;">
-                    VAR
-                </div>
-                <div style="color: #FFD700; font-size: 16px; font-family: 'Courier New', monospace;">
-                    ${goalScorer.name} - ${team.name.toUpperCase()}
-                </div>
-            `;
-            
-            document.body.appendChild(varScreen);
-            
-            // Simuler VAR-sjekk
-            setTimeout(() => {
-                makeVARDecision(scorer, goalScorer, team, varScreen, isVikingFifthGoal);
-            }, 4000);
-        }, 500);
-    }
+            makeVARDecision(scorer, goalScorer, team, varScreen, isVikingFifthGoal);
+        }, 4000);
+    }, 500);
+}
 
     function makeVARDecision(scorer, goalScorer, team, varScreen, isVikingFifthGoal = false) {
         const goalStands = Math.random() < 0.5;
@@ -2229,17 +2230,17 @@ function initializeGame() {
         const playerImage = `assets/players/${team.name.toLowerCase().replace(/\s+/g, '-').replace('ø','o').replace('å','a')}/${player.image}.png`;
 
         scorerDisplay.innerHTML = `
-            <div style="width: 50px; height: 50px; border-radius: 50%; border: 4px solid #FFD700; margin: 0 auto 8px auto; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #FFD700, #FFA500); position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); font-size: 20px;">
-                <img src="${playerImage}" alt="${player.name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div style="display: none; color: #000;">${player.emoji}</div>
-            </div>
-            <div class="goal-scorer-name">⚽ MÅL!</div>
-            <div class="goal-scorer-team">${player.name}</div>
-            <div style="color: #FFFFFF; font-size: 12px; margin-top: 6px;">${team.name.toUpperCase()}</div>
-            <div style="color: #00FF00; font-size: 14px; font-weight: bold; margin-top: 8px; font-family: 'Courier New', monospace;">
-                VIKING FK ${gameState.vikingScore} – ${gameState.opponentScore} ${getCurrentOpponent().name.toUpperCase()}
-            </div>
-        `;
+    <div style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid #FFD700; margin: 0 auto 15px auto; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #FFD700, #FFA500); position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);">
+        <img src="${playerImage}" alt="${player.name}" style="width: 110px; height: 110px; object-fit: cover; border-radius: 50%;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div style="display: none; color: #000; font-size: 50px;">${player.emoji}</div>
+    </div>
+    <div class="goal-scorer-name">⚽ MÅL!</div>
+    <div class="goal-scorer-team">${player.name}</div>
+    <div style="color: #FFFFFF; font-size: 12px; margin-top: 6px;">${team.name.toUpperCase()}</div>
+    <div style="color: #00FF00; font-size: 14px; font-weight: bold; margin-top: 8px; font-family: 'Courier New', monospace;">
+        VIKING FK ${gameState.vikingScore} – ${gameState.opponentScore} ${getCurrentOpponent().name.toUpperCase()}
+    </div>
+`;
         
         document.body.appendChild(scorerDisplay);
 
@@ -3316,4 +3317,5 @@ document.addEventListener('click', function startIntroOnClick() {
     </script>
 </body>
 </html>
+
 

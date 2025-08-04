@@ -2825,7 +2825,7 @@ function checkPlayerCollisions() {
         const opponentRight = opponentRect.right - gameFieldRect.left;
         const opponentBottom = opponentRect.bottom - gameFieldRect.top;
         
-        if (Date.now() - gameState.lastCollisionTime > 100 &&
+        if (Date.now() - gameState.lastCollisionTime > 50 &&
     ballCenterY <= (opponentBottom + 10) && 
     ballCenterY >= (opponentTop - 5) &&
     ballCenterX >= (opponentLeft - 5) && 
@@ -5194,3 +5194,4 @@ function optimizeForMobile() {
     </script>
 </body>
 </html>
+

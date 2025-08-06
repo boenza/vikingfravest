@@ -410,9 +410,37 @@ body {
     font-weight: bold;
     font-family: 'Courier New', monospace;
 }
+/* NYTT - RIKTIG: */
+.halftime-screen {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.95);
+    padding: 18px 25px;
+    border-radius: 20px;
+    text-align: center;
+    z-index: 400;
+    border: 4px solid #FFD700;
+    max-width: 280px;
+    box-shadow: 0 0 50px rgba(255,215,0,0.5);
+}
 
-.halftime-screen,
-.var-screen,
+.var-screen {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.95);
+    padding: 18px 25px;
+    border-radius: 20px;
+    text-align: center;
+    z-index: 450;
+    border: 4px solid #FF0000;
+    max-width: 280px;
+    box-shadow: 0 0 50px rgba(255,0,0,0.5);
+}
+
 #gameMessage {
     position: fixed;
     top: 50%;
@@ -426,13 +454,9 @@ body {
     border: 4px solid #FFD700;
     max-width: 280px;
     box-shadow: 0 0 50px rgba(255,215,0,0.5);
-    display: none;  /* <- LEGG TIL DENNE LINJEN */
+    display: none;
 }
 
-.var-screen {
-    border: 4px solid #FF0000;
-    box-shadow: 0 0 50px rgba(255,0,0,0.5);
-}
 .var-lines {
     position: absolute;
     top: 0;
@@ -2125,11 +2149,17 @@ function initializeGame() {
     }
 
     function showVARCheck(scorer, goalScorer, team, isVikingFifthGoal = false) {
-    soundSystem.playVAR();
+    // Fjern eventuelle eksisterende VAR-elementer først
+    cleanupVAR();
     
+    soundSystem.playVAR();
     showOffsideLines(scorer);
     
     setTimeout(() => {
+        const existingVarScreen = document.getElementById('varScreen');
+    if (existingVarScreen) {
+        existingVarScreen.remove();
+    }
         const varScreen = document.createElement('div');
         varScreen.className = 'var-screen';
         varScreen.id = 'varScreen';
@@ -2151,6 +2181,8 @@ function initializeGame() {
         `;
         
         document.body.appendChild(varScreen);
+    varScreen.style.display = 'block'; // Forsikre at den vises
+    console.log('🎥 VAR-skjerm lagt til DOM:', varScreen);
         
         // Start linje-animasjoner etter 1 sekund
         setTimeout(() => {
@@ -2163,7 +2195,13 @@ function initializeGame() {
         }, 4000);
     }, 500);
 }
-function showOffsideLines(scorer) {
+    function showOffsideLines(scorer) {
+    // Sjekk om linjer allerede eksisterer
+    const existingLines = document.getElementById('varLines');
+    if (existingLines) {
+        existingLines.remove();
+    }
+    
     const gameField = document.getElementById('gameField');
     const fieldRect = gameField.getBoundingClientRect();
     
@@ -2254,24 +2292,37 @@ function animateFinalLines(goalStands) {
 }
 
 function cleanupVAR() {
+    console.log('🧹 Starter VAR cleanup...');
+    
     const varScreen = document.getElementById('varScreen');
     const varLines = document.getElementById('varLines');
     
-    if (varScreen) {
+    if (varScreen && varScreen.parentNode) {
         try {
-            document.body.removeChild(varScreen);
+            varScreen.parentNode.removeChild(varScreen);
+            console.log('✅ VAR-skjerm fjernet');
         } catch (e) {
-            console.log('VAR-skjerm allerede fjernet');
+            console.log('⚠️ VAR-skjerm allerede fjernet');
         }
     }
     
-    if (varLines) {
+    if (varLines && varLines.parentNode) {
         try {
-            document.body.removeChild(varLines);
+            varLines.parentNode.removeChild(varLines);
+            console.log('✅ VAR-linjer fjernet');
         } catch (e) {
-            console.log('VAR-linjer allerede fjernet');
+            console.log('⚠️ VAR-linjer allerede fjernet');
         }
     }
+    
+    // Fjern også eventuelle offside-linjer direkte
+    const allOffsideLines = document.querySelectorAll('.offside-line');
+    allOffsideLines.forEach(line => {
+        if (line.parentNode) {
+            line.parentNode.removeChild(line);
+        }
+    });
+    
     soundSystem.stopAllGoalSounds();
 }
     function makeVARDecision(scorer, goalScorer, team, varScreen, isVikingFifthGoal = false) {
@@ -2554,11 +2605,14 @@ function cleanupVAR() {
     }
 
     function endMatch() {
-        if (gameState.currentHalf < 2 || gameState.matchTime < 45) {
-            return;
-        }
-        
-        gameState.gameActive = false;
+    if (gameState.currentHalf < 2 || gameState.matchTime < 45) {
+        return;
+    }
+    
+    // Rydd opp eventuelle VAR-elementer
+    cleanupVAR();
+    
+    gameState.gameActive = false;
         const currentTeam = getCurrentOpponent();
         const currentMatch = vikingSchedule[gameState.currentMatchIndex];
 
@@ -3222,6 +3276,9 @@ function continueToNextRound() {
 }
 
 function nextMatch() {
+    // Rydd opp eventuelle VAR-elementer fra forrige kamp
+    cleanupVAR();
+    
     const roundSummary = document.getElementById('roundSummary');
     if (roundSummary) roundSummary.style.display = 'none';
     
@@ -3332,6 +3389,9 @@ window.showSummaryPage = showSummaryPage;
 window.continueToNextRound = continueToNextRound;
 
 window.startSecondHalf = function() {
+    // Rydd opp eventuelle VAR-elementer
+    cleanupVAR();
+    
     const halfTimeScreen = document.getElementById('halfTimeScreen');
     if (halfTimeScreen && halfTimeScreen.parentNode) {
         halfTimeScreen.parentNode.removeChild(halfTimeScreen);
@@ -3375,6 +3435,9 @@ window.startSecondHalf = function() {
 };
 
 window.restartSeason = function() {
+    // Rydd opp eventuelle VAR-elementer
+    cleanupVAR();
+    
     gameState.currentRound = 1;
     gameState.currentMatchIndex = 0;
     gameState.cupEliminated = false;
@@ -3483,6 +3546,7 @@ document.addEventListener('click', function startIntroOnClick() {
     </script>
 </body>
 </html>
+
 
 
 

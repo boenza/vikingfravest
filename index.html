@@ -433,7 +433,55 @@ body {
     border: 4px solid #FF0000;
     box-shadow: 0 0 50px rgba(255,0,0,0.5);
 }
+.var-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 550;
+}
 
+.offside-line {
+    position: absolute;
+    width: 4px;
+    height: 60%;
+    top: 20%;
+    opacity: 0;
+    box-shadow: 0 0 10px currentColor;
+    transition: all 0.5s ease-in-out;
+}
+
+.offside-line.red {
+    background: #FF0000;
+    color: #FF0000;
+}
+
+.offside-line.green {
+    background: #00FF00;
+    color: #00FF00;
+}
+
+.var-checking {
+    animation: varPulse 1s ease-in-out infinite;
+}
+
+@keyframes varLineAppear {
+    0% { 
+        opacity: 0; 
+        transform: scaleY(0) rotate(0deg); 
+    }
+    100% { 
+        opacity: 1; 
+        transform: scaleY(1) rotate(var(--rotation)); 
+    }
+}
+
+@keyframes varPulse {
+    0%, 100% { color: #FF0000; }
+    50% { color: #FFFF00; }
+}
 /* ======= ANIMASJONER ======= */
 @keyframes crowdPulse {
     0%, 100% { opacity: 0.3; }
@@ -2079,6 +2127,8 @@ function initializeGame() {
     function showVARCheck(scorer, goalScorer, team, isVikingFifthGoal = false) {
     soundSystem.playVAR();
     
+    showOffsideLines(scorer);
+    
     setTimeout(() => {
         const varScreen = document.createElement('div');
         varScreen.className = 'var-screen';
@@ -2089,7 +2139,7 @@ function initializeGame() {
             <div style="color: #FF0000; font-size: 24px; font-weight: bold; margin-bottom: 15px; font-family: 'Courier New', monospace;">
                 📹 VAR SJEKK
             </div>
-            <div style="font-size: 18px; font-weight: bold; margin-bottom: 20px; font-family: 'Courier New', monospace; animation: varPulse 1s ease-in-out infinite;">
+            <div class="var-checking" style="font-size: 18px; font-weight: bold; margin-bottom: 20px; font-family: 'Courier New', monospace;">
                 SJEKKER MULIG OFFSIDE
             </div>
             <div style="color: #FFFF00; font-size: 18px; margin-bottom: 20px;">
@@ -2102,13 +2152,128 @@ function initializeGame() {
         
         document.body.appendChild(varScreen);
         
-        // Simuler VAR-sjekk
+        // Start linje-animasjoner etter 1 sekund
+        setTimeout(() => {
+            animateVARLines(scorer);
+        }, 1000);
+        
+        // Simuler VAR-sjekk i 4 sekunder
         setTimeout(() => {
             makeVARDecision(scorer, goalScorer, team, varScreen, isVikingFifthGoal);
         }, 4000);
     }, 500);
 }
+function showOffsideLines(scorer) {
+    const gameField = document.getElementById('gameField');
+    const fieldRect = gameField.getBoundingClientRect();
+    
+    const varLines = document.createElement('div');
+    varLines.className = 'var-lines';
+    varLines.id = 'varLines';
+    varLines.style.width = fieldRect.width + 'px';
+    varLines.style.height = fieldRect.height + 'px';
+    varLines.style.left = fieldRect.left + 'px';
+    varLines.style.top = fieldRect.top + 'px';
+    
+    // På mobil: mål er oppe/nede, så plasser linjer horisontalt
+    const baseY = scorer === 'viking' ? 25 : 75; // 25% (oppe) eller 75% (nede)
+    
+    // Rød linje (horisontal for mobil)
+    const redLine = document.createElement('div');
+    redLine.className = 'offside-line red';
+    redLine.id = 'redLine';
+    redLine.style.width = '60%';
+    redLine.style.height = '4px';
+    redLine.style.left = '20%';
+    redLine.style.top = baseY + '%';
+    redLine.style.animation = 'varLineAppear 0.7s ease-in-out forwards';
+    
+    // Grønn linje (horisontal for mobil)
+    const greenLine = document.createElement('div');
+    greenLine.className = 'offside-line green';
+    greenLine.id = 'greenLine';
+    greenLine.style.width = '60%';
+    greenLine.style.height = '4px';
+    greenLine.style.left = '20%';
+    greenLine.style.top = (baseY + 3) + '%';
+    greenLine.style.animation = 'varLineAppear 0.7s ease-in-out 0.3s forwards';
+    
+    varLines.appendChild(redLine);
+    varLines.appendChild(greenLine);
+    document.body.appendChild(varLines);
+}
 
+function animateVARLines(scorer) {
+    const redLine = document.getElementById('redLine');
+    const greenLine = document.getElementById('greenLine');
+    
+    if (!redLine || !greenLine) return;
+    
+    let moveCount = 0;
+    const maxMoves = 2 + Math.floor(Math.random() * 2);
+    
+    const moveInterval = setInterval(() => {
+        if (moveCount >= maxMoves) {
+            clearInterval(moveInterval);
+            return;
+        }
+        
+        // Flytt linjene litt opp/ned for mobil
+        const redCurrentY = parseFloat(redLine.style.top);
+        const greenCurrentY = parseFloat(greenLine.style.top);
+        
+        const redNewY = redCurrentY + (Math.random() * 4 - 2);
+        const greenNewY = greenCurrentY + (Math.random() * 4 - 2);
+        
+        redLine.style.top = Math.max(10, Math.min(90, redNewY)) + '%';
+        greenLine.style.top = Math.max(10, Math.min(90, greenNewY)) + '%';
+        
+        moveCount++;
+    }, 800);
+}
+
+function animateFinalLines(goalStands) {
+    const redLine = document.getElementById('redLine');
+    const greenLine = document.getElementById('greenLine');
+    
+    if (!redLine || !greenLine) return;
+    
+    if (goalStands) {
+        setTimeout(() => {
+            redLine.style.backgroundColor = '#00FF00';
+            redLine.style.color = '#00FF00';
+            redLine.style.boxShadow = '0 0 15px #00FF00';
+        }, 200);
+    } else {
+        setTimeout(() => {
+            greenLine.style.backgroundColor = '#FF0000';
+            greenLine.style.color = '#FF0000';
+            greenLine.style.boxShadow = '0 0 15px #FF0000';
+        }, 200);
+    }
+}
+
+function cleanupVAR() {
+    const varScreen = document.getElementById('varScreen');
+    const varLines = document.getElementById('varLines');
+    
+    if (varScreen) {
+        try {
+            document.body.removeChild(varScreen);
+        } catch (e) {
+            console.log('VAR-skjerm allerede fjernet');
+        }
+    }
+    
+    if (varLines) {
+        try {
+            document.body.removeChild(varLines);
+        } catch (e) {
+            console.log('VAR-linjer allerede fjernet');
+        }
+    }
+    soundSystem.stopAllGoalSounds();
+}
     function makeVARDecision(scorer, goalScorer, team, varScreen, isVikingFifthGoal = false) {
         const goalStands = Math.random() < 0.5;
         const currentMatch = vikingSchedule[gameState.currentMatchIndex];
@@ -2230,17 +2395,17 @@ function initializeGame() {
         const playerImage = `assets/players/${team.name.toLowerCase().replace(/\s+/g, '-').replace('ø','o').replace('å','a')}/${player.image}.png`;
 
         scorerDisplay.innerHTML = `
-    <div style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid #FFD700; margin: 0 auto 15px auto; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #FFD700, #FFA500); position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);">
-        <img src="${playerImage}" alt="${player.name}" style="width: 110px; height: 110px; object-fit: cover; border-radius: 50%;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-        <div style="display: none; color: #000; font-size: 50px;">${player.emoji}</div>
-    </div>
-    <div class="goal-scorer-name">⚽ MÅL!</div>
-    <div class="goal-scorer-team">${player.name}</div>
-    <div style="color: #FFFFFF; font-size: 12px; margin-top: 6px;">${team.name.toUpperCase()}</div>
-    <div style="color: #00FF00; font-size: 14px; font-weight: bold; margin-top: 8px; font-family: 'Courier New', monospace;">
-        VIKING FK ${gameState.vikingScore} – ${gameState.opponentScore} ${getCurrentOpponent().name.toUpperCase()}
-    </div>
-`;
+                    <div style="width: 200px; height: 200px; border-radius: 50%; border: 4px solid #FFD700; margin: 0 auto 20px auto; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #FFD700, #FFA500); position: relative; overflow: hidden; box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);">
+                        <img src="${playerImage}" alt="${player.name}" style="width: 190px; height: 190px; object-fit: contain; border-radius: 50%;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div style="display: none; font-size: 65px; color: #000;">${player.emoji}</div>
+                    </div>
+                    <div class="goal-scorer-name">⚽ MÅL!</div>
+                    <div class="goal-scorer-team">${player.name}</div>
+                    <div style="color: #FFFFFF; font-size: 14px; margin-top: 8px;">${team.name.toUpperCase()}</div>
+                    <div style="color: #00FF00; font-size: 18px; font-weight: bold; margin-top: 10px; font-family: 'Courier New', monospace;">
+                        VIKING FK ${gameState.vikingScore} – ${gameState.opponentScore} ${getCurrentOpponent().name.toUpperCase()}
+                    </div>
+                `;
         
         document.body.appendChild(scorerDisplay);
 
@@ -2256,6 +2421,7 @@ function initializeGame() {
         }, 4000);
     }
 
+    
     function updateUI() {
         const homeTeamName = document.getElementById('homeTeamName');
         const awayTeamName = document.getElementById('awayTeamName');
@@ -3317,5 +3483,6 @@ document.addEventListener('click', function startIntroOnClick() {
     </script>
 </body>
 </html>
+
 
 

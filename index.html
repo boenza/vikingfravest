@@ -2557,14 +2557,6 @@ function cleanupVAR() {
     
     let secondHalfStarted = false;
     
-    // DEFINER FUNKSJONEN FØR HTML SETTES INN
-    window.startSecondHalfOnce = function() {
-        if (!secondHalfStarted) {
-            secondHalfStarted = true;
-            startSecondHalf();
-        }
-    };
-    
     const halfTimeScreen = document.createElement('div');
     halfTimeScreen.className = 'halftime-screen';
     halfTimeScreen.id = 'halfTimeScreen';
@@ -2579,12 +2571,23 @@ function cleanupVAR() {
         <div style="color: #FFD700; font-size: 14px; margin-bottom: 25px;">
             Forbereder 2. omgang
         </div>
-        <button class="button" onclick="startSecondHalfOnce()" style="background: linear-gradient(135deg, #00AA00, #00FF00); color: #000;">
+        <button id="startSecondHalfBtn" class="button" style="background: linear-gradient(135deg, #00AA00, #00FF00); color: #000;">
             Start 2. omgang
         </button>
     `;
     
     document.body.appendChild(halfTimeScreen);
+    
+    // LEGG TIL EVENT LISTENER ETTER AT ELEMENTET ER I DOM
+    const startBtn = document.getElementById('startSecondHalfBtn');
+    if (startBtn) {
+        startBtn.addEventListener('click', function() {
+            if (!secondHalfStarted) {
+                secondHalfStarted = true;
+                startSecondHalf();
+            }
+        });
+    }
     
     setTimeout(() => {
         if (!secondHalfStarted) {
@@ -3535,6 +3538,7 @@ document.addEventListener('click', function startIntroOnClick() {
     </script>
 </body>
 </html>
+
 
 
 

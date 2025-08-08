@@ -2550,7 +2550,9 @@ function cleanupVAR() {
         }
     }
 
-   function showHalfTimeBreak() {
+ function showHalfTimeBreak() {
+    console.log('⏱️ showHalfTimeBreak called');
+    
     cleanupVAR();
     gameState.gameActive = false;
     gameState.halfTimeBreak = true;
@@ -2571,30 +2573,49 @@ function cleanupVAR() {
         <div style="color: #FFD700; font-size: 14px; margin-bottom: 25px;">
             Forbereder 2. omgang
         </div>
-        <button id="startSecondHalfBtn" class="button" style="background: linear-gradient(135deg, #00AA00, #00FF00); color: #000;">
+        <button id="halfTimeButton" class="button" style="background: linear-gradient(135deg, #00AA00, #00FF00); color: #000;">
             Start 2. omgang
         </button>
     `;
     
     document.body.appendChild(halfTimeScreen);
     
-    // LEGG TIL EVENT LISTENER ETTER AT ELEMENTET ER I DOM
-    const startBtn = document.getElementById('startSecondHalfBtn');
-    if (startBtn) {
-        startBtn.addEventListener('click', function() {
-            if (!secondHalfStarted) {
-                secondHalfStarted = true;
-                startSecondHalf();
-            }
-        });
-    }
-    
-    setTimeout(() => {
+    // Funksjon som starter 2. omgang
+    const startSecondHalfHandler = function(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        console.log('⏱️ Button handler triggered, secondHalfStarted:', secondHalfStarted);
         if (!secondHalfStarted) {
             secondHalfStarted = true;
             startSecondHalf();
         }
-    }, 3000);
+    };
+    
+    // Legg til BÅDE click og touch event listeners
+    const halfTimeButton = document.getElementById('halfTimeButton');
+    if (halfTimeButton) {
+        // Click event for desktop
+        halfTimeButton.addEventListener('click', startSecondHalfHandler);
+        
+        // Touch event for mobil (viktigst!)
+        halfTimeButton.addEventListener('touchend', startSecondHalfHandler, {passive: false});
+        
+        // Forhindre at andre touch handlers blokkerer
+        halfTimeButton.addEventListener('touchstart', function(e) {
+            e.stopPropagation();
+        }, {passive: false});
+    }
+    
+    // Auto-start etter 5 sekunder (økt fra 3)
+    setTimeout(() => {
+        if (!secondHalfStarted) {
+            console.log('⏱️ Auto-starting second half');
+            secondHalfStarted = true;
+            startSecondHalf();
+        }
+    }, 5000);
 }
     function endMatch() {
     if (gameState.currentHalf < 2 || gameState.matchTime < 45) {
@@ -3538,6 +3559,7 @@ document.addEventListener('click', function startIntroOnClick() {
     </script>
 </body>
 </html>
+
 
 
 
